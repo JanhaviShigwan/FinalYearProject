@@ -1,37 +1,81 @@
-import { motion } from "framer-motion";
-import events from "../data/events";
-
 export default function TrendingEvents() {
+  const events = [
+    {
+      title: "Code Clash 2026",
+      date: "March 15, 2026",
+      location: "MIT Auditorium",
+      registered: "342 registered",
+      image:
+        "https://images.unsplash.com/photo-1518770660439-4636190af475",
+    },
+    {
+      title: "Cultural Nite",
+      date: "April 2, 2026",
+      location: "Central Arena",
+      registered: "578 registered",
+      image:
+        "https://ln.run/nku0G",
+    },
+    {
+      title: "AI Workshop",
+      date: "April 18, 2026",
+      location: "Tech Lab 3",
+      registered: "215 registered",
+      image:
+        "https://images.unsplash.com/photo-1531482615713-2afd69097998",
+    },
+    {
+      title: "Sports Fest",
+      date: "May 5, 2026",
+      location: "Main Stadium",
+      registered: "890 registered",
+      image:
+        "https://images.unsplash.com/photo-1517649763962-0c623066013b",
+    },
+  ];
+
   return (
-    <section className="section">
-      <h2 className="section-title">🔥 Trending Events</h2>
+    <section className="trending-section">
+      <div className="trending-container">
 
-      <div className="grid md:grid-cols-4 gap-6">
-        {events.map((event, index) => (
-          <motion.div
-            key={event.id}
-            className="card p-6"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.2 }}
-            viewport={{ once: true }}
-          >
-            <h3 className="font-semibold text-lg">{event.title}</h3>
-            <p className="text-gray-500 text-sm">{event.date}</p>
+        <h2 className="trending-title">
+          Trending <span className="trending-gradient">Events</span>
+        </h2>
 
-            <div className="flex justify-between items-center mt-4">
-              <span className="text-secondary font-medium">
-                {event.registrations} Registered
-              </span>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                className="btn-secondary"
-              >
-                Register
-              </motion.button>
+        <p className="trending-subtitle">
+          Don't miss out on the most popular events happening now
+        </p>
+
+        <div className="trending-grid">
+          {events.map((event, index) => (
+            <div key={index} className="trending-card">
+
+              <div className="trending-image-wrapper">
+                <img
+                  src={event.image}
+                  alt={event.title}
+                  className="trending-image"
+                />
+              </div>
+
+              <div className="trending-content">
+                <h3>{event.title}</h3>
+
+                <div className="trending-info">
+                  <p>📅 {event.date}</p>
+                  <p>📍 {event.location}</p>
+                  <p>👥 {event.registered}</p>
+                </div>
+
+                <button className="trending-btn">
+                  Register Now
+                </button>
+              </div>
+
             </div>
-          </motion.div>
-        ))}
+          ))}
+        </div>
+
       </div>
     </section>
   );

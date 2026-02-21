@@ -2,42 +2,452 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===============================
+/* =================================================
    GLOBAL BASE STYLES
-================================ */
+================================================= */
 
 body {
   @apply bg-background text-gray-800 transition-colors duration-300;
 }
 
-/* Dark Mode Background */
 .dark body {
   @apply bg-gray-900 text-gray-200;
 }
 
-/* ===============================
+/* =================================================
    NAVBAR
-================================ */
+================================================= */
 
-.navbar {
-  @apply bg-white shadow-md sticky top-0 z-50 transition-colors duration-300;
+.navbar-container {
+  @apply bg-white dark:bg-gray-900 shadow-sm transition-colors duration-300;
 }
 
-.dark .navbar {
-  @apply bg-gray-800 shadow-lg;
+.navbar-wrapper {
+  @apply max-w-7xl mx-auto px-6 py-4 flex items-center justify-between;
 }
 
-.nav-link {
-  @apply text-gray-600 hover:text-primary transition;
+.navbar-logo {
+  @apply flex items-center gap-3;
 }
 
-.dark .nav-link {
-  @apply text-gray-300 hover:text-accent;
+.logo-circle {
+  @apply w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm;
 }
 
-/* ===============================
-   SECTION STYLES
-================================ */
+.brand-name {
+  @apply text-lg font-semibold text-gray-800 dark:text-white;
+}
+
+.brand-highlight {
+  @apply text-secondary;
+}
+
+.nav-links {
+  @apply hidden md:flex gap-8 text-gray-600 dark:text-gray-300 font-medium;
+}
+
+.nav-links a {
+  @apply hover:text-primary transition duration-300;
+}
+
+.nav-actions {
+  @apply flex items-center gap-6;
+}
+
+.theme-toggle {
+  @apply text-gray-600 dark:text-gray-300 hover:text-primary transition duration-300;
+}
+
+.login-text {
+  @apply text-gray-600 dark:text-gray-300 hover:text-primary transition duration-300;
+}
+
+.register-btn {
+  @apply bg-primary text-white px-5 py-2 rounded-full shadow-sm hover:opacity-90 transition duration-300;
+}
+
+/* =================================================
+   HERO
+================================================= */
+
+.hero-section {
+  @apply bg-background py-28 px-6 text-center transition-colors duration-300;
+}
+
+.dark .hero-section {
+  @apply bg-gray-900;
+}
+
+.hero-container {
+  @apply max-w-4xl mx-auto;
+}
+
+.hero-badge {
+  @apply inline-block mb-6 px-5 py-2 rounded-full bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-sm shadow-sm;
+}
+
+.hero-title {
+  @apply text-5xl md:text-6xl font-bold leading-tight text-gray-900 dark:text-white mb-6;
+}
+
+.hero-gradient {
+  @apply bg-gradient-to-r from-primary to-secondary text-transparent inline-block;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  @apply text-lg text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto;
+}
+
+.hero-buttons {
+  @apply flex justify-center gap-6;
+}
+
+.hero-btn-primary {
+  @apply bg-primary text-white px-8 py-4 rounded-xl shadow-lg transition duration-300 hover:scale-105;
+}
+
+.hero-btn-secondary {
+  @apply border border-secondary text-secondary px-8 py-4 rounded-xl transition duration-300 hover:bg-secondary hover:text-white;
+}
+
+/* =================================================
+   EVENT PREVIEW SECTION
+================================================= */
+
+.event-preview-section {
+  @apply py-20 px-6;
+}
+
+.event-preview-container {
+  @apply max-w-6xl mx-auto grid md:grid-cols-3 gap-8;
+}
+
+.event-preview-card {
+  @apply bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 
+         transition duration-300 ease-out 
+         transform hover:-translate-y-4 hover:scale-105 
+         hover:shadow-2xl cursor-pointer;
+}
+
+.event-preview-image {
+  @apply w-full h-32 rounded-xl mb-4 bg-gray-200 dark:bg-gray-700;
+}
+
+.event-preview-content h3 {
+  @apply font-semibold text-lg mb-1 text-gray-900 dark:text-white;
+}
+
+.event-preview-content p {
+  @apply text-gray-500 dark:text-gray-400 text-sm;
+}
+
+/* =================================================
+   TRENDING EVENTS SECTION (ADDED PROPERLY)
+================================================= */
+
+.trending-section {
+  @apply py-24 px-6 bg-background dark:bg-gray-900 transition-colors duration-300;
+}
+
+.trending-container {
+  @apply max-w-7xl mx-auto;
+}
+
+.trending-title {
+  @apply text-4xl font-bold text-center text-gray-900 dark:text-white mb-4;
+}
+
+.trending-gradient {
+  @apply bg-gradient-to-r from-primary to-secondary text-transparent inline-block;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.trending-subtitle {
+  @apply text-center text-gray-600 dark:text-gray-400 mb-16;
+}
+
+.trending-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8;
+}
+
+/* Card */
+
+.trending-card {
+  @apply bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden
+         transition duration-300 transform hover:-translate-y-4 hover:shadow-2xl;
+}
+
+/* Image Fix */
+
+.trending-image-wrapper {
+  @apply w-full h-56 overflow-hidden;
+}
+
+.trending-image {
+  @apply w-full h-full object-cover;
+}
+
+/* Content */
+
+.trending-content {
+  @apply p-6;
+}
+
+.trending-content h3 {
+  @apply text-lg font-semibold text-gray-900 dark:text-white mb-4;
+}
+
+.trending-info {
+  @apply text-gray-600 dark:text-gray-400 text-sm space-y-2 mb-6;
+}
+
+.trending-btn {
+  @apply w-full bg-secondary text-white py-3 rounded-xl 
+         transition duration-300 hover:bg-primary;
+}
+/* =================================================
+   CATEGORIES SECTION (UPDATED)
+================================================= */
+
+.categories-section {
+  @apply py-24 px-6 bg-background dark:bg-gray-900 transition-colors duration-300;
+}
+
+.categories-container {
+  @apply max-w-7xl mx-auto text-center;
+}
+
+.categories-title {
+  @apply text-4xl font-bold text-gray-900 dark:text-white mb-4;
+}
+
+.categories-gradient {
+  @apply bg-gradient-to-r from-primary to-secondary text-transparent inline-block;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.categories-subtitle {
+  @apply text-gray-600 dark:text-gray-400 mb-16;
+}
+
+.categories-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8;
+}
+
+/* Card */
+
+.category-card {
+  @apply bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-md
+         border border-gray-200 dark:border-gray-700
+         transition duration-300
+         hover:-translate-y-4 hover:shadow-xl cursor-pointer;
+}
+
+.category-card h3 {
+  @apply text-lg font-semibold text-gray-900 dark:text-white mt-4 mb-2;
+}
+
+.category-card p {
+  @apply text-sm text-gray-600 dark:text-gray-400;
+}
+
+/* Icon */
+
+.category-icon {
+  @apply w-16 h-16 mx-auto rounded-2xl flex items-center justify-center
+         text-2xl bg-primary/10 dark:bg-primary/20;
+}
+
+/* =================================================
+   SMOOTH TRANSITION
+================================================= */
+
+* {
+  @apply transition-colors duration-300;
+}
+/* =================================================
+   STATS SECTION (COMPACT VERSION)
+================================================= */
+
+.stats-section {
+  @apply py-16 px-6 bg-background dark:bg-gray-900 transition-colors duration-300;
+}
+
+.stats-container {
+  @apply max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3
+         rounded-2xl overflow-hidden
+         border border-gray-200 dark:border-gray-700
+         bg-white dark:bg-gray-800;
+}
+
+/* Individual Card */
+
+.stats-card {
+  @apply text-center py-10 px-4
+         border-b md:border-b-0 md:border-r
+         border-gray-200 dark:border-gray-700
+         transition duration-300 hover:bg-gray-50 dark:hover:bg-gray-700;
+}
+
+.stats-card:last-child {
+  @apply md:border-r-0;
+}
+
+/* Icon */
+
+.stats-icon {
+  @apply text-secondary mb-4 mx-auto;
+}
+
+/* Number */
+
+.stats-card h3 {
+  @apply text-4xl font-bold text-primary mb-2;
+}
+
+/* Label */
+
+.stats-card p {
+  @apply text-sm text-gray-600 dark:text-gray-400;
+}
+/* =================================================
+   HOW IT WORKS (TIMELINE VERSION - IMAGE MATCH)
+================================================= */
+
+.how-section {
+  @apply py-24 px-6 bg-background dark:bg-gray-900 transition-colors duration-300;
+}
+
+.how-container {
+  @apply max-w-7xl mx-auto text-center;
+}
+
+.how-title {
+  @apply text-4xl font-bold text-gray-900 dark:text-white mb-4;
+}
+
+.how-gradient {
+  @apply bg-gradient-to-r from-primary to-secondary text-transparent inline-block;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.how-subtitle {
+  @apply text-gray-600 dark:text-gray-400 mb-20;
+}
+
+/* Timeline wrapper */
+
+.how-timeline {
+  @apply relative grid grid-cols-1 md:grid-cols-4 gap-12 items-start;
+}
+
+/* Connecting line */
+
+.how-line {
+  @apply hidden md:block absolute top-10 left-0 right-0 h-1
+         bg-gradient-to-r from-primary to-secondary;
+}
+
+/* Each step */
+
+.how-step {
+  @apply relative text-center;
+}
+
+/* Circle */
+
+.how-circle {
+  @apply relative w-24 h-24 mx-auto rounded-full
+         flex items-center justify-center
+         bg-gray-100 dark:bg-gray-800
+         border border-gray-200 dark:border-gray-700
+         text-secondary
+         transition duration-300
+         hover:scale-110;
+}
+
+/* Step number badge */
+
+.how-number {
+  @apply absolute -top-3 -right-3 w-8 h-8 rounded-full
+         bg-primary text-white text-sm
+         flex items-center justify-center shadow-md;
+}
+
+/* Titles */
+
+.how-step h3 {
+  @apply mt-6 text-lg font-semibold text-gray-900 dark:text-white;
+}
+
+.how-step p {
+  @apply mt-2 text-sm text-gray-600 dark:text-gray-400;
+}
+/* =================================================
+   FOOTER (MATCHING YOUR IMAGE)
+================================================= */
+
+.footer-section {
+  @apply bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300
+         pt-16 pb-8 px-6 transition-colors duration-300;
+}
+
+.footer-container {
+  @apply max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 mb-12;
+}
+
+/* Left */
+
+.footer-about p {
+  @apply mt-4 text-sm text-gray-600 dark:text-gray-400 leading-relaxed;
+}
+
+/* Links */
+
+.footer-links h4,
+.footer-contact h4 {
+  @apply text-sm font-semibold tracking-wide mb-6 text-gray-900 dark:text-white;
+}
+
+.footer-links a {
+  @apply block mb-3 text-sm text-gray-600 dark:text-gray-400
+         hover:text-primary transition duration-300;
+}
+
+/* Contact */
+
+.footer-contact-item {
+  @apply flex items-center gap-3 mb-4 text-sm text-gray-600 dark:text-gray-400;
+}
+
+/* Bottom Section */
+
+.footer-bottom {
+  @apply max-w-7xl mx-auto flex flex-col md:flex-row
+         justify-between items-center
+         border-t border-gray-200 dark:border-gray-700
+         pt-6 text-sm text-gray-600 dark:text-gray-400;
+}
+
+.footer-socials {
+  @apply flex gap-5 mt-4 md:mt-0 text-gray-500 dark:text-gray-400;
+}
+
+.footer-socials svg {
+  @apply hover:text-primary cursor-pointer transition duration-300;
+}
+/* =================================================
+   SECTION
+================================================= */
 
 .section {
   @apply py-16 px-6 transition-colors duration-300;
@@ -51,28 +461,24 @@ body {
   @apply text-accent;
 }
 
-/* ===============================
+/* =================================================
    CARDS
-================================ */
+================================================= */
 
 .card {
-  @apply bg-card rounded-2xl shadow-md transition duration-300 hover:shadow-xl hover:-translate-y-2;
+  @apply bg-card rounded-2xl shadow-md transition duration-300 hover:shadow-xl hover:-translate-y-2 p-6;
 }
 
 .dark .card {
   @apply bg-gray-800 text-gray-200;
 }
 
-/* ===============================
+/* =================================================
    BUTTONS
-================================ */
+================================================= */
 
 .btn-primary {
   @apply bg-primary text-white px-6 py-3 rounded-xl shadow-md transition hover:opacity-90;
-}
-
-.dark .btn-primary {
-  @apply bg-primary;
 }
 
 .btn-secondary {
@@ -83,21 +489,21 @@ body {
   @apply bg-accent text-black px-6 py-3 rounded-xl shadow-md transition hover:opacity-90;
 }
 
-/* ===============================
-   CTA SECTION
-================================ */
+/* =================================================
+   CTA
+================================================= */
 
 .cta-section {
-  @apply bg-primary text-white transition-colors duration-300;
+  @apply bg-primary text-white py-20 text-center transition-colors duration-300;
 }
 
 .dark .cta-section {
   @apply bg-gray-800 text-white;
 }
 
-/* ===============================
+/* =================================================
    FOOTER
-================================ */
+================================================= */
 
 .footer {
   @apply bg-primary text-white text-center py-6 transition-colors duration-300;
