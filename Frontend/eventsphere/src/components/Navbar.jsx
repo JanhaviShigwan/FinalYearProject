@@ -1,6 +1,8 @@
 import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { Sun, Moon } from "lucide-react";
+import logo from "../assets/logoo.png";
+
 
 export default function Navbar() {
   const { darkMode, setDarkMode } = useContext(ThemeContext);
@@ -11,9 +13,9 @@ export default function Navbar() {
 
         {/* Logo */}
         <div className="navbar-logo">
-          <div className="logo-circle">CV</div>
+          <img src={logo} alt="CampusVibe Logo" className="logo-image" />
           <span className="brand-name">
-            Campus<span className="brand-highlight">Vibe</span>
+            Event<span className="brand-highlight">Sphere</span>
           </span>
         </div>
 

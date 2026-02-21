@@ -1,4 +1,5 @@
 import { Mail, Phone, MapPin, Github, Linkedin, Instagram } from "lucide-react";
+import logo from "../assets/logoo.png"; 
 
 export default function Footer() {
   return (
@@ -8,9 +9,9 @@ export default function Footer() {
         {/* Left */}
         <div className="footer-about">
           <div className="footer-logo">
-            <div className="logo-circle">CV</div>
+             <img src={logo} alt="CampusVibe Logo" className="footer-logo-image" />
             <span className="brand-name">
-              Campus<span className="brand-highlight">Vibe</span>
+              Event<span className="brand-highlight">Sphere</span>
             </span>
           </div>
 

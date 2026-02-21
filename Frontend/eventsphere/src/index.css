@@ -98,9 +98,9 @@ body {
 }
 
 .hero-subtitle {
-  @apply text-lg text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto;
+  @apply text-xl font-medium text-gray-600 dark:text-gray-300 
+         mb-10 max-w-2xl mx-auto leading-relaxed;
 }
-
 .hero-buttons {
   @apply flex justify-center gap-6;
 }
@@ -157,7 +157,10 @@ body {
 }
 
 .trending-title {
-  @apply text-4xl font-bold text-center text-gray-900 dark:text-white mb-4;
+  @apply text-4xl font-bold text-center 
+         text-gray-900 dark:text-white 
+         mb-6 leading-tight;
+  padding-bottom: 6px;
 }
 
 .trending-gradient {
@@ -168,7 +171,9 @@ body {
 }
 
 .trending-subtitle {
-  @apply text-center text-gray-600 dark:text-gray-400 mb-16;
+  @apply text-center text-lg font-medium 
+         text-gray-600 dark:text-gray-400 
+         mb-16 leading-relaxed;
 }
 
 .trending-grid {
@@ -203,7 +208,7 @@ body {
 }
 
 .trending-info {
-  @apply text-gray-600 dark:text-gray-400 text-sm space-y-2 mb-6;
+  @apply text-gray-600 dark:text-gray-400 text-base space-y-2 mb-6;
 }
 
 .trending-btn {
@@ -223,7 +228,9 @@ body {
 }
 
 .categories-title {
-  @apply text-4xl font-bold text-gray-900 dark:text-white mb-4;
+  @apply text-4xl font-bold text-gray-900 dark:text-white 
+         mb-6 leading-tight;
+  padding-bottom: 6px;
 }
 
 .categories-gradient {
@@ -234,7 +241,9 @@ body {
 }
 
 .categories-subtitle {
-  @apply text-gray-600 dark:text-gray-400 mb-16;
+  @apply text-lg font-medium 
+         text-gray-600 dark:text-gray-400 
+         mb-16 leading-relaxed;
 }
 
 .categories-grid {
@@ -255,7 +264,7 @@ body {
 }
 
 .category-card p {
-  @apply text-sm text-gray-600 dark:text-gray-400;
+  @apply text-base text-gray-600 dark:text-gray-400;
 }
 
 /* Icon */
@@ -341,7 +350,9 @@ body {
 }
 
 .how-subtitle {
-  @apply text-gray-600 dark:text-gray-400 mb-20;
+  @apply text-lg font-medium 
+         text-gray-600 dark:text-gray-400 
+         mb-20 leading-relaxed;
 }
 
 /* Timeline wrapper */
@@ -386,19 +397,30 @@ body {
 /* Titles */
 
 .how-step h3 {
-  @apply mt-6 text-lg font-semibold text-gray-900 dark:text-white;
+  @apply mt-6 text-xl font-semibold text-gray-900 dark:text-white;
 }
 
 .how-step p {
-  @apply mt-2 text-sm text-gray-600 dark:text-gray-400;
+  @apply mt-2 text-base text-gray-600 dark:text-gray-400;
 }
 /* =================================================
    FOOTER (MATCHING YOUR IMAGE)
 ================================================= */
 
 .footer-section {
-  @apply bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300
+  @apply bg-white text-gray-700
          pt-16 pb-8 px-6 transition-colors duration-300;
+}
+
+/* Dark Mode – Differentiated Footer */
+
+.dark .footer-section {
+  background: linear-gradient(
+    to right,
+    #0f0a1f,
+    #111827
+  );
+  color: #d1d5db;
 }
 
 .footer-container {
@@ -408,25 +430,25 @@ body {
 /* Left */
 
 .footer-about p {
-  @apply mt-4 text-sm text-gray-600 dark:text-gray-400 leading-relaxed;
+  @apply mt-4 text-base text-gray-600 dark:text-gray-400 leading-relaxed;
 }
 
 /* Links */
 
 .footer-links h4,
 .footer-contact h4 {
-  @apply text-sm font-semibold tracking-wide mb-6 text-gray-900 dark:text-white;
+  @apply text-base font-semibold tracking-wide mb-6 text-gray-900 dark:text-white;
 }
 
 .footer-links a {
-  @apply block mb-3 text-sm text-gray-600 dark:text-gray-400
+  @apply block mb-3 text-base text-gray-600 dark:text-gray-400
          hover:text-primary transition duration-300;
 }
 
 /* Contact */
 
 .footer-contact-item {
-  @apply flex items-center gap-3 mb-4 text-sm text-gray-600 dark:text-gray-400;
+  @apply flex items-center gap-3 mb-4 text-base text-gray-600 dark:text-gray-400;
 }
 
 /* Bottom Section */
@@ -435,7 +457,7 @@ body {
   @apply max-w-7xl mx-auto flex flex-col md:flex-row
          justify-between items-center
          border-t border-gray-200 dark:border-gray-700
-         pt-6 text-sm text-gray-600 dark:text-gray-400;
+         pt-6 text-base text-gray-600 dark:text-gray-400;
 }
 
 .footer-socials {
@@ -490,18 +512,6 @@ body {
 }
 
 /* =================================================
-   CTA
-================================================= */
-
-.cta-section {
-  @apply bg-primary text-white py-20 text-center transition-colors duration-300;
-}
-
-.dark .cta-section {
-  @apply bg-gray-800 text-white;
-}
-
-/* =================================================
    FOOTER
 ================================================= */
 
@@ -509,6 +519,63 @@ body {
   @apply bg-primary text-white text-center py-6 transition-colors duration-300;
 }
 
+/* Dark Mode - Slightly Different Tone */
+
 .dark .footer {
-  @apply bg-gray-900;
+  @apply bg-gray-950 text-gray-300;
+}
+/* =================================================
+   GLOBAL PURPLE GLOW HOVER EFFECT (UPDATED)
+================================================= */
+
+.card,
+.category-card,
+.trending-card,
+.stats-card,
+.event-preview-card {
+  position: relative;
+  transition: all 0.35s ease;
+}
+
+/* Smooth Lift + Glow */
+
+.card:hover,
+.category-card:hover,
+.trending-card:hover,
+.stats-card:hover,
+.event-preview-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow:
+    0 0 0 1px rgba(142, 97, 214, 0.4),
+    0 10px 25px rgba(142, 97, 214, 0.4),
+    0 0 40px rgba(142, 97, 214, 0.4);
+}
+.how-circle {
+  @apply relative w-24 h-24 mx-auto rounded-full
+         flex items-center justify-center
+         bg-gray-100 dark:bg-gray-800
+         border border-gray-200 dark:border-gray-700
+         text-secondary;
+  transition: all 0.35s ease;
+}
+
+/* Glow ONLY on circle */
+
+.how-circle:hover {
+  transform: scale(1.08);
+  box-shadow:
+    0 0 0 2px rgba(142, 97, 214, 0.4),
+    0 0 25px rgba(142, 97, 214, 0.4),
+    0 0 50px rgba(142, 97, 214, 0.4);
+}
+/* =================================================
+   LOGO IMAGE STYLING
+================================================= */
+
+.logo-image {
+  @apply w-10 h-10 object-contain;
+}
+
+.footer-logo-image {
+  @apply w-12 h-12 object-contain mb-3;
 }
