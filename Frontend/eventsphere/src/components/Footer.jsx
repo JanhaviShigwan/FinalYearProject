@@ -1,15 +1,21 @@
 import { Mail, Phone, MapPin, Github, Linkedin, Instagram } from "lucide-react";
-import logo from "../assets/EventSphere.png"; 
+import logo from "../assets/EventSphere.png";
 
 export default function Footer() {
   return (
     <footer className="footer-section">
       <div className="footer-container">
 
-        {/* Left */}
+        {/* LEFT SECTION */}
         <div className="footer-about">
-          <div className="footer-logo">
-             <img src={logo} alt="CampusVibe Logo" className="footer-logo-image" />
+          
+          {/* Logo + Brand */}
+          <div className="flex items-center gap-3">
+            <img
+              src={logo}
+              alt="EventSphere Logo"
+              className="footer-logo-image"
+            />
             <span className="brand-name">
               Event<span className="brand-highlight">Sphere</span>
             </span>
@@ -21,16 +27,17 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* Middle */}
+        {/* MIDDLE SECTION */}
         <div className="footer-links">
           <h4>QUICK LINKS</h4>
+
           <a href="#">Home</a>
           <a href="#">Events</a>
           <a href="#">Categories</a>
           <a href="#">About</a>
         </div>
 
-        {/* Right */}
+        {/* RIGHT SECTION */}
         <div className="footer-contact">
           <h4>CONTACT US</h4>
 
@@ -41,7 +48,7 @@ export default function Footer() {
 
           <div className="footer-contact-item">
             <Phone size={18} />
-            <span>91+ 8426935467</span>
+            <span>+91 8426935467</span>
           </div>
 
           <div className="footer-contact-item">
@@ -52,7 +59,7 @@ export default function Footer() {
 
       </div>
 
-      {/* Bottom */}
+      {/* BOTTOM SECTION */}
       <div className="footer-bottom">
         <p>© 2026 EventSphere. All rights reserved.</p>
 

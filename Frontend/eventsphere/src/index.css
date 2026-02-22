@@ -6,6 +6,10 @@
    GLOBAL BASE STYLES
 ================================================= */
 
+html {
+  @apply scroll-smooth;
+}
+
 body {
   @apply bg-background text-gray-800 transition-colors duration-300;
 }
@@ -30,8 +34,8 @@ body {
   @apply flex items-center gap-3;
 }
 
-.logo-circle {
-  @apply w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm;
+.logo-image {
+  @apply w-10 h-10 object-contain;
 }
 
 .brand-name {
@@ -54,10 +58,7 @@ body {
   @apply flex items-center gap-6;
 }
 
-.theme-toggle {
-  @apply text-gray-600 dark:text-gray-300 hover:text-primary transition duration-300;
-}
-
+.theme-toggle,
 .login-text {
   @apply text-gray-600 dark:text-gray-300 hover:text-primary transition duration-300;
 }
@@ -67,15 +68,11 @@ body {
 }
 
 /* =================================================
-   HERO
+   HERO SECTION
 ================================================= */
 
 .hero-section {
-  @apply bg-background py-28 px-6 text-center transition-colors duration-300;
-}
-
-.dark .hero-section {
-  @apply bg-gray-900;
+  @apply bg-background dark:bg-gray-900 py-28 px-6 text-center transition-colors duration-300;
 }
 
 .hero-container {
@@ -83,34 +80,41 @@ body {
 }
 
 .hero-badge {
-  @apply inline-block mb-6 px-5 py-2 rounded-full bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-sm shadow-sm;
+  @apply inline-block mb-6 px-5 py-2 rounded-full 
+         bg-white dark:bg-gray-800 
+         text-gray-600 dark:text-gray-300 
+         text-sm shadow-sm;
 }
 
 .hero-title {
-  @apply text-5xl md:text-6xl font-bold leading-tight text-gray-900 dark:text-white mb-6;
+  @apply text-5xl md:text-6xl font-bold leading-tight 
+         text-gray-900 dark:text-white mb-6;
 }
 
 .hero-gradient {
-  @apply bg-gradient-to-r from-primary to-secondary text-transparent inline-block;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  @apply bg-gradient-to-r from-primary to-secondary 
+         bg-clip-text text-transparent inline-block;
 }
 
 .hero-subtitle {
-  @apply text-xl font-medium text-gray-600 dark:text-gray-300 
+  @apply text-xl font-medium 
+         text-gray-600 dark:text-gray-300 
          mb-10 max-w-2xl mx-auto leading-relaxed;
 }
+
 .hero-buttons {
   @apply flex justify-center gap-6;
 }
 
 .hero-btn-primary {
-  @apply bg-primary text-white px-8 py-4 rounded-xl shadow-lg transition duration-300 hover:scale-105;
+  @apply bg-primary text-white px-8 py-4 rounded-xl 
+         shadow-lg transition duration-300 hover:scale-105;
 }
 
 .hero-btn-secondary {
-  @apply border border-secondary text-secondary px-8 py-4 rounded-xl transition duration-300 hover:bg-secondary hover:text-white;
+  @apply border border-secondary text-secondary 
+         px-8 py-4 rounded-xl transition duration-300 
+         hover:bg-secondary hover:text-white;
 }
 
 /* =================================================
@@ -127,9 +131,8 @@ body {
 
 .event-preview-card {
   @apply bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 
-         transition duration-300 ease-out 
-         transform hover:-translate-y-4 hover:scale-105 
-         hover:shadow-2xl cursor-pointer;
+         transition-all duration-300 
+         hover:-translate-y-4 hover:shadow-2xl cursor-pointer;
 }
 
 .event-preview-image {
@@ -145,7 +148,7 @@ body {
 }
 
 /* =================================================
-   TRENDING EVENTS SECTION (ADDED PROPERLY)
+   TRENDING EVENTS
 ================================================= */
 
 .trending-section {
@@ -158,36 +161,29 @@ body {
 
 .trending-title {
   @apply text-4xl font-bold text-center 
-         text-gray-900 dark:text-white 
-         mb-6 leading-tight;
-  padding-bottom: 6px;
+         text-gray-900 dark:text-white mb-6;
 }
 
 .trending-gradient {
-  @apply bg-gradient-to-r from-primary to-secondary text-transparent inline-block;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  @apply bg-gradient-to-r from-primary to-secondary 
+         bg-clip-text text-transparent inline-block;
 }
 
 .trending-subtitle {
   @apply text-center text-lg font-medium 
-         text-gray-600 dark:text-gray-400 
-         mb-16 leading-relaxed;
+         text-gray-600 dark:text-gray-400 mb-16;
 }
 
 .trending-grid {
   @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8;
 }
 
-/* Card */
-
 .trending-card {
-  @apply bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden
-         transition duration-300 transform hover:-translate-y-4 hover:shadow-2xl;
+  @apply bg-white dark:bg-gray-800 rounded-2xl 
+         shadow-md overflow-hidden 
+         transition-all duration-300 
+         hover:-translate-y-4 hover:shadow-2xl;
 }
-
-/* Image Fix */
 
 .trending-image-wrapper {
   @apply w-full h-56 overflow-hidden;
@@ -196,8 +192,6 @@ body {
 .trending-image {
   @apply w-full h-full object-cover;
 }
-
-/* Content */
 
 .trending-content {
   @apply p-6;
@@ -215,8 +209,9 @@ body {
   @apply w-full bg-secondary text-white py-3 rounded-xl 
          transition duration-300 hover:bg-primary;
 }
+
 /* =================================================
-   CATEGORIES SECTION (UPDATED)
+   CATEGORIES SECTION
 ================================================= */
 
 .categories-section {
@@ -228,34 +223,26 @@ body {
 }
 
 .categories-title {
-  @apply text-4xl font-bold text-gray-900 dark:text-white 
-         mb-6 leading-tight;
-  padding-bottom: 6px;
+  @apply text-4xl font-bold text-gray-900 dark:text-white mb-6;
 }
 
 .categories-gradient {
-  @apply bg-gradient-to-r from-primary to-secondary text-transparent inline-block;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  @apply bg-gradient-to-r from-primary to-secondary 
+         bg-clip-text text-transparent inline-block;
 }
 
 .categories-subtitle {
-  @apply text-lg font-medium 
-         text-gray-600 dark:text-gray-400 
-         mb-16 leading-relaxed;
+  @apply text-lg font-medium text-gray-600 dark:text-gray-400 mb-16;
 }
 
 .categories-grid {
   @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8;
 }
 
-/* Card */
-
 .category-card {
   @apply bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-md
          border border-gray-200 dark:border-gray-700
-         transition duration-300
+         transition-all duration-300
          hover:-translate-y-4 hover:shadow-xl cursor-pointer;
 }
 
@@ -267,67 +254,13 @@ body {
   @apply text-base text-gray-600 dark:text-gray-400;
 }
 
-/* Icon */
-
 .category-icon {
-  @apply w-16 h-16 mx-auto rounded-2xl flex items-center justify-center
-         text-2xl bg-primary/10 dark:bg-primary/20;
+  @apply w-16 h-16 mx-auto rounded-2xl flex items-center 
+         justify-center text-2xl bg-primary/10 dark:bg-primary/20;
 }
 
 /* =================================================
-   SMOOTH TRANSITION
-================================================= */
-
-* {
-  @apply transition-colors duration-300;
-}
-/* =================================================
-   STATS SECTION (COMPACT VERSION)
-================================================= */
-
-.stats-section {
-  @apply py-16 px-6 bg-background dark:bg-gray-900 transition-colors duration-300;
-}
-
-.stats-container {
-  @apply max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3
-         rounded-2xl overflow-hidden
-         border border-gray-200 dark:border-gray-700
-         bg-white dark:bg-gray-800;
-}
-
-/* Individual Card */
-
-.stats-card {
-  @apply text-center py-10 px-4
-         border-b md:border-b-0 md:border-r
-         border-gray-200 dark:border-gray-700
-         transition duration-300 hover:bg-gray-50 dark:hover:bg-gray-700;
-}
-
-.stats-card:last-child {
-  @apply md:border-r-0;
-}
-
-/* Icon */
-
-.stats-icon {
-  @apply text-secondary mb-4 mx-auto;
-}
-
-/* Number */
-
-.stats-card h3 {
-  @apply text-4xl font-bold text-primary mb-2;
-}
-
-/* Label */
-
-.stats-card p {
-  @apply text-sm text-gray-600 dark:text-gray-400;
-}
-/* =================================================
-   HOW IT WORKS (TIMELINE VERSION - IMAGE MATCH)
+   HOW IT WORKS
 ================================================= */
 
 .how-section {
@@ -343,38 +276,26 @@ body {
 }
 
 .how-gradient {
-  @apply bg-gradient-to-r from-primary to-secondary text-transparent inline-block;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  @apply bg-gradient-to-r from-primary to-secondary 
+         bg-clip-text text-transparent inline-block;
 }
 
 .how-subtitle {
-  @apply text-lg font-medium 
-         text-gray-600 dark:text-gray-400 
-         mb-20 leading-relaxed;
+  @apply text-lg font-medium text-gray-600 dark:text-gray-400 mb-20;
 }
-
-/* Timeline wrapper */
 
 .how-timeline {
   @apply relative grid grid-cols-1 md:grid-cols-4 gap-12 items-start;
 }
-
-/* Connecting line */
 
 .how-line {
   @apply hidden md:block absolute top-10 left-0 right-0 h-1
          bg-gradient-to-r from-primary to-secondary;
 }
 
-/* Each step */
-
 .how-step {
   @apply relative text-center;
 }
-
-/* Circle */
 
 .how-circle {
   @apply relative w-24 h-24 mx-auto rounded-full
@@ -382,19 +303,14 @@ body {
          bg-gray-100 dark:bg-gray-800
          border border-gray-200 dark:border-gray-700
          text-secondary
-         transition duration-300
-         hover:scale-110;
+         transition-all duration-300 hover:scale-110;
 }
-
-/* Step number badge */
 
 .how-number {
   @apply absolute -top-3 -right-3 w-8 h-8 rounded-full
          bg-primary text-white text-sm
          flex items-center justify-center shadow-md;
 }
-
-/* Titles */
 
 .how-step h3 {
   @apply mt-6 text-xl font-semibold text-gray-900 dark:text-white;
@@ -403,179 +319,89 @@ body {
 .how-step p {
   @apply mt-2 text-base text-gray-600 dark:text-gray-400;
 }
-/* =================================================
-   FOOTER (MATCHING YOUR IMAGE)
-================================================= */
-
-.footer-section {
-  @apply bg-white text-gray-700
-         pt-16 pb-8 px-6 transition-colors duration-300;
-}
-
-/* Dark Mode – Differentiated Footer */
-
-.dark .footer-section {
-  background: linear-gradient(
-    to right,
-    #0f0a1f,
-    #111827
-  );
-  color: #d1d5db;
-}
-
-.footer-container {
-  @apply max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 mb-12;
-}
-
-/* Left */
-
-.footer-about p {
-  @apply mt-4 text-base text-gray-600 dark:text-gray-400 leading-relaxed;
-}
-
-/* Links */
-
-.footer-links h4,
-.footer-contact h4 {
-  @apply text-base font-semibold tracking-wide mb-6 text-gray-900 dark:text-white;
-}
-
-.footer-links a {
-  @apply block mb-3 text-base text-gray-600 dark:text-gray-400
-         hover:text-primary transition duration-300;
-}
-
-/* Contact */
-
-.footer-contact-item {
-  @apply flex items-center gap-3 mb-4 text-base text-gray-600 dark:text-gray-400;
-}
-
-/* Bottom Section */
-
-.footer-bottom {
-  @apply max-w-7xl mx-auto flex flex-col md:flex-row
-         justify-between items-center
-         border-t border-gray-200 dark:border-gray-700
-         pt-6 text-base text-gray-600 dark:text-gray-400;
-}
-
-.footer-socials {
-  @apply flex gap-5 mt-4 md:mt-0 text-gray-500 dark:text-gray-400;
-}
-
-.footer-socials svg {
-  @apply hover:text-primary cursor-pointer transition duration-300;
-}
-/* =================================================
-   SECTION
-================================================= */
-
-.section {
-  @apply py-16 px-6 transition-colors duration-300;
-}
-
-.section-title {
-  @apply text-3xl font-bold text-primary text-center mb-10 transition-colors duration-300;
-}
-
-.dark .section-title {
-  @apply text-accent;
-}
-
-/* =================================================
-   CARDS
-================================================= */
-
-.card {
-  @apply bg-card rounded-2xl shadow-md transition duration-300 hover:shadow-xl hover:-translate-y-2 p-6;
-}
-
-.dark .card {
-  @apply bg-gray-800 text-gray-200;
-}
-
-/* =================================================
-   BUTTONS
-================================================= */
-
-.btn-primary {
-  @apply bg-primary text-white px-6 py-3 rounded-xl shadow-md transition hover:opacity-90;
-}
-
-.btn-secondary {
-  @apply border-2 border-secondary text-secondary px-6 py-3 rounded-xl transition hover:bg-secondary hover:text-white;
-}
-
-.btn-accent {
-  @apply bg-accent text-black px-6 py-3 rounded-xl shadow-md transition hover:opacity-90;
-}
 
 /* =================================================
    FOOTER
 ================================================= */
 
-.footer {
-  @apply bg-primary text-white text-center py-6 transition-colors duration-300;
+.footer-section {
+  @apply pt-20 pb-10 px-6
+         bg-slate-200
+         text-gray-800
+         border-t border-slate-300
+         transition-colors duration-300;
 }
 
-/* Dark Mode - Slightly Different Tone */
-
-.dark .footer {
-  @apply bg-gray-950 text-gray-300;
-}
-/* =================================================
-   GLOBAL PURPLE GLOW HOVER EFFECT (UPDATED)
-================================================= */
-
-.card,
-.category-card,
-.trending-card,
-.stats-card,
-.event-preview-card {
-  position: relative;
-  transition: all 0.35s ease;
+/* Dark Mode */
+.dark .footer-section {
+  @apply bg-gray-950
+         text-gray-300
+         border-t border-gray-800;
 }
 
-/* Smooth Lift + Glow */
-
-.card:hover,
-.category-card:hover,
-.trending-card:hover,
-.stats-card:hover,
-.event-preview-card:hover {
-  transform: translateY(-6px) scale(1.02);
-  box-shadow:
-    0 0 0 1px rgba(142, 97, 214, 0.4),
-    0 10px 25px rgba(142, 97, 214, 0.4),
-    0 0 40px rgba(142, 97, 214, 0.4);
-}
-.how-circle {
-  @apply relative w-24 h-24 mx-auto rounded-full
-         flex items-center justify-center
-         bg-gray-100 dark:bg-gray-800
-         border border-gray-200 dark:border-gray-700
-         text-secondary;
-  transition: all 0.35s ease;
+.footer-container {
+  @apply max-w-7xl mx-auto 
+         grid grid-cols-1 md:grid-cols-3 
+         gap-16 mb-14;
 }
 
-/* Glow ONLY on circle */
+/* About Text */
 
-.how-circle:hover {
-  transform: scale(1.08);
-  box-shadow:
-    0 0 0 2px rgba(142, 97, 214, 0.4),
-    0 0 25px rgba(142, 97, 214, 0.4),
-    0 0 50px rgba(142, 97, 214, 0.4);
+.footer-about p {
+  @apply mt-6 text-base 
+         text-gray-600 dark:text-gray-400
+         leading-relaxed 
+         max-w-sm;
 }
-/* =================================================
-   LOGO IMAGE STYLING
-================================================= */
 
-.logo-image {
-  @apply w-10 h-10 object-contain;
+/* Headings */
+
+.footer-links h4,
+.footer-contact h4 {
+  @apply text-sm font-semibold tracking-wider 
+         text-gray-900 dark:text-white 
+         mb-6;
+}
+
+/* Links */
+
+.footer-links a {
+  @apply block mb-4 
+         text-gray-600 dark:text-gray-400
+         hover:text-primary 
+         transition duration-300;
+}
+
+/* Contact Items */
+
+.footer-contact-item {
+  @apply flex items-center gap-3 
+         mb-5 
+         text-gray-600 dark:text-gray-400;
+}
+
+/* Bottom Section */
+
+.footer-bottom {
+  @apply max-w-7xl mx-auto 
+         flex flex-col md:flex-row
+         justify-between items-center
+         border-t border-gray-300 dark:border-gray-800
+         pt-6
+         text-sm text-gray-600 dark:text-gray-400;
+}
+
+.footer-socials {
+  @apply flex gap-6 mt-4 md:mt-0 
+         text-gray-500 dark:text-gray-400;
+}
+
+.footer-socials svg {
+  @apply hover:text-primary 
+         transition duration-300 
+         cursor-pointer;
 }
 
 .footer-logo-image {
-  @apply w-12 h-12 object-contain mb-3;
+  @apply w-12 h-12 object-contain;
 }

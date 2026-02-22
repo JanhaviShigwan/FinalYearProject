@@ -24,7 +24,6 @@ export default function Navbar() {
           <a href="#">Events</a>
           <a href="#">Categories</a>
           <a href="#">About</a>
-          <a href="#">Contact</a>
         </div>
 
         {/* Right Section */}
