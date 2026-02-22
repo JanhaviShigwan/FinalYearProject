@@ -1,8 +1,7 @@
 import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { Sun, Moon } from "lucide-react";
-import logo from "../assets/logoo.png";
-
+import logo from "../assets/EventSphere.png";
 
 export default function Navbar() {
   const { darkMode, setDarkMode } = useContext(ThemeContext);

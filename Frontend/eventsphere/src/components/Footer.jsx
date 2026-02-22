@@ -1,5 +1,5 @@
 import { Mail, Phone, MapPin, Github, Linkedin, Instagram } from "lucide-react";
-import logo from "../assets/logoo.png"; 
+import logo from "../assets/EventSphere.png"; 
 
 export default function Footer() {
   return (
@@ -36,17 +36,17 @@ export default function Footer() {
 
           <div className="footer-contact-item">
             <Mail size={18} />
-            <span>hello@campusvibe.com</span>
+            <span>eventsphere@gmail.com</span>
           </div>
 
           <div className="footer-contact-item">
             <Phone size={18} />
-            <span>+1 (555) 123-4567</span>
+            <span>91+ 8426935467</span>
           </div>
 
           <div className="footer-contact-item">
             <MapPin size={18} />
-            <span>San Francisco, CA</span>
+            <span>Mumbai, India</span>
           </div>
         </div>
 
@@ -54,7 +54,7 @@ export default function Footer() {
 
       {/* Bottom */}
       <div className="footer-bottom">
-        <p>© 2026 CampusVibe. All rights reserved.</p>
+        <p>© 2026 EventSphere. All rights reserved.</p>
 
         <div className="footer-socials">
           <Github size={20} />
