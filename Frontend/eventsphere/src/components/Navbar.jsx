@@ -26,8 +26,8 @@ export default function Navbar() {
           <Link
             to="/"
             className={`relative transition duration-300 ${location.pathname === "/"
-                ? "text-[#6D28D9] dark:text-purple-400"
-                : "text-gray-700 dark:text-gray-300 hover:text-[#0D9488]"
+              ? "text-[#6D28D9] dark:text-purple-400"
+              : "text-gray-700 dark:text-gray-300 hover:text-[#0D9488]"
               }`}
           >
             Home
@@ -39,8 +39,8 @@ export default function Navbar() {
           <Link
             to="/events"
             className={`relative transition duration-300 ${location.pathname === "/events"
-                ? "text-[#6D28D9] dark:text-purple-400"
-                : "text-gray-700 dark:text-gray-300 hover:text-[#0D9488]"
+              ? "text-[#6D28D9] dark:text-purple-400"
+              : "text-gray-700 dark:text-gray-300 hover:text-[#0D9488]"
               }`}
           >
             Events
@@ -52,8 +52,8 @@ export default function Navbar() {
           <Link
             to="/categories"
             className={`relative transition duration-300 ${location.pathname === "/categories"
-                ? "text-[#6D28D9] dark:text-purple-400"
-                : "text-gray-700 dark:text-gray-300 hover:text-[#0D9488]"
+              ? "text-[#6D28D9] dark:text-purple-400"
+              : "text-gray-700 dark:text-gray-300 hover:text-[#0D9488]"
               }`}
           >
             Categories
@@ -65,8 +65,8 @@ export default function Navbar() {
           <Link
             to="/about"
             className={`relative transition duration-300 ${location.pathname === "/about"
-                ? "text-[#6D28D9] dark:text-purple-400"
-                : "text-gray-700 dark:text-gray-300 hover:text-[#0D9488]"
+              ? "text-[#6D28D9] dark:text-purple-400"
+              : "text-gray-700 dark:text-gray-300 hover:text-[#0D9488]"
               }`}
           >
             About
@@ -77,8 +77,8 @@ export default function Navbar() {
           <Link
             to="/faq"
             className={`relative transition duration-300 ${location.pathname === "/faq"
-                ? "text-[#6D28D9] dark:text-purple-400"
-                : "text-gray-700 dark:text-gray-300 hover:text-[#0D9488]"
+              ? "text-[#6D28D9] dark:text-purple-400"
+              : "text-gray-700 dark:text-gray-300 hover:text-[#0D9488]"
               }`}
           >
             FAQ
@@ -113,10 +113,7 @@ export default function Navbar() {
           </Link>
 
           {/* Register Button */}
-          <Link
-            to="/register"
-            className="px-5 py-2 rounded-2xl bg-[#6D28D9] text-white font-medium hover:scale-105 hover:shadow-lg transition-all duration-300"
-          >
+          <Link to="/register" className="nav-register-btn">
             Register
           </Link>
 
