@@ -117,7 +117,21 @@ const steps = [
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
+      className="relative bg-[#F3F4F6] dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300 overflow-hidden"
     >
+
+      <div className="absolute inset-0 bg-gradient-to-r 
+        from-[#6D28D9]/10 
+        via-[#0D9488]/10 
+        to-[#FDBA74]/10
+        dark:from-[#6D28D9]/20 
+        dark:via-[#0D9488]/20 
+        dark:to-[#FDBA74]/20
+        blur-3xl pointer-events-none">
+    </div>
+
+    {/* Content Layer */}
+    <div className="relative z-10">
       <Navbar />
 
       <AnimatedSection>
@@ -304,6 +318,9 @@ const steps = [
       <AnimatedSection delay={0.6}>
         <Footer />
       </AnimatedSection>
+
+  </div>
+
     </motion.div>
   );
 }
