@@ -25,11 +25,10 @@ export default function Navbar() {
 
           <Link
             to="/"
-            className={`relative transition duration-300 ${
-              location.pathname === "/"
+            className={`relative transition duration-300 ${location.pathname === "/"
                 ? "text-[#6D28D9] dark:text-purple-400"
                 : "text-gray-700 dark:text-gray-300 hover:text-[#0D9488]"
-            }`}
+              }`}
           >
             Home
             {location.pathname === "/" && (
@@ -39,11 +38,10 @@ export default function Navbar() {
 
           <Link
             to="/events"
-            className={`relative transition duration-300 ${
-              location.pathname === "/events"
+            className={`relative transition duration-300 ${location.pathname === "/events"
                 ? "text-[#6D28D9] dark:text-purple-400"
                 : "text-gray-700 dark:text-gray-300 hover:text-[#0D9488]"
-            }`}
+              }`}
           >
             Events
             {location.pathname === "/events" && (
@@ -53,11 +51,10 @@ export default function Navbar() {
 
           <Link
             to="/categories"
-            className={`relative transition duration-300 ${
-              location.pathname === "/categories"
+            className={`relative transition duration-300 ${location.pathname === "/categories"
                 ? "text-[#6D28D9] dark:text-purple-400"
                 : "text-gray-700 dark:text-gray-300 hover:text-[#0D9488]"
-            }`}
+              }`}
           >
             Categories
             {location.pathname === "/categories" && (
@@ -67,14 +64,25 @@ export default function Navbar() {
 
           <Link
             to="/about"
-            className={`relative transition duration-300 ${
-              location.pathname === "/about"
+            className={`relative transition duration-300 ${location.pathname === "/about"
                 ? "text-[#6D28D9] dark:text-purple-400"
                 : "text-gray-700 dark:text-gray-300 hover:text-[#0D9488]"
-            }`}
+              }`}
           >
             About
             {location.pathname === "/about" && (
+              <span className="absolute -bottom-2 left-0 w-full h-0.5 bg-[#FDBA74] rounded-full"></span>
+            )}
+          </Link>
+          <Link
+            to="/faq"
+            className={`relative transition duration-300 ${location.pathname === "/faq"
+                ? "text-[#6D28D9] dark:text-purple-400"
+                : "text-gray-700 dark:text-gray-300 hover:text-[#0D9488]"
+              }`}
+          >
+            FAQ
+            {location.pathname === "/faq" && (
               <span className="absolute -bottom-2 left-0 w-full h-0.5 bg-[#FDBA74] rounded-full"></span>
             )}
           </Link>
