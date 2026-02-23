@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, Check, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -16,6 +16,27 @@ export default function Register() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [error, setError] = useState("");
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@somaiya\.edu$/;
+
+  const passwordRules = {
+    minLength: /.{8,}/,
+    upperCase: /[A-Z]/,
+    lowerCase: /[a-z]/,
+    number: /[0-9]/,
+    specialChar: /[!@#$%^&*(),.?":{}|<>]/,
+  };
+
+  const validatePassword = (password) => ({
+    minLength: passwordRules.minLength.test(password),
+    upperCase: passwordRules.upperCase.test(password),
+    lowerCase: passwordRules.lowerCase.test(password),
+    number: passwordRules.number.test(password),
+    specialChar: passwordRules.specialChar.test(password),
+  });
+
+  const passwordValidation = validatePassword(formData.password);
 
   const handleChange = (e) => {
     setFormData({
@@ -26,7 +47,25 @@ export default function Register() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    setError("");
+
+    if (!emailRegex.test(formData.email)) {
+      setError("Email must be a valid @somaiya.edu address.");
+      return;
+    }
+
+    const allValid = Object.values(passwordValidation).every(Boolean);
+    if (!allValid) {
+      setError("Password does not meet required criteria.");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    console.log("Register Success:", formData);
   };
 
   return (
@@ -34,8 +73,6 @@ export default function Register() {
       <Navbar />
 
       <div className="login-wrapper">
-
-        {/* Same Floating Blobs */}
         <div className="login-blob blob-1"></div>
         <div className="login-blob blob-2"></div>
         <div className="login-blob blob-3"></div>
@@ -46,13 +83,14 @@ export default function Register() {
           transition={{ duration: 0.5 }}
           className="register-card"
         >
-          <h2 className="register-title">Create Account!!</h2>
-          <p className="register-subtitle">
-            Join and start exploring amazing events
-          </p>
+          <h2 className="register-title">Create Account 🎓</h2>
+
+          {error && (
+            <p className="text-red-500 text-sm text-center mb-3">{error}</p>
+          )}
 
           <form className="register-form" onSubmit={handleSubmit}>
-
+            
             {/* Full Name */}
             <div className="form-group">
               <label>Full Name</label>
@@ -61,7 +99,6 @@ export default function Register() {
                 <input
                   type="text"
                   name="name"
-                  placeholder="Enter your full name"
                   value={formData.name}
                   onChange={handleChange}
                 />
@@ -76,11 +113,24 @@ export default function Register() {
                 <input
                   type="email"
                   name="email"
-                  placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
                 />
               </div>
+
+              {formData.email && (
+                <p
+                  className={`text-sm mt-1 ${
+                    emailRegex.test(formData.email)
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
+                >
+                  {emailRegex.test(formData.email)
+                    ? "Valid Somaiya email ✔"
+                    : "Email must end with @somaiya.edu"}
+                </p>
+              )}
             </div>
 
             {/* Password */}
@@ -91,16 +141,34 @@ export default function Register() {
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
-                  placeholder="Enter password"
                   value={formData.password}
                   onChange={handleChange}
                 />
                 <div
-                  className="cursor-pointer ml-2 text-gray-400"
+                  className="cursor-pointer ml-2"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </div>
+              </div>
+
+              {/* Password Checklist */}
+              <div className="mt-3 space-y-1 text-sm">
+                {Object.entries(passwordValidation).map(([key, value]) => (
+                  <div
+                    key={key}
+                    className={`flex items-center gap-2 ${
+                      value ? "text-green-500" : "text-red-500"
+                    }`}
+                  >
+                    {value ? <Check size={16} /> : <X size={16} />}
+                    {key === "minLength" && "Minimum 8 characters"}
+                    {key === "upperCase" && "At least 1 uppercase letter"}
+                    {key === "lowerCase" && "At least 1 lowercase letter"}
+                    {key === "number" && "At least 1 number"}
+                    {key === "specialChar" && "At least 1 special character"}
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -112,17 +180,24 @@ export default function Register() {
                 <input
                   type={showConfirm ? "text" : "password"}
                   name="confirmPassword"
-                  placeholder="Confirm password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                 />
-                <div
-                  className="cursor-pointer ml-2 text-gray-400"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                >
-                  {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
-                </div>
               </div>
+
+              {formData.confirmPassword && (
+                <p
+                  className={`text-sm mt-1 ${
+                    formData.password === formData.confirmPassword
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
+                >
+                  {formData.password === formData.confirmPassword
+                    ? "Passwords match ✔"
+                    : "Passwords do not match"}
+                </p>
+              )}
             </div>
 
             <button type="submit" className="register-btn">
@@ -133,10 +208,8 @@ export default function Register() {
               Already have an account?
               <Link to="/login"> Login</Link>
             </p>
-
           </form>
         </motion.div>
-
       </div>
 
       <Footer />

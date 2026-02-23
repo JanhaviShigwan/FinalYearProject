@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -10,31 +10,41 @@ export default function Login() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    remember: false,
   });
 
-  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@somaiya\.edu$/;
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: type === "checkbox" ? checked : value,
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    setError("");
+
+    if (!emailRegex.test(formData.email)) {
+      setError("Only @somaiya.edu emails are allowed.");
+      return;
+    }
+
+    if (!formData.password) {
+      setError("Password is required.");
+      return;
+    }
+
+    console.log("Login Success:", formData);
   };
 
   return (
     <>
       <Navbar />
-
       <div className="login-wrapper">
 
-        {/* Floating Background Blobs */}
         <div className="login-blob blob-1"></div>
         <div className="login-blob blob-2"></div>
         <div className="login-blob blob-3"></div>
@@ -46,13 +56,13 @@ export default function Login() {
           className="login-card"
         >
           <h2 className="login-title">Welcome Back 👋</h2>
-          <p className="login-subtitle">
-            Login to manage and explore events
-          </p>
+
+          {error && (
+            <p className="text-red-500 text-sm text-center mb-3">{error}</p>
+          )}
 
           <form className="login-form" onSubmit={handleSubmit}>
             
-            {/* Email */}
             <div className="form-group">
               <label>Email Address</label>
               <div className="input-box">
@@ -60,48 +70,23 @@ export default function Login() {
                 <input
                   type="email"
                   name="email"
-                  placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
                 />
               </div>
             </div>
 
-            {/* Password */}
             <div className="form-group">
               <label>Password</label>
               <div className="input-box">
                 <Lock size={18} className="input-icon" />
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type="password"
                   name="password"
-                  placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
                 />
-                <div
-                  className="cursor-pointer ml-2 text-gray-400"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </div>
               </div>
-            </div>
-
-            <div className="login-options">
-              <label className="remember-me">
-                <input
-                  type="checkbox"
-                  name="remember"
-                  checked={formData.remember}
-                  onChange={handleChange}
-                />
-                Remember me
-              </label>
-
-              <Link to="/forgot-password" className="forgot-link">
-                Forgot Password?
-              </Link>
             </div>
 
             <button type="submit" className="login-btn">
@@ -112,12 +97,9 @@ export default function Login() {
               Don’t have an account?
               <Link to="/register"> Register</Link>
             </p>
-
           </form>
         </motion.div>
-
       </div>
-
       <Footer />
     </>
   );
