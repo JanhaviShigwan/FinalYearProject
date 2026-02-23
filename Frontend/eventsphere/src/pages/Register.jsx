@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { User, Mail, Lock, Eye, EyeOff, Check, X } from "lucide-react";
+import {
+  User,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Check,
+  X,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -18,8 +26,10 @@ export default function Register() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState("");
 
+  // ✅ Somaiya email restriction
   const emailRegex = /^[a-zA-Z0-9._%+-]+@somaiya\.edu$/;
 
+  // ✅ Password rules
   const passwordRules = {
     minLength: /.{8,}/,
     upperCase: /[A-Z]/,
@@ -86,7 +96,9 @@ export default function Register() {
           <h2 className="register-title">Create Account 🎓</h2>
 
           {error && (
-            <p className="text-red-500 text-sm text-center mb-3">{error}</p>
+            <p className="text-red-500 text-sm text-center mb-3">
+              {error}
+            </p>
           )}
 
           <form className="register-form" onSubmit={handleSubmit}>
@@ -152,7 +164,7 @@ export default function Register() {
                 </div>
               </div>
 
-              {/* Password Checklist */}
+              {/* Checklist */}
               <div className="mt-3 space-y-1 text-sm">
                 {Object.entries(passwordValidation).map(([key, value]) => (
                   <div
@@ -183,6 +195,12 @@ export default function Register() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                 />
+                <div
+                  className="cursor-pointer ml-2"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                >
+                  {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                </div>
               </div>
 
               {formData.confirmPassword && (
