@@ -168,10 +168,6 @@ const steps = [
           <button className="hero-btn-primary">
             Explore Events →
           </button>
-
-          <button className="hero-btn-secondary">
-            Create Event
-          </button>
         </div>
 
       </motion.div>
