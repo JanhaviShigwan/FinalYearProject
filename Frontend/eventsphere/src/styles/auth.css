@@ -2,10 +2,12 @@
 
 @layer components {
 
-  /* ================= LOGIN PAGE ================= */
+  /* ================= WRAPPER ================= */
 
   .login-wrapper {
-    @apply relative min-h-screen flex items-center justify-center overflow-hidden transition-colors duration-500;
+    @apply relative min-h-screen flex items-center justify-center 
+           overflow-hidden transition-colors duration-500
+           px-4 sm:px-6;
   }
 
   /* Light Mode Gradient */
@@ -28,73 +30,95 @@
     );
   }
 
-  /* Floating Blobs */
+  /* ================= FLOATING BLOBS ================= */
+
   .login-blob {
     @apply absolute rounded-full blur-3xl opacity-40 animate-pulse;
   }
 
+  /* Smaller blobs for mobile */
   .blob-1 {
-    @apply w-72 h-72 bg-[#6D28D9] top-10 left-10;
+    @apply w-40 h-40 sm:w-72 sm:h-72 bg-[#6D28D9] top-10 left-5 sm:left-10;
   }
 
   .blob-2 {
-    @apply w-72 h-72 bg-[#0D9488] bottom-10 right-10;
+    @apply w-40 h-40 sm:w-72 sm:h-72 bg-[#0D9488] bottom-10 right-5 sm:right-10;
   }
 
   .blob-3 {
-    @apply w-60 h-60 bg-[#FDBA74] top-1/2 left-1/3;
+    @apply w-32 h-32 sm:w-60 sm:h-60 bg-[#FDBA74] 
+           top-1/2 left-1/3;
   }
 
-  /* Login Card */
+  /* ================= LOGIN CARD ================= */
+
   .login-card {
-    @apply relative z-10 w-full max-w-md p-8 rounded-2xl shadow-2xl transition-all duration-300;
-    @apply bg-white dark:bg-gray-800;
+    @apply relative z-10 w-full max-w-sm sm:max-w-md
+           p-6 sm:p-8 
+           rounded-2xl shadow-2xl 
+           transition-all duration-300
+           bg-white dark:bg-gray-800;
   }
 
   .login-card:hover {
-    transform: translateY(-6px) scale(1.02);
+    transform: translateY(-4px) scale(1.01);
   }
 
-  /* Title */
+  /* ================= TITLES ================= */
+
   .login-title {
-    @apply text-3xl font-bold text-center mb-2;
+    @apply text-2xl sm:text-3xl font-bold text-center mb-2;
     @apply text-[#6D28D9] dark:text-white;
   }
 
   .login-subtitle {
-    @apply text-center text-gray-600 dark:text-gray-400 mb-6;
+    @apply text-center text-sm sm:text-base 
+           text-gray-600 dark:text-gray-400 
+           mb-5 sm:mb-6;
   }
 
-  /* Form */
+  /* ================= FORM ================= */
+
   .login-form {
-    @apply space-y-5;
+    @apply space-y-4 sm:space-y-5;
   }
 
   .form-group label {
-    @apply block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300;
+    @apply block text-sm font-medium mb-2 
+           text-gray-700 dark:text-gray-300;
   }
 
   .input-box {
-    @apply flex items-center border rounded-lg px-3 py-2 transition-all duration-200;
-    @apply border-gray-300 dark:border-gray-600;
-    @apply focus-within:ring-2 focus-within:ring-[#6D28D9];
+    @apply flex items-center border 
+           rounded-lg px-3 py-2 
+           transition-all duration-200
+           border-gray-300 dark:border-gray-600
+           focus-within:ring-2 
+           focus-within:ring-[#6D28D9];
   }
 
   .input-box input {
-    @apply w-full bg-transparent outline-none text-sm;
-    @apply text-gray-800 dark:text-white;
+    @apply w-full bg-transparent outline-none 
+           text-sm text-gray-800 dark:text-white;
   }
 
   .input-icon {
     @apply text-gray-400 mr-2;
   }
 
+  /* ================= OPTIONS ================= */
+
   .login-options {
-    @apply flex items-center justify-between text-sm;
+    @apply flex flex-col sm:flex-row 
+           sm:items-center 
+           sm:justify-between 
+           gap-2 sm:gap-0
+           text-sm;
   }
 
   .remember-me {
-    @apply flex items-center gap-2 text-gray-600 dark:text-gray-300;
+    @apply flex items-center gap-2 
+           text-gray-600 dark:text-gray-300;
   }
 
   .remember-me input {
@@ -105,45 +129,75 @@
     @apply text-[#0D9488] hover:underline;
   }
 
+  /* ================= BUTTON ================= */
+
   .login-btn {
-    @apply w-full py-2.5 rounded-lg font-semibold text-white transition duration-300;
-    @apply bg-[#6D28D9] hover:bg-purple-800;
+    @apply w-full py-2.5 sm:py-3 
+           rounded-lg font-semibold 
+           text-white text-sm sm:text-base
+           transition duration-300
+           bg-[#6D28D9] hover:bg-purple-800;
   }
 
   .register-text {
-    @apply text-center text-sm text-gray-600 dark:text-gray-400;
+    @apply text-center text-sm 
+           text-gray-600 dark:text-gray-400;
   }
 
   .register-text a {
     @apply text-[#0D9488] font-medium hover:underline;
   }
 
-  /* ================= REGISTER PAGE ================= */
+  /* ================= REGISTER CARD ================= */
 
-.register-card {
-  @apply relative z-10 w-full max-w-lg p-8 rounded-2xl shadow-2xl transition-all duration-300;
-  @apply bg-white dark:bg-gray-800;
-}
+  .register-card {
+    @apply relative z-10 w-full 
+           max-w-sm sm:max-w-lg
+           p-6 sm:p-8 
+           rounded-2xl shadow-2xl 
+           transition-all duration-300
+           bg-white dark:bg-gray-800;
+  }
 
-.register-card:hover {
-  transform: translateY(-6px) scale(1.02);
-}
+  .register-card:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
 
-.register-title {
-  @apply text-3xl font-bold text-center mb-2;
-  @apply text-[#6D28D9] dark:text-white;
-}
+  .register-title {
+    @apply text-2xl sm:text-3xl font-bold 
+           text-center mb-2;
+    @apply text-[#6D28D9] dark:text-white;
+  }
 
-.register-subtitle {
-  @apply text-center text-gray-600 dark:text-gray-400 mb-6;
-}
+  .register-subtitle {
+    @apply text-center text-sm sm:text-base 
+           text-gray-600 dark:text-gray-400 
+           mb-5 sm:mb-6;
+  }
 
-.register-form {
-  @apply space-y-4;
-}
+  .register-form {
+    @apply space-y-4;
+  }
 
-.register-btn {
-  @apply w-full py-2.5 rounded-lg font-semibold text-white transition duration-300;
-  @apply bg-[#6D28D9] hover:bg-purple-800;
-}
+  .register-btn {
+    @apply w-full py-2.5 sm:py-3 
+           rounded-lg font-semibold 
+           text-white text-sm sm:text-base
+           transition duration-300
+           bg-[#6D28D9] hover:bg-purple-800;
+  }
+
+  /* ================= EXTRA SMALL SAFETY ================= */
+
+  @media (max-width: 380px) {
+    .login-title,
+    .register-title {
+      font-size: 1.3rem;
+    }
+
+    .login-card,
+    .register-card {
+      padding: 1.2rem;
+    }
+  }
 }

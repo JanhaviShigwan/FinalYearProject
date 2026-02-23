@@ -3,7 +3,9 @@
 ================================================= */
 
 .footer-section {
-  @apply pt-20 pb-10 px-6
+  @apply pt-14 sm:pt-20 
+         pb-8 sm:pb-10 
+         px-4 sm:px-6
          bg-slate-200
          text-gray-800
          border-t border-slate-300
@@ -17,69 +19,132 @@
          border-t border-gray-800;
 }
 
+/* ==============================================
+   MAIN GRID
+============================================== */
+
 .footer-container {
   @apply max-w-7xl mx-auto 
-         grid grid-cols-1 md:grid-cols-3 
-         gap-16 mb-14;
+         grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 
+         gap-10 sm:gap-12 md:gap-16 
+         mb-10 sm:mb-14;
 }
 
-/* About Text */
+/* ==============================================
+   ABOUT SECTION
+============================================== */
+
+.footer-about {
+  @apply text-center sm:text-left;
+}
 
 .footer-about p {
-  @apply mt-6 text-base 
+  @apply mt-5 sm:mt-6 
+         text-sm sm:text-base 
          text-gray-600 dark:text-gray-400
          leading-relaxed 
-         max-w-sm;
+         max-w-xs sm:max-w-sm mx-auto sm:mx-0;
 }
 
-/* Headings */
+/* ==============================================
+   HEADINGS
+============================================== */
 
 .footer-links h4,
 .footer-contact h4 {
-  @apply text-sm font-semibold tracking-wider 
+  @apply text-xs sm:text-sm 
+         font-semibold tracking-wider 
          text-gray-900 dark:text-white 
-         mb-6;
+         mb-4 sm:mb-6
+         text-center sm:text-left;
 }
 
-/* Links */
+/* ==============================================
+   LINKS
+============================================== */
+
+.footer-links {
+  @apply text-center sm:text-left;
+}
 
 .footer-links a {
-  @apply block mb-4 
+  @apply block mb-3 sm:mb-4 
+         text-sm sm:text-base
          text-gray-600 dark:text-gray-400
-         hover:text-primary 
+         hover:text-[#6D28D9]
          transition duration-300;
 }
 
-/* Contact Items */
+/* ==============================================
+   CONTACT
+============================================== */
+
+.footer-contact {
+  @apply text-center sm:text-left;
+}
 
 .footer-contact-item {
-  @apply flex items-center gap-3 
-         mb-5 
+  @apply flex items-center 
+         justify-center sm:justify-start
+         gap-3 mb-4 sm:mb-5 
+         text-sm sm:text-base
          text-gray-600 dark:text-gray-400;
 }
 
-/* Bottom Section */
+/* ==============================================
+   BOTTOM SECTION
+============================================== */
 
 .footer-bottom {
   @apply max-w-7xl mx-auto 
          flex flex-col md:flex-row
          justify-between items-center
+         gap-4 md:gap-0
          border-t border-gray-300 dark:border-gray-800
          pt-6
-         text-sm text-gray-600 dark:text-gray-400;
+         text-xs sm:text-sm 
+         text-center md:text-left
+         text-gray-600 dark:text-gray-400;
 }
 
 .footer-socials {
-  @apply flex gap-6 mt-4 md:mt-0 
+  @apply flex gap-5 sm:gap-6
          text-gray-500 dark:text-gray-400;
 }
 
 .footer-socials svg {
-  @apply hover:text-primary 
+  @apply hover:text-[#6D28D9]
          transition duration-300 
          cursor-pointer;
 }
 
+/* ==============================================
+   LOGO
+============================================== */
+
 .footer-logo-image {
-  @apply w-14 h-14 object-contain;
+  @apply w-10 h-10 sm:w-14 sm:h-14 object-contain;
+}
+
+.brand-name {
+  @apply text-base sm:text-lg font-semibold 
+         text-gray-800 dark:text-white;
+}
+
+.brand-highlight {
+  @apply text-[#0D9488];
+}
+
+/* ==============================================
+   EXTRA SMALL DEVICES SAFETY
+============================================== */
+
+@media (max-width: 400px) {
+  .footer-container {
+    gap: 2rem;
+  }
+
+  .footer-about p {
+    font-size: 0.85rem;
+  }
 }
