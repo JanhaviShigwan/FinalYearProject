@@ -2,7 +2,8 @@ import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { Sun, Moon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import logo from "../assets/EventSphere.png";
+import logo from "../assets/logoo.png";
+import "../styles/navbar.css";
 
 export default function Navbar() {
   const { darkMode, setDarkMode } = useContext(ThemeContext);
@@ -14,7 +15,7 @@ export default function Navbar() {
 
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
-          <img src={logo} alt="EventSphere Logo" className="w-10 h-10 object-contain" />
+          <img src={logo} alt="EventSphere Logo" className="w-14 h-14 object-contain" />
           <span className="text-xl font-bold text-[#6D28D9] dark:text-purple-400 tracking-wide">
             Event<span className="text-[#0D9488]">Sphere</span>
           </span>

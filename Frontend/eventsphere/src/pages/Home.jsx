@@ -6,6 +6,7 @@ import { UserPlus, Search, Ticket, PartyPopper } from "lucide-react";
 import hackathon from "../assets/hackathon.jpg";
 import cultural from "../assets/cultural.jpg";
 import tech from "../assets/tech.jpg";
+import "../styles/home.css"
 
 function Home() {
   const events = [

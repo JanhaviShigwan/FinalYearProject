@@ -1,0 +1,85 @@
+/* =================================================
+   FOOTER
+================================================= */
+
+.footer-section {
+  @apply pt-20 pb-10 px-6
+         bg-slate-200
+         text-gray-800
+         border-t border-slate-300
+         transition-colors duration-300;
+}
+
+/* Dark Mode */
+.dark .footer-section {
+  @apply bg-gray-950
+         text-gray-300
+         border-t border-gray-800;
+}
+
+.footer-container {
+  @apply max-w-7xl mx-auto 
+         grid grid-cols-1 md:grid-cols-3 
+         gap-16 mb-14;
+}
+
+/* About Text */
+
+.footer-about p {
+  @apply mt-6 text-base 
+         text-gray-600 dark:text-gray-400
+         leading-relaxed 
+         max-w-sm;
+}
+
+/* Headings */
+
+.footer-links h4,
+.footer-contact h4 {
+  @apply text-sm font-semibold tracking-wider 
+         text-gray-900 dark:text-white 
+         mb-6;
+}
+
+/* Links */
+
+.footer-links a {
+  @apply block mb-4 
+         text-gray-600 dark:text-gray-400
+         hover:text-primary 
+         transition duration-300;
+}
+
+/* Contact Items */
+
+.footer-contact-item {
+  @apply flex items-center gap-3 
+         mb-5 
+         text-gray-600 dark:text-gray-400;
+}
+
+/* Bottom Section */
+
+.footer-bottom {
+  @apply max-w-7xl mx-auto 
+         flex flex-col md:flex-row
+         justify-between items-center
+         border-t border-gray-300 dark:border-gray-800
+         pt-6
+         text-sm text-gray-600 dark:text-gray-400;
+}
+
+.footer-socials {
+  @apply flex gap-6 mt-4 md:mt-0 
+         text-gray-500 dark:text-gray-400;
+}
+
+.footer-socials svg {
+  @apply hover:text-primary 
+         transition duration-300 
+         cursor-pointer;
+}
+
+.footer-logo-image {
+  @apply w-14 h-14 object-contain;
+}

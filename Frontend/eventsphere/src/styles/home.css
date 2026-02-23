@@ -1,0 +1,252 @@
+/* =================================================
+   HERO SECTION
+================================================= */
+
+.hero-section {
+  @apply bg-background dark:bg-gray-900 py-28 px-6 text-center transition-colors duration-300;
+}
+
+.hero-container {
+  @apply max-w-4xl mx-auto;
+}
+
+.hero-badge {
+  @apply inline-block mb-6 px-5 py-2 rounded-full 
+         bg-white dark:bg-gray-800 
+         text-gray-600 dark:text-gray-300 
+         text-sm shadow-sm;
+}
+
+.hero-title {
+  @apply text-5xl md:text-6xl font-bold leading-tight 
+         text-gray-900 dark:text-white mb-6;
+}
+
+.hero-gradient {
+  @apply bg-gradient-to-r from-primary to-secondary 
+         bg-clip-text text-transparent inline-block;
+}
+
+.hero-subtitle {
+  @apply text-xl font-medium 
+         text-gray-600 dark:text-gray-300 
+         mb-10 max-w-2xl mx-auto leading-relaxed;
+}
+
+.hero-buttons {
+  @apply flex justify-center gap-6;
+}
+
+.hero-btn-primary {
+  @apply bg-primary text-white px-8 py-4 rounded-xl 
+         shadow-lg transition duration-300 hover:scale-105;
+}
+
+.hero-btn-secondary {
+  @apply border border-secondary text-secondary 
+         px-8 py-4 rounded-xl transition duration-300 
+         hover:bg-secondary hover:text-white;
+}
+
+/* =================================================
+   EVENT PREVIEW SECTION
+================================================= */
+
+.event-preview-section {
+  @apply py-20 px-6;
+}
+
+.event-preview-container {
+  @apply max-w-6xl mx-auto grid md:grid-cols-3 gap-8;
+}
+
+.event-preview-card {
+  @apply bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 
+         transition-all duration-300 
+         hover:-translate-y-4 hover:shadow-2xl cursor-pointer;
+}
+
+.event-preview-image {
+  @apply w-full h-32 rounded-xl mb-4 bg-gray-200 dark:bg-gray-700;
+}
+
+.event-preview-content h3 {
+  @apply font-semibold text-lg mb-1 text-gray-900 dark:text-white;
+}
+
+.event-preview-content p {
+  @apply text-gray-500 dark:text-gray-400 text-sm;
+}
+
+/* =================================================
+   TRENDING EVENTS
+================================================= */
+
+.trending-section {
+  @apply py-24 px-6 bg-background dark:bg-gray-900 transition-colors duration-300;
+}
+
+.trending-container {
+  @apply max-w-7xl mx-auto;
+}
+
+.trending-title {
+  @apply text-4xl font-bold text-center 
+         text-gray-900 dark:text-white mb-6;
+}
+
+.trending-gradient {
+  @apply bg-gradient-to-r from-primary to-secondary 
+         bg-clip-text text-transparent inline-block;
+}
+
+.trending-subtitle {
+  @apply text-center text-lg font-medium 
+         text-gray-600 dark:text-gray-400 mb-16;
+}
+
+.trending-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8;
+}
+
+.trending-card {
+  @apply bg-white dark:bg-gray-800 rounded-2xl 
+         shadow-md overflow-hidden 
+         transition-all duration-300 
+         hover:-translate-y-4 hover:shadow-2xl;
+}
+
+.trending-image-wrapper {
+  @apply w-full h-56 overflow-hidden;
+}
+
+.trending-image {
+  @apply w-full h-full object-cover;
+}
+
+.trending-content {
+  @apply p-6;
+}
+
+.trending-content h3 {
+  @apply text-lg font-semibold text-gray-900 dark:text-white mb-4;
+}
+
+.trending-info {
+  @apply text-gray-600 dark:text-gray-400 text-base space-y-2 mb-6;
+}
+
+.trending-btn {
+  @apply w-full bg-secondary text-white py-3 rounded-xl 
+         transition duration-300 hover:bg-primary;
+}
+
+/* =================================================
+   CATEGORIES SECTION
+================================================= */
+
+.categories-section {
+  @apply py-24 px-6 bg-background dark:bg-gray-900 transition-colors duration-300;
+}
+
+.categories-container {
+  @apply max-w-7xl mx-auto text-center;
+}
+
+.categories-title {
+  @apply text-4xl font-bold text-gray-900 dark:text-white mb-6;
+}
+
+.categories-gradient {
+  @apply bg-gradient-to-r from-primary to-secondary 
+         bg-clip-text text-transparent inline-block;
+}
+
+.categories-subtitle {
+  @apply text-lg font-medium text-gray-600 dark:text-gray-400 mb-16;
+}
+
+.categories-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8;
+}
+
+.category-card {
+  @apply bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-md
+         border border-gray-200 dark:border-gray-700
+         transition-all duration-300
+         hover:-translate-y-4 hover:shadow-xl cursor-pointer;
+}
+
+.category-card h3 {
+  @apply text-lg font-semibold text-gray-900 dark:text-white mt-4 mb-2;
+}
+
+.category-card p {
+  @apply text-base text-gray-600 dark:text-gray-400;
+}
+
+.category-icon {
+  @apply w-16 h-16 mx-auto rounded-2xl flex items-center 
+         justify-center text-2xl bg-primary/10 dark:bg-primary/20;
+}
+
+/* =================================================
+   HOW IT WORKS
+================================================= */
+
+.how-section {
+  @apply py-24 px-6 bg-background dark:bg-gray-900 transition-colors duration-300;
+}
+
+.how-container {
+  @apply max-w-7xl mx-auto text-center;
+}
+
+.how-title {
+  @apply text-4xl font-bold text-gray-900 dark:text-white mb-4;
+}
+
+.how-gradient {
+  @apply bg-gradient-to-r from-primary to-secondary 
+         bg-clip-text text-transparent inline-block;
+}
+
+.how-subtitle {
+  @apply text-lg font-medium text-gray-600 dark:text-gray-400 mb-20;
+}
+
+.how-timeline {
+  @apply relative grid grid-cols-1 md:grid-cols-4 gap-12 items-start;
+}
+
+.how-line {
+  @apply hidden md:block absolute top-10 left-0 right-0 h-1
+         bg-gradient-to-r from-primary to-secondary;
+}
+
+.how-step {
+  @apply relative text-center;
+}
+
+.how-circle {
+  @apply relative w-24 h-24 mx-auto rounded-full
+         flex items-center justify-center
+         bg-gray-100 dark:bg-gray-800
+         border border-gray-200 dark:border-gray-700
+         text-secondary
+         transition-all duration-300 hover:scale-110;
+}
+
+.how-number {
+  @apply absolute -top-3 -right-3 w-8 h-8 rounded-full
+         bg-primary text-white text-sm
+         flex items-center justify-center shadow-md;
+}
+
+.how-step h3 {
+  @apply mt-6 text-xl font-semibold text-gray-900 dark:text-white;
+}
+
+.how-step p {
+  @apply mt-2 text-base text-gray-600 dark:text-gray-400;
+}

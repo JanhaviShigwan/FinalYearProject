@@ -1,0 +1,59 @@
+/* =================================================
+   NAVBAR
+================================================= */
+
+.navbar-container {
+  @apply bg-white dark:bg-gray-900 shadow-sm transition-colors duration-300;
+}
+
+.navbar-wrapper {
+  @apply max-w-7xl mx-auto px-6 py-4 flex items-center justify-between;
+}
+
+.navbar-logo {
+  @apply flex items-center gap-3;
+}
+
+.logo-image {
+  @apply w-10 h-10 object-contain;
+}
+
+.brand-name {
+  @apply text-lg font-semibold text-gray-800 dark:text-white;
+}
+
+.brand-highlight {
+  @apply text-secondary;
+}
+
+.nav-links {
+  @apply hidden md:flex gap-8 text-gray-600 dark:text-gray-300 font-medium;
+}
+
+.nav-links a {
+  @apply hover:text-primary transition duration-300;
+}
+
+.nav-actions {
+  @apply flex items-center gap-6;
+}
+
+.theme-toggle,
+.login-text {
+  @apply text-gray-600 dark:text-gray-300 hover:text-primary transition duration-300;
+}
+
+.register-btn {
+  @apply bg-primary text-white px-5 py-2 rounded-full shadow-sm hover:opacity-90 transition duration-300;
+
+}
+.nav-login-btn {
+  @apply px-4 py-2 rounded-lg font-medium transition duration-300;
+  @apply bg-[#6D28D9] text-white hover:bg-purple-800;
+}
+
+.nav-register-btn {
+  @apply px-4 py-2 rounded-lg font-medium transition duration-300;
+  @apply border border-[#6D28D9] text-[#6D28D9];
+  @apply hover:bg-[#6D28D9] hover:text-white;
+}
