@@ -51,13 +51,6 @@ export default function Footer() {
           </div>
 
           <div className="footer-contact-item">
-            <Phone size={18} />
-            <a href="tel:+918426935467">
-              +91 8426935467
-            </a>
-          </div>
-
-          <div className="footer-contact-item">
             <MapPin size={18} />
             <span>Mumbai, India</span>
           </div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 export default function Faq() {
   const [openIndex, setOpenIndex] = useState(null);
@@ -102,6 +103,7 @@ export default function Faq() {
       </div>
 
     </div>
+    <Footer/>
     </>
   );
 }
