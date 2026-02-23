@@ -1,6 +1,7 @@
 import { Mail, Phone, MapPin, Github, Linkedin, Instagram } from "lucide-react";
+import { Link } from "react-router-dom";
 import logo from "../assets/logoo.png";
-import "../styles/footer.css"
+import "../styles/footer.css";
 
 export default function Footer() {
   return (
@@ -9,7 +10,7 @@ export default function Footer() {
 
         {/* LEFT SECTION */}
         <div className="footer-about">
-          
+
           {/* Logo + Brand */}
           <div className="flex items-center gap-3">
             <img
@@ -32,10 +33,10 @@ export default function Footer() {
         <div className="footer-links">
           <h4>QUICK LINKS</h4>
 
-          <a href="#">Home</a>
-          <a href="#">Events</a>
-          <a href="#">Categories</a>
-          <a href="#">About</a>
+          <Link to="/">Home</Link>
+          <Link to="/events">Events</Link>
+          <Link to="/categories">Categories</Link>
+          <Link to="/about">About</Link>
         </div>
 
         {/* RIGHT SECTION */}
@@ -44,12 +45,16 @@ export default function Footer() {
 
           <div className="footer-contact-item">
             <Mail size={18} />
-            <span>eventsphere@gmail.com</span>
+            <a href="mailto:eventsphere@gmail.com">
+              eventsphere@gmail.com
+            </a>
           </div>
 
           <div className="footer-contact-item">
             <Phone size={18} />
-            <span>+91 8426935467</span>
+            <a href="tel:+918426935467">
+              +91 8426935467
+            </a>
           </div>
 
           <div className="footer-contact-item">
@@ -65,9 +70,32 @@ export default function Footer() {
         <p>© 2026 EventSphere. All rights reserved.</p>
 
         <div className="footer-socials">
-          <Github size={20} />
-          <Linkedin size={20} />
-          <Instagram size={20} />
+          <a
+            href="https://github.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub"
+          >
+            <Github size={20} />
+          </a>
+
+          <a
+            href="https://linkedin.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn"
+          >
+            <Linkedin size={20} />
+          </a>
+
+          <a
+            href="https://instagram.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram"
+          >
+            <Instagram size={20} />
+          </a>
         </div>
       </div>
     </footer>
