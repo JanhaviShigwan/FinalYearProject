@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin, Github, Linkedin, Instagram } from "lucide-react";
+import { Mail, MapPin, Github, Linkedin, Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logoo.png";
 import "../styles/footer.css";
