@@ -112,11 +112,12 @@
 }
 
 .mission-title {
-  @apply text-3xl font-semibold text-[#0D9488];
+  @apply text-3xl font-semibold text-[#0D9488] dark:text-[#14B8A6];
 }
 
 .mission-subtitle {
-  @apply mt-4 text-gray-400 max-w-2xl mx-auto;
+  @apply mt-4 max-w-2xl mx-auto
+         text-gray-600 dark:text-gray-400;
 }
 
 .mission-cards {
@@ -124,60 +125,38 @@
 }
 
 .mission-card {
-  @apply bg-[#1F2937]/80 
-         backdrop-blur-xl
-         border border-gray-700/60
-         rounded-2xl
-         p-8
-         text-left
-         transition-all duration-300
-         hover:-translate-y-1
-         hover:border-gray-500/60;
+  @apply rounded-2xl p-8 text-left
+         transition-all duration-300 hover:-translate-y-1
+         bg-white dark:bg-[#1F2937]/80
+         border border-gray-200 dark:border-gray-700/60
+         backdrop-blur-xl;
 }
 
 .mission-card h3 {
-  @apply text-lg font-semibold text-white mt-4 mb-3;
+  @apply text-lg font-semibold
+         text-gray-900 dark:text-white
+         mt-4 mb-3;
 }
 
 .mission-card p {
-  @apply text-sm text-gray-400 leading-relaxed;
+  @apply text-sm leading-relaxed
+         text-gray-600 dark:text-gray-400;
 }
 
-/* Purple Glow */
+/* Icon colors */
+.mission-icon.purple { @apply text-[#7C3AED]; }
+.mission-icon.teal   { @apply text-[#14B8A6]; }
+.mission-icon.peach  { @apply text-[#FDBA74]; }
+
+/* Glow (same in both modes) */
 .mission-card:has(.mission-icon.purple):hover {
-  box-shadow:
-    0 0 0 1px rgba(124, 58, 237, 0.35),
-    0 0 25px rgba(124, 58, 237, 0.25);
+  box-shadow: 0 0 0 1px rgba(124,58,237,.35), 0 0 25px rgba(124,58,237,.25);
 }
-
-/* Teal Glow */
 .mission-card:has(.mission-icon.teal):hover {
-  box-shadow:
-    0 0 0 1px rgba(20, 184, 166, 0.35),
-    0 0 25px rgba(20, 184, 166, 0.25);
+  box-shadow: 0 0 0 1px rgba(20,184,166,.35), 0 0 25px rgba(20,184,166,.25);
 }
-
-/* Peach Glow */
 .mission-card:has(.mission-icon.peach):hover {
-  box-shadow:
-    0 0 0 1px rgba(253, 186, 116, 0.40),
-    0 0 28px rgba(253, 186, 116, 0.30);
-}
-
-.mission-icon {
-  @apply mb-2;
-}
-
-.mission-icon.purple {
-  @apply text-[#7C3AED];
-}
-
-.mission-icon.teal {
-  @apply text-[#14B8A6];
-}
-
-.mission-icon.peach {
-  @apply text-[#FDBA74];
+  box-shadow: 0 0 0 1px rgba(253,186,116,.4), 0 0 28px rgba(253,186,116,.3);
 }
 
 .offer-wrapper {
@@ -185,11 +164,12 @@
 }
 
 .offer-title {
-  @apply text-3xl font-semibold text-[#0D9488];
+  @apply text-3xl font-semibold text-[#0D9488] dark:text-[#14B8A6];
 }
 
 .offer-subtitle {
-  @apply mt-4 text-gray-400 max-w-2xl mx-auto;
+  @apply mt-4 max-w-2xl mx-auto
+         text-gray-600 dark:text-gray-400;
 }
 
 .offer-cards {
@@ -197,59 +177,38 @@
 }
 
 .offer-card {
-  @apply bg-[#1F2937]/80
-         backdrop-blur-xl
-         border border-gray-700/60
-         rounded-2xl
-         p-8
-         text-left
-         transition-all duration-300
-         hover:-translate-y-1;
+  @apply rounded-2xl p-8 text-left
+         transition-all duration-300 hover:-translate-y-1
+         bg-white dark:bg-[#1F2937]/80
+         border border-gray-200 dark:border-gray-700/60
+         backdrop-blur-xl;
 }
 
 .offer-card h3 {
-  @apply text-lg font-semibold text-white mt-4 mb-3;
+  @apply text-lg font-semibold
+         text-gray-900 dark:text-white
+         mt-4 mb-3;
 }
 
 .offer-card p {
-  @apply text-sm text-gray-400 leading-relaxed;
-}
-
-.offer-icon {
-  @apply mb-2;
+  @apply text-sm leading-relaxed
+         text-gray-600 dark:text-gray-400;
 }
 
 /* Icon colors */
-.offer-icon.purple {
-  @apply text-[#7C3AED];
-}
+.offer-icon.purple { @apply text-[#7C3AED]; }
+.offer-icon.teal   { @apply text-[#14B8A6]; }
+.offer-icon.peach  { @apply text-[#FDBA74]; }
 
-.offer-icon.teal {
-  @apply text-[#14B8A6];
-}
-
-.offer-icon.peach {
-  @apply text-[#FDBA74];
-}
-
-/* ===== Color-matched glow (same as icon) ===== */
-
+/* Icon-based glow */
 .offer-card:has(.offer-icon.purple):hover {
-  box-shadow:
-    0 0 0 1px rgba(124, 58, 237, 0.35),
-    0 0 28px rgba(124, 58, 237, 0.25);
+  box-shadow: 0 0 0 1px rgba(124,58,237,.35), 0 0 28px rgba(124,58,237,.25);
 }
-
 .offer-card:has(.offer-icon.teal):hover {
-  box-shadow:
-    0 0 0 1px rgba(20, 184, 166, 0.35),
-    0 0 28px rgba(20, 184, 166, 0.25);
+  box-shadow: 0 0 0 1px rgba(20,184,166,.35), 0 0 28px rgba(20,184,166,.25);
 }
-
 .offer-card:has(.offer-icon.peach):hover {
-  box-shadow:
-    0 0 0 1px rgba(253, 186, 116, 0.40),
-    0 0 30px rgba(253, 186, 116, 0.30);
+  box-shadow: 0 0 0 1px rgba(253,186,116,.4), 0 0 30px rgba(253,186,116,.3);
 }
 
 .dev-wrapper {
@@ -261,16 +220,14 @@
 }
 
 .dev-card {
-  @apply bg-[#1F2937]/80
-         backdrop-blur-xl
-         border border-gray-700/60
-         rounded-3xl
-         p-10
-         transition-all duration-300;
+  @apply rounded-3xl p-10
+         transition-all duration-300
+         bg-white dark:bg-[#1F2937]/80
+         border border-gray-200 dark:border-gray-700/60
+         backdrop-blur-xl;
 }
 
-/* ===== LEFT CARD ===== */
-
+/* Header */
 .dev-header {
   @apply flex items-center gap-6 mb-6;
 }
@@ -279,44 +236,44 @@
   @apply w-24 h-24 rounded-full
          bg-gradient-to-br from-[#7C3AED] to-[#14B8A6]
          flex items-center justify-center
-         text-white text-4xl
-         shadow-lg;
+         text-white text-4xl shadow-lg;
 }
 
 .dev-name {
-  @apply text-2xl font-semibold text-white;
+  @apply text-2xl font-semibold
+         text-gray-900 dark:text-white;
 }
 
 .dev-role {
-  @apply text-[#14B8A6] font-medium mt-1;
+  @apply font-medium mt-1
+         text-[#0D9488] dark:text-[#14B8A6];
 }
 
 .dev-text {
-  @apply text-gray-400 leading-relaxed mb-6;
+  @apply leading-relaxed mb-6
+         text-gray-600 dark:text-gray-400;
 }
 
+/* Buttons */
 .dev-links {
   @apply flex gap-4;
 }
 
 .dev-btn {
-  @apply px-5 py-2 rounded-xl
-         text-sm font-medium
-         transition-all duration-300;
+  @apply px-5 py-2 rounded-xl text-sm font-medium transition-all duration-300;
 }
 
 .dev-btn.purple {
-  @apply bg-[#7C3AED]/20 text-[#7C3AED]
-         hover:bg-[#7C3AED]/30;
+  @apply bg-[#7C3AED]/15 text-[#7C3AED]
+         hover:bg-[#7C3AED]/25;
 }
 
 .dev-btn.teal {
-  @apply bg-[#14B8A6]/20 text-[#14B8A6]
-         hover:bg-[#14B8A6]/30;
+  @apply bg-[#14B8A6]/15 text-[#14B8A6]
+         hover:bg-[#14B8A6]/25;
 }
 
-/* ===== RIGHT CARD ===== */
-
+/* Project */
 .project-header {
   @apply flex items-center gap-4 mb-6;
 }
@@ -325,26 +282,24 @@
   @apply w-14 h-14 rounded-2xl
          bg-[#7C3AED]
          flex items-center justify-center
-         text-white text-xl
-         shadow-md;
+         text-white text-xl shadow-md;
 }
 
 .project-title {
-  @apply text-2xl font-semibold text-white;
+  @apply text-2xl font-semibold
+         text-gray-900 dark:text-white;
 }
 
-/* ===== TECH STACK PILLS ===== */
-
+/* Tech stack pills */
 .tech-stack {
   @apply flex flex-wrap gap-3 mt-6;
 }
 
 .tech-pill {
-  @apply px-4 py-2 rounded-full
-         text-sm font-medium
-         bg-[#111827]/60
-         border border-gray-600/60
-         text-gray-300
+  @apply px-4 py-2 rounded-full text-sm font-medium
+         bg-gray-100 dark:bg-[#111827]/60
+         border border-gray-300 dark:border-gray-600/60
+         text-gray-700 dark:text-gray-300
          transition-all duration-300
          hover:border-[#7C3AED]/50
          hover:shadow-[0_0_15px_rgba(124,58,237,0.25)];
