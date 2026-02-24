@@ -1,0 +1,54 @@
+.event-details-page {
+  padding-top: 80px;
+  min-height: 100vh;
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+.event-banner img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+}
+
+.event-details-container {
+  padding: 40px 10%;
+}
+
+.event-details-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+}
+
+.event-meta {
+  color: gray;
+  margin-bottom: 20px;
+}
+
+.event-description {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 30px;
+}
+
+.details-buttons {
+  display: flex;
+  gap: 20px;
+}
+
+.register-btn {
+  padding: 10px 20px;
+  background: #6D28D9;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.back-btn {
+  padding: 10px 20px;
+  background: #FDBA74;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}

@@ -1,9 +1,45 @@
+/* =========================
+   EVENTS PAGE BACKGROUND
+========================= */
+
 .events-page {
   padding: 100px 8%;
   min-height: 100vh;
-  background: var(--bg-color);
-  transition: 0.3s ease;
+  background:
+    radial-gradient(
+      at 20% 20%,
+      rgba(109, 40, 217, 0.08),
+      transparent 50%
+    ),
+    radial-gradient(
+      at 80% 80%,
+      rgba(13, 148, 136, 0.08),
+      transparent 50%
+    ),
+    #f8fafc;
+  transition: background 0.3s ease;
 }
+
+/* Dark Mode Background */
+
+.dark .events-page {
+  background:
+    radial-gradient(
+      at 20% 20%,
+      rgba(109, 40, 217, 0.18),
+      transparent 50%
+    ),
+    radial-gradient(
+      at 80% 80%,
+      rgba(13, 148, 136, 0.15),
+      transparent 50%
+    ),
+    #0f172a;
+}
+
+/* =========================
+   TITLE
+========================= */
 
 .events-title {
   text-align: center;
@@ -13,73 +49,140 @@
   color: var(--text-color);
 }
 
-/* Category Tabs */
+/* =========================
+   CATEGORY TABS
+========================= */
+
 .category-tabs {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   gap: 15px;
-  margin-bottom: 40px;
+  margin-bottom: 50px;
 }
 
 .category-btn {
-  padding: 10px 20px;
+  padding: 10px 22px;
   border-radius: 30px;
-  border: 1px solid #6D28D9;
-  background: transparent;
+  border: 1px solid rgba(109, 40, 217, 0.3);
+  background: white;
   cursor: pointer;
   font-weight: 500;
-  color: #6D28D9;
-  transition: 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.dark .category-btn {
+  background: #1f2937;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
 }
 
 .category-btn:hover {
-  background: #6D28D9;
-  color: #fff;
+  background: #6d28d9;
+  color: white;
 }
 
 .category-btn.active {
-  background: #6D28D9;
-  color: #fff;
+  background: #6d28d9;
+  color: white;
 }
 
-/* Grid */
+/* =========================
+   EVENTS GRID
+========================= */
+
 .events-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 30px;
 }
 
-/* Card */
+/* =========================
+   EVENT CARD
+========================= */
+
 .event-card {
+  position: relative;
   background: var(--card-bg);
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
-  transition: 0.3s ease;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  transition: 0.4s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.event-card:hover {
-  box-shadow: 0 15px 35px rgba(109, 40, 217, 0.25);
+.dark .event-card {
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
+
+/* Spotlight Effect */
+
+.event-card::before {
+  content: "";
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(
+    circle,
+    rgba(109, 40, 217, 0.15),
+    transparent 70%
+  );
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: 0.4s ease;
+  pointer-events: none;
+}
+
+.dark .event-card::before {
+  background: radial-gradient(
+    circle,
+    rgba(109, 40, 217, 0.25),
+    transparent 70%
+  );
+}
+
+.event-card:hover::before {
+  opacity: 1;
+}
+
+/* Hover Lift */
+
+.event-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.dark .event-card:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* =========================
+   IMAGE
+========================= */
 
 .event-card img {
   width: 100%;
-  height: 200px;
+  height: 220px;
   object-fit: cover;
   transition: 0.4s ease;
 }
 
 .event-card:hover img {
-  transform: scale(1.08);
+  transform: scale(1.05);
 }
+
+/* =========================
+   CARD CONTENT
+========================= */
+
 .event-content {
   padding: 20px;
 }
 
 .event-category {
-  background: #0D9488;
-  color: #fff;
+  background: #0d9488;
+  color: white;
   padding: 5px 12px;
   font-size: 0.8rem;
   border-radius: 20px;
@@ -94,14 +197,19 @@
 .event-content p {
   font-size: 0.9rem;
   color: gray;
+  margin: 4px 0;
 }
+
+/* =========================
+   DETAILS BUTTON
+========================= */
 
 .details-btn {
   margin-top: 15px;
   padding: 8px 16px;
   border: none;
   border-radius: 8px;
-  background: #FDBA74;
+  background: #fdbA74;
   cursor: pointer;
   font-weight: 500;
   transition: 0.3s ease;
