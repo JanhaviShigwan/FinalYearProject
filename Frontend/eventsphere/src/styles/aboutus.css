@@ -1,0 +1,351 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.about-wrapper {
+  @apply relative bg-[#F3F4F6] dark:bg-gray-900 text-gray-800 dark:text-gray-200 overflow-hidden transition-colors duration-300;
+}
+
+.about-bg-glow {
+  @apply absolute inset-0 bg-gradient-to-br from-[#6D28D9]/10 via-[#0D9488]/10 to-[#FDBA74]/10
+  dark:from-[#6D28D9]/20 dark:via-[#0D9488]/20 dark:to-[#FDBA74]/20 blur-3xl pointer-events-none;
+}
+
+.about-container {
+  @apply relative z-10 max-w-6xl mx-auto px-6 py-24;
+}
+
+.about-hero {
+  @apply text-center mb-20;
+}
+
+.about-title {
+  @apply text-5xl font-bold text-[#6D28D9] dark:text-purple-400;
+}
+
+.about-subtitle {
+  @apply mt-6 max-w-2xl mx-auto text-lg text-gray-600 dark:text-gray-300;
+}
+
+.about-tabs {
+  @apply flex flex-wrap justify-center gap-4 mb-16;
+}
+
+.about-tab {
+  @apply px-6 py-3 rounded-2xl font-medium transition-all duration-300 bg-white dark:bg-gray-800 hover:bg-[#FDBA74]/30;
+}
+
+.about-tab.active {
+  @apply bg-[#6D28D9] text-white shadow-lg;
+}
+
+.about-card {
+  @apply bg-white dark:bg-gray-800 rounded-3xl p-12 shadow-xl transition-all duration-500;
+}
+
+.about-grid {
+  @apply grid md:grid-cols-2 gap-12;
+}
+
+.section-title {
+  @apply text-3xl font-semibold mb-6;
+}
+
+.section-title.teal {
+  @apply text-[#0D9488];
+}
+
+.center {
+  @apply text-center;
+}
+
+.center-text {
+  @apply mt-4 text-center text-gray-600 dark:text-gray-300 max-w-2xl mx-auto;
+}
+
+.text-muted {
+  @apply text-gray-600 dark:text-gray-300 leading-relaxed mb-6;
+}
+
+.text-muted-light {
+  @apply text-gray-600 dark:text-gray-400 leading-relaxed mb-6;
+}
+
+.stats {
+  @apply flex gap-6 mt-8;
+}
+
+.stat {
+  @apply text-2xl font-semibold;
+}
+
+.stat.purple {
+  @apply text-[#6D28D9];
+}
+
+.stat.teal {
+  @apply text-[#0D9488];
+}
+
+.stat.peach {
+  @apply text-[#FDBA74];
+}
+
+.feature-card {
+  @apply bg-white dark:bg-[#1F2937] border border-gray-200 dark:border-gray-700 p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1;
+}
+
+.purple-glow {
+  @apply hover:shadow-[0_0_25px_rgba(109,40,217,0.25)];
+}
+
+.teal-glow {
+  @apply hover:shadow-[0_0_25px_rgba(13,148,136,0.25)];
+}
+
+.peach-glow {
+  @apply hover:shadow-[0_0_25px_rgba(253,186,116,0.30)];
+}
+
+.mission-wrapper {
+  @apply text-center;
+}
+
+.mission-title {
+  @apply text-3xl font-semibold text-[#0D9488];
+}
+
+.mission-subtitle {
+  @apply mt-4 text-gray-400 max-w-2xl mx-auto;
+}
+
+.mission-cards {
+  @apply grid md:grid-cols-3 gap-8 mt-12;
+}
+
+.mission-card {
+  @apply bg-[#1F2937]/80 
+         backdrop-blur-xl
+         border border-gray-700/60
+         rounded-2xl
+         p-8
+         text-left
+         transition-all duration-300
+         hover:-translate-y-1
+         hover:border-gray-500/60;
+}
+
+.mission-card h3 {
+  @apply text-lg font-semibold text-white mt-4 mb-3;
+}
+
+.mission-card p {
+  @apply text-sm text-gray-400 leading-relaxed;
+}
+
+/* Purple Glow */
+.mission-card:has(.mission-icon.purple):hover {
+  box-shadow:
+    0 0 0 1px rgba(124, 58, 237, 0.35),
+    0 0 25px rgba(124, 58, 237, 0.25);
+}
+
+/* Teal Glow */
+.mission-card:has(.mission-icon.teal):hover {
+  box-shadow:
+    0 0 0 1px rgba(20, 184, 166, 0.35),
+    0 0 25px rgba(20, 184, 166, 0.25);
+}
+
+/* Peach Glow */
+.mission-card:has(.mission-icon.peach):hover {
+  box-shadow:
+    0 0 0 1px rgba(253, 186, 116, 0.40),
+    0 0 28px rgba(253, 186, 116, 0.30);
+}
+
+.mission-icon {
+  @apply mb-2;
+}
+
+.mission-icon.purple {
+  @apply text-[#7C3AED];
+}
+
+.mission-icon.teal {
+  @apply text-[#14B8A6];
+}
+
+.mission-icon.peach {
+  @apply text-[#FDBA74];
+}
+
+.offer-wrapper {
+  @apply text-center;
+}
+
+.offer-title {
+  @apply text-3xl font-semibold text-[#0D9488];
+}
+
+.offer-subtitle {
+  @apply mt-4 text-gray-400 max-w-2xl mx-auto;
+}
+
+.offer-cards {
+  @apply grid md:grid-cols-2 gap-8 mt-12;
+}
+
+.offer-card {
+  @apply bg-[#1F2937]/80
+         backdrop-blur-xl
+         border border-gray-700/60
+         rounded-2xl
+         p-8
+         text-left
+         transition-all duration-300
+         hover:-translate-y-1;
+}
+
+.offer-card h3 {
+  @apply text-lg font-semibold text-white mt-4 mb-3;
+}
+
+.offer-card p {
+  @apply text-sm text-gray-400 leading-relaxed;
+}
+
+.offer-icon {
+  @apply mb-2;
+}
+
+/* Icon colors */
+.offer-icon.purple {
+  @apply text-[#7C3AED];
+}
+
+.offer-icon.teal {
+  @apply text-[#14B8A6];
+}
+
+.offer-icon.peach {
+  @apply text-[#FDBA74];
+}
+
+/* ===== Color-matched glow (same as icon) ===== */
+
+.offer-card:has(.offer-icon.purple):hover {
+  box-shadow:
+    0 0 0 1px rgba(124, 58, 237, 0.35),
+    0 0 28px rgba(124, 58, 237, 0.25);
+}
+
+.offer-card:has(.offer-icon.teal):hover {
+  box-shadow:
+    0 0 0 1px rgba(20, 184, 166, 0.35),
+    0 0 28px rgba(20, 184, 166, 0.25);
+}
+
+.offer-card:has(.offer-icon.peach):hover {
+  box-shadow:
+    0 0 0 1px rgba(253, 186, 116, 0.40),
+    0 0 30px rgba(253, 186, 116, 0.30);
+}
+
+.dev-wrapper {
+  @apply max-w-7xl mx-auto;
+}
+
+.dev-grid {
+  @apply grid md:grid-cols-2 gap-12;
+}
+
+.dev-card {
+  @apply bg-[#1F2937]/80
+         backdrop-blur-xl
+         border border-gray-700/60
+         rounded-3xl
+         p-10
+         transition-all duration-300;
+}
+
+/* ===== LEFT CARD ===== */
+
+.dev-header {
+  @apply flex items-center gap-6 mb-6;
+}
+
+.dev-avatar {
+  @apply w-24 h-24 rounded-full
+         bg-gradient-to-br from-[#7C3AED] to-[#14B8A6]
+         flex items-center justify-center
+         text-white text-4xl
+         shadow-lg;
+}
+
+.dev-name {
+  @apply text-2xl font-semibold text-white;
+}
+
+.dev-role {
+  @apply text-[#14B8A6] font-medium mt-1;
+}
+
+.dev-text {
+  @apply text-gray-400 leading-relaxed mb-6;
+}
+
+.dev-links {
+  @apply flex gap-4;
+}
+
+.dev-btn {
+  @apply px-5 py-2 rounded-xl
+         text-sm font-medium
+         transition-all duration-300;
+}
+
+.dev-btn.purple {
+  @apply bg-[#7C3AED]/20 text-[#7C3AED]
+         hover:bg-[#7C3AED]/30;
+}
+
+.dev-btn.teal {
+  @apply bg-[#14B8A6]/20 text-[#14B8A6]
+         hover:bg-[#14B8A6]/30;
+}
+
+/* ===== RIGHT CARD ===== */
+
+.project-header {
+  @apply flex items-center gap-4 mb-6;
+}
+
+.project-icon {
+  @apply w-14 h-14 rounded-2xl
+         bg-[#7C3AED]
+         flex items-center justify-center
+         text-white text-xl
+         shadow-md;
+}
+
+.project-title {
+  @apply text-2xl font-semibold text-white;
+}
+
+/* ===== TECH STACK PILLS ===== */
+
+.tech-stack {
+  @apply flex flex-wrap gap-3 mt-6;
+}
+
+.tech-pill {
+  @apply px-4 py-2 rounded-full
+         text-sm font-medium
+         bg-[#111827]/60
+         border border-gray-600/60
+         text-gray-300
+         transition-all duration-300
+         hover:border-[#7C3AED]/50
+         hover:shadow-[0_0_15px_rgba(124,58,237,0.25)];
+}
