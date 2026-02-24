@@ -2,202 +2,215 @@
 
 @layer components {
 
-  /* ================= WRAPPER ================= */
+  /* ================= PAGE BACKGROUND ================= */
 
-  .login-wrapper {
-    @apply relative min-h-screen flex items-center justify-center 
-           overflow-hidden transition-colors duration-500
-           px-4 sm:px-6;
+  .auth-wrapper {
+    @apply relative min-h-screen flex items-center justify-center px-6 py-12
+           bg-gray-100 dark:bg-[#0f172a] overflow-hidden;
   }
 
-  /* Light Mode Gradient */
-  .login-wrapper {
+  /* ================= MAIN CARD ================= */
+
+  .auth-main-card {
+    @apply relative w-full max-w-6xl 
+           rounded-[40px] shadow-2xl
+           overflow-hidden
+           flex z-10;
+    min-height: 720px;
+  }
+
+  /* ================= LEFT PANEL (IMAGE) ================= */
+
+  .auth-image-left {
+    @apply w-1/2 relative flex items-center justify-center overflow-hidden;
+    
+    background-image: url("https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=2000&auto=format&fit=crop");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    border-top-left-radius: 40px;
+    border-bottom-left-radius: 40px;
+  }
+
+  /* Overlay */
+  .auth-overlay {
+    @apply absolute inset-0;
     background: linear-gradient(
       135deg,
-      #6D28D9 0%,
-      #0D9488 50%,
-      #FDBA74 100%
+      rgba(109,40,217,0.55),
+      rgba(13,148,136,0.45)
     );
   }
 
-  /* Dark Mode Gradient */
-  .dark .login-wrapper {
-    background: linear-gradient(
-      135deg,
-      #1F2937 0%,
-      #111827 50%,
-      #000000 100%
-    );
+  /* Image Content */
+  .auth-image-content {
+    @apply relative z-10 text-center max-w-lg px-8 text-white
+           flex flex-col items-center justify-center;
   }
 
-  /* ================= FLOATING BLOBS ================= */
-
-  .login-blob {
-    @apply absolute rounded-full blur-3xl opacity-40 animate-pulse;
+  .hero-title {
+    @apply text-4xl xl:text-5xl font-bold mb-4 text-white;
   }
 
-  /* Smaller blobs for mobile */
-  .blob-1 {
-    @apply w-40 h-40 sm:w-72 sm:h-72 bg-[#6D28D9] top-10 left-5 sm:left-10;
+  .hero-subtitle {
+    @apply text-base opacity-90 mb-10 text-white;
   }
 
-  .blob-2 {
-    @apply w-40 h-40 sm:w-72 sm:h-72 bg-[#0D9488] bottom-10 right-5 sm:right-10;
+  .auth-features {
+    @apply space-y-5 w-full;
   }
 
-  .blob-3 {
-    @apply w-32 h-32 sm:w-60 sm:h-60 bg-[#FDBA74] 
-           top-1/2 left-1/3;
+  .feature-item {
+    @apply flex items-center justify-center gap-3
+           bg-white/15 backdrop-blur-md
+           px-6 py-4 rounded-2xl
+           transition-all duration-300 cursor-pointer;
   }
 
-  /* ================= LOGIN CARD ================= */
-
-  .login-card {
-    @apply relative z-10 w-full max-w-sm sm:max-w-md
-           p-6 sm:p-8 
-           rounded-2xl shadow-2xl 
-           transition-all duration-300
-           bg-white dark:bg-gray-800;
+  .feature-item svg {
+    @apply text-[#FDBA74];
   }
 
-  .login-card:hover {
-    transform: translateY(-4px) scale(1.01);
+  .feature-item:hover {
+    @apply bg-white/25 shadow-xl;
+    transform: translateY(-4px);
   }
 
-  /* ================= TITLES ================= */
+  /* ================= RIGHT PANEL (FORM) ================= */
 
-  .login-title {
-    @apply text-2xl sm:text-3xl font-bold text-center mb-2;
-    @apply text-[#6D28D9] dark:text-white;
+  .auth-form-right {
+    @apply w-1/2 bg-white dark:bg-[#111827]
+           px-16 py-16 flex items-center;
+    
+    border-top-right-radius: 40px;
+    border-bottom-right-radius: 40px;
   }
 
-  .login-subtitle {
-    @apply text-center text-sm sm:text-base 
-           text-gray-600 dark:text-gray-400 
-           mb-5 sm:mb-6;
+  .auth-form-card {
+    @apply w-full max-w-md mx-auto;
   }
 
-  /* ================= FORM ================= */
-
-  .login-form {
-    @apply space-y-4 sm:space-y-5;
+  .auth-title {
+    @apply text-3xl font-bold mb-8
+           text-[#6D28D9] dark:text-white;
   }
 
-  .form-group label {
-    @apply block text-sm font-medium mb-2 
-           text-gray-700 dark:text-gray-300;
+  .auth-error {
+    @apply text-sm text-red-500 mb-4;
   }
+
+  /* ================= INPUT ================= */
 
   .input-box {
-    @apply flex items-center border 
-           rounded-lg px-3 py-2 
-           transition-all duration-200
-           border-gray-300 dark:border-gray-600
-           focus-within:ring-2 
-           focus-within:ring-[#6D28D9];
+    @apply flex items-center
+           border border-gray-300 dark:border-gray-600
+           rounded-full px-5 py-3
+           bg-white dark:bg-gray-800
+           transition-all duration-200;
+  }
+
+  .input-box:focus-within {
+    @apply ring-2 ring-[#6D28D9] border-transparent;
   }
 
   .input-box input {
-    @apply w-full bg-transparent outline-none 
-           text-sm text-gray-800 dark:text-white;
+    @apply w-full outline-none bg-transparent text-sm
+           text-gray-800 dark:text-white;
   }
 
   .input-icon {
-    @apply text-gray-400 mr-2;
+    @apply text-gray-400 mr-3;
   }
 
-  /* ================= OPTIONS ================= */
+  /* ================= LINKS ================= */
 
   .login-options {
-    @apply flex flex-col sm:flex-row 
-           sm:items-center 
-           sm:justify-between 
-           gap-2 sm:gap-0
-           text-sm;
-  }
-
-  .remember-me {
-    @apply flex items-center gap-2 
-           text-gray-600 dark:text-gray-300;
-  }
-
-  .remember-me input {
-    @apply accent-[#6D28D9];
+    @apply flex justify-end text-sm;
   }
 
   .forgot-link {
     @apply text-[#0D9488] hover:underline;
   }
 
-  /* ================= BUTTON ================= */
-
-  .login-btn {
-    @apply w-full py-2.5 sm:py-3 
-           rounded-lg font-semibold 
-           text-white text-sm sm:text-base
-           transition duration-300
-           bg-[#6D28D9] hover:bg-purple-800;
-  }
-
   .register-text {
-    @apply text-center text-sm 
-           text-gray-600 dark:text-gray-400;
+    @apply text-sm text-gray-600 dark:text-gray-400 mt-6;
   }
 
   .register-text a {
-    @apply text-[#0D9488] font-medium hover:underline;
+    @apply text-[#6D28D9] hover:underline ml-1;
   }
 
-  /* ================= REGISTER CARD ================= */
+  /* ================= BUTTON ================= */
 
-  .register-card {
-    @apply relative z-10 w-full 
-           max-w-sm sm:max-w-lg
-           p-6 sm:p-8 
-           rounded-2xl shadow-2xl 
-           transition-all duration-300
-           bg-white dark:bg-gray-800;
+  .auth-btn {
+    @apply w-full py-3 rounded-full text-white font-semibold
+           transition-all duration-300;
+    background: linear-gradient(90deg, #6D28D9, #0D9488);
   }
 
-  .register-card:hover {
-    transform: translateY(-4px) scale(1.01);
+  .auth-btn:hover {
+    transform: scale(1.03);
   }
 
-  .register-title {
-    @apply text-2xl sm:text-3xl font-bold 
-           text-center mb-2;
-    @apply text-[#6D28D9] dark:text-white;
+  /* ================= BLOBS ================= */
+
+  .blob {
+    @apply absolute rounded-full blur-3xl opacity-40;
+    animation: floatBlob 12s ease-in-out infinite;
+    z-index: 0;
   }
 
-  .register-subtitle {
-    @apply text-center text-sm sm:text-base 
-           text-gray-600 dark:text-gray-400 
-           mb-5 sm:mb-6;
+  .blob-1 {
+    width: 400px;
+    height: 400px;
+    top: 10%;
+    left: 5%;
+    background: radial-gradient(circle, #6D28D9, transparent 70%);
   }
 
-  .register-form {
-    @apply space-y-4;
+  .blob-2 {
+    width: 350px;
+    height: 350px;
+    bottom: 10%;
+    right: 8%;
+    background: radial-gradient(circle, #0D9488, transparent 70%);
   }
 
-  .register-btn {
-    @apply w-full py-2.5 sm:py-3 
-           rounded-lg font-semibold 
-           text-white text-sm sm:text-base
-           transition duration-300
-           bg-[#6D28D9] hover:bg-purple-800;
+  .dark .blob-1 {
+    background: radial-gradient(circle, #7c3aed, transparent 70%);
+    opacity: 0.5;
   }
 
-  /* ================= EXTRA SMALL SAFETY ================= */
+  .dark .blob-2 {
+    background: radial-gradient(circle, #14b8a6, transparent 70%);
+    opacity: 0.5;
+  }
 
-  @media (max-width: 380px) {
-    .login-title,
-    .register-title {
-      font-size: 1.3rem;
+  @keyframes floatBlob {
+    0% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-40px) scale(1.05); }
+    100% { transform: translateY(0px) scale(1); }
+  }
+
+  /* ================= MOBILE ================= */
+
+  @media (max-width: 1024px) {
+
+    .auth-main-card {
+      @apply flex-col;
+      min-height: auto;
     }
 
-    .login-card,
-    .register-card {
-      padding: 1.2rem;
+    .auth-image-left {
+      @apply w-full h-72;
+      border-radius: 40px 40px 0 0;
+    }
+
+    .auth-form-right {
+      @apply w-full px-8 py-10;
+      border-radius: 0 0 40px 40px;
     }
   }
+
 }

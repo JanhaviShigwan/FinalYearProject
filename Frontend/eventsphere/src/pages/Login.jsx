@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Lock } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  CalendarCheck,
+  Users,
+  Ticket,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -10,20 +18,17 @@ export default function Login() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    remember: false,
   });
 
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
-  // Somaiya email restriction
   const emailRegex = /^[a-zA-Z0-9._%+-]+@somaiya\.edu$/;
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-
     setFormData({
       ...formData,
-      [name]: type === "checkbox" ? checked : value,
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -42,94 +47,116 @@ export default function Login() {
     }
 
     console.log("Login Success:", formData);
-
-    /*
-      Later when backend added:
-      - If remember = true → store token in localStorage
-      - Else → store in sessionStorage
-    */
   };
 
   return (
     <>
       <Navbar />
 
-      <div className="login-wrapper">
-        <div className="login-blob blob-1"></div>
-        <div className="login-blob blob-2"></div>
-        <div className="login-blob blob-3"></div>
+      <div className="auth-wrapper">
 
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="login-card"
-        >
-          <h2 className="login-title">Welcome Back 👋</h2>
+        {/* BLOBS */}
+        <div className="blob blob-1"></div>
+        <div className="blob blob-2"></div>
 
-          {error && (
-            <p className="text-red-500 text-sm text-center mb-3">
-              {error}
-            </p>
-          )}
+        <div className="auth-main-card">
 
-          <form className="login-form" onSubmit={handleSubmit}>
-            
-            {/* Email */}
-            <div className="form-group">
-              <label>Email Address</label>
-              <div className="input-box">
-                <Mail size={18} className="input-icon" />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                />
+          {/* LEFT SIDE - LOGIN */}
+          <div className="auth-left">
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="auth-form-card"
+            >
+              <h2 className="auth-title">Sign In</h2>
+
+              {error && (
+                <p className="auth-error">{error}</p>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+
+                <div className="input-box">
+                  <Mail size={18} className="input-icon" />
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Somaiya Email"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="input-box">
+                  <Lock size={18} className="input-icon" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </div>
+                </div>
+
+                <div className="login-options">
+                  <Link to="/forgot-password" className="forgot-link">
+                    Forgot Password?
+                  </Link>
+                </div>
+
+                <button type="submit" className="auth-btn">
+                  Sign In
+                </button>
+
+                <p className="register-text">
+                  Don’t have an account?
+                  <Link to="/register"> Register</Link>
+                </p>
+
+              </form>
+            </motion.div>
+          </div>
+
+          {/* RIGHT SIDE - IMAGE */}
+          <div className="auth-right">
+            <div className="auth-overlay"></div>
+
+            <div className="auth-image-content">
+              <h1 className="hero-title">
+                EventSphere Platform
+              </h1>
+
+              <p className="hero-subtitle">
+                A smarter way to manage and experience college events.
+              </p>
+
+              <div className="auth-features">
+                <div className="feature-item">
+                  <CalendarCheck size={22} />
+                  <span>Plan & Schedule Events</span>
+                </div>
+
+                <div className="feature-item">
+                  <Users size={22} />
+                  <span>Manage Participants</span>
+                </div>
+
+                <div className="feature-item">
+                  <Ticket size={22} />
+                  <span>Digital Ticketing System</span>
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Password */}
-            <div className="form-group">
-              <label>Password</label>
-              <div className="input-box">
-                <Lock size={18} className="input-icon" />
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            {/* Remember Me + Forgot Password */}
-            <div className="login-options">
-              <label className="remember-me">
-                <input
-                  type="checkbox"
-                  name="remember"
-                  checked={formData.remember}
-                  onChange={handleChange}
-                />
-                Remember Me
-              </label>
-
-              <Link to="/forgot-password" className="forgot-link">
-                Forgot Password?
-              </Link>
-            </div>
-
-            <button type="submit" className="login-btn">
-              Login
-            </button>
-
-            <p className="register-text">
-              Don’t have an account?
-              <Link to="/register"> Register</Link>
-            </p>
-          </form>
-        </motion.div>
+        </div>
       </div>
 
       <Footer />
