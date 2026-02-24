@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -96,18 +96,16 @@ export default function Events() {
   ];
 
   // 🖼 Generate stable random image per event (prevents image changing on filter)
-  const eventsWithImages = useMemo(() => {
-    return events.map((event) => {
-      const images = categoryImages[event.category];
-      const randomImage =
-        images[Math.floor(Math.random() * images.length)];
+ const eventsWithImages = events.map((event) => {
+  const images = categoryImages[event.category];
+  const randomImage =
+    images[Math.floor(Math.random() * images.length)];
 
-      return {
-        ...event,
-        image: `${randomImage}?auto=format&fit=crop&w=800&q=80`,
-      };
-    });
-  }, []);
+  return {
+    ...event,
+    image: `${randomImage}?auto=format&fit=crop&w=800&q=80`,
+  };
+});
 
   const filteredEvents =
     activeCategory === "All"
