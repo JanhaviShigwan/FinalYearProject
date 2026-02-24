@@ -33,6 +33,16 @@
     border-bottom-left-radius: 40px;
   }
 
+  /* ================= LOGIN LEFT PANEL ================= */
+
+.auth-left {
+  @apply w-1/2 bg-white dark:bg-[#111827]
+         px-16 py-16 flex items-center;
+
+  border-top-left-radius: 40px;
+  border-bottom-left-radius: 40px;
+}
+
   /* Overlay */
   .auth-overlay {
     @apply absolute inset-0;
@@ -86,6 +96,20 @@
     border-top-right-radius: 40px;
     border-bottom-right-radius: 40px;
   }
+
+  /* ================= LOGIN RIGHT PANEL ================= */
+
+.auth-right {
+  @apply w-1/2 relative flex items-center justify-center overflow-hidden;
+
+  background-image: url("https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=2000&auto=format&fit=crop");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  border-top-right-radius: 40px;
+  border-bottom-right-radius: 40px;
+}
 
   .auth-form-card {
     @apply w-full max-w-md mx-auto;
@@ -195,22 +219,61 @@
 
   /* ================= MOBILE ================= */
 
-  @media (max-width: 1024px) {
+  /* ================= MOBILE FIX (FOR BOTH LOGIN & REGISTER) ================= */
 
-    .auth-main-card {
-      @apply flex-col;
-      min-height: auto;
-    }
+@media (max-width: 1024px) {
 
-    .auth-image-left {
-      @apply w-full h-72;
-      border-radius: 40px 40px 0 0;
-    }
-
-    .auth-form-right {
-      @apply w-full px-8 py-10;
-      border-radius: 0 0 40px 40px;
-    }
+  .auth-main-card {
+    @apply flex-col;
+    min-height: auto;
+    border-radius: 30px;
   }
 
+  /* HIDE IMAGE PANEL (LOGIN + REGISTER) */
+  .auth-image-left,
+  .auth-right {
+    display: none !important;
+  }
+
+  /* FORM FULL WIDTH */
+  .auth-left,
+  .auth-form-right {
+    @apply w-full px-6 py-10;
+    border-radius: 30px;
+  }
+
+  .auth-title {
+    @apply text-2xl text-center mb-6;
+  }
+
+  .auth-form-card {
+    @apply max-w-full;
+  }
+
+  .input-box {
+    @apply px-4 py-2.5;
+  }
+
+  .auth-btn {
+    @apply py-2.5 text-sm;
+  }
+
+  .register-text {
+    @apply text-center;
+  }
+
+  /* Optional: Slightly smaller blobs */
+  .blob-1 {
+    width: 220px;
+    height: 220px;
+  }
+
+  .blob-2 {
+    width: 200px;
+    height: 200px;
+  }
+
+}
+
+  
 }
