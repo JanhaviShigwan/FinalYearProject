@@ -64,7 +64,7 @@ export default function Footer() {
 
         <div className="footer-socials">
           <a
-            href="https://github.com/"
+            href="https://github.com/JanhaviShigwan"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="GitHub"

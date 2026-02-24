@@ -363,7 +363,7 @@ const AboutUs = () => {
 
                       <div className="flex gap-4">
                         <a
-                          href="#"
+                          href="#www.linkedin.com/in/janhavi-shigwan"
                           className="px-5 py-2 rounded-xl
               bg-[#6D28D9]/10 dark:bg-[#6D28D9]/20
               text-[#6D28D9]
@@ -374,7 +374,7 @@ const AboutUs = () => {
                         </a>
 
                         <a
-                          href="#"
+                          href="https://github.com/JanhaviShigwan"
                           className="px-5 py-2 rounded-xl
               bg-[#0D9488]/10 dark:bg-[#0D9488]/20
               text-[#0D9488]
