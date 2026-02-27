@@ -4,15 +4,16 @@
 
 .navbar-main {
   @apply sticky top-0 z-50 
-         bg-white/80 dark:bg-gray-900/80 
          backdrop-blur-md shadow-sm 
          transition-all duration-300;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #9B96E5;
 }
 
 .navbar-inner {
   @apply max-w-7xl mx-auto 
          px-4 sm:px-6 md:px-8 
-         py-3 sm:py-4 
+         py-4 
          flex justify-between items-center;
 }
 
@@ -21,20 +22,22 @@
 ============================================== */
 
 .navbar-logo {
-  @apply flex items-center gap-2 sm:gap-3;
+  @apply flex items-center gap-3;
 }
 
 .logo-image {
-  @apply w-10 h-10 sm:w-12 sm:h-12 object-contain;
+  @apply w-11 h-11 object-contain;
 }
 
 .brand-text {
-  @apply text-lg sm:text-xl font-bold 
-         text-[#6D28D9] dark:text-purple-400 tracking-wide;
+  font-size: 20px;
+  font-weight: 700;
+  color: #3F3D56;
+  letter-spacing: 0.5px;
 }
 
 .brand-accent {
-  @apply text-[#0D9488];
+  color: #9B96E5; /* Lavender */
 }
 
 /* ==============================================
@@ -42,16 +45,22 @@
 ============================================== */
 
 .navbar-links {
-  @apply hidden md:flex gap-8 font-medium;
+  @apply hidden md:flex gap-10 font-medium;
 }
 
 .nav-link {
-  @apply relative text-gray-700 dark:text-gray-300 
-         hover:text-[#0D9488] transition duration-300;
+  position: relative;
+  font-size: 15px;
+  color: #3F3D56;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #F08A6C; /* Coral */
 }
 
 .nav-active {
-  @apply text-[#6D28D9] dark:text-purple-400;
+  color: #9B96E5;
 }
 
 /* ==============================================
@@ -59,29 +68,38 @@
 ============================================== */
 
 .navbar-actions {
-  @apply flex items-center gap-4 sm:gap-6;
-}
-
-.theme-toggle-btn {
-  @apply p-2 rounded-full 
-         bg-[#F3F4F6] dark:bg-gray-800 
-         hover:bg-[#FDBA74]/30 transition;
+  @apply flex items-center gap-6;
 }
 
 /* Desktop Auth */
+
 .auth-desktop {
   @apply hidden md:flex items-center gap-4;
 }
 
 .nav-login-btn {
-  @apply text-gray-700 dark:text-gray-300 
-         hover:text-[#0D9488] transition;
+  font-size: 14px;
+  color: #3F3D56;
+  transition: 0.3s ease;
+}
+
+.nav-login-btn:hover {
+  color: #F08A6C;
 }
 
 .nav-register-btn {
-  @apply px-4 py-2 rounded-lg font-medium transition duration-300;
-  @apply border border-[#6D28D9] text-[#6D28D9];
-  @apply hover:bg-[#6D28D9] hover:text-white;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1.5px solid #9B96E5;
+  color: #9B96E5;
+  transition: 0.3s ease;
+}
+
+.nav-register-btn:hover {
+  background-color: #9B96E5;
+  color: #FFFFFF;
 }
 
 /* ==============================================
@@ -89,9 +107,9 @@
 ============================================== */
 
 .hamburger-btn {
-  @apply md:hidden p-2 rounded-lg 
-         bg-gray-100 dark:bg-gray-800 
-         text-gray-700 dark:text-gray-200;
+  @apply md:hidden p-2 rounded-lg;
+  background-color: #F6F1EB;
+  color: #3F3D56;
 }
 
 /* ==============================================
@@ -100,11 +118,11 @@
 
 .mobile-menu {
   @apply md:hidden flex flex-col gap-4 
-         px-6 py-4 
-         bg-white dark:bg-gray-900 
+         px-6 py-5 
          shadow-md overflow-hidden 
          max-h-0 opacity-0 
          transition-all duration-300;
+  background-color: #FFFFFF;
 }
 
 .mobile-open {
@@ -112,21 +130,31 @@
 }
 
 .mobile-link {
-  @apply text-gray-700 dark:text-gray-300 
-         font-medium py-2 
-         hover:text-[#0D9488] transition;
+  font-weight: 500;
+  font-size: 15px;
+  color: #3F3D56;
+  transition: 0.3s ease;
+}
+
+.mobile-link:hover {
+  color: #F08A6C;
 }
 
 .mobile-active {
-  @apply text-[#6D28D9] dark:text-purple-400;
+  color: #9B96E5;
 }
 
 .mobile-auth {
-  @apply flex flex-col gap-3 pt-4 border-t 
-         border-gray-200 dark:border-gray-700;
+  @apply flex flex-col gap-3 pt-4 border-t;
+  border-color: #F6F1EB;
 }
 
 .mobile-auth a {
-  @apply py-2 font-medium text-gray-700 
-         dark:text-gray-300 hover:text-[#0D9488] transition;
+  font-weight: 500;
+  color: #3F3D56;
+  transition: 0.3s ease;
+}
+
+.mobile-auth a:hover {
+  color: #F08A6C;
 }

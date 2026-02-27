@@ -1,19 +1,16 @@
-import { useContext, useState } from "react";
-import { ThemeContext } from "../context/ThemeContext";
-import { Sun, Moon, Menu, X } from "lucide-react";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/logoo.png";
 import "../styles/navbar.css";
 
 export default function Navbar() {
-  const { darkMode, setDarkMode } = useContext(ThemeContext);
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Events", path: "/events" },
-    { name: "Categories", path: "/categories" },
     { name: "About", path: "/about" },
     { name: "FAQ", path: "/faq" },
   ];
@@ -48,19 +45,7 @@ export default function Navbar() {
         {/* Right Section */}
         <div className="navbar-actions">
 
-          {/* Theme Toggle */}
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="theme-toggle-btn"
-          >
-            {darkMode ? (
-              <Sun size={18} className="text-[#FDBA74]" />
-            ) : (
-              <Moon size={18} className="text-[#6D28D9]" />
-            )}
-          </button>
-
-          {/* Desktop Auth Buttons */}
+          {/* Desktop Auth */}
           <div className="auth-desktop">
             <Link to="/login" className="nav-login-btn">
               Log in

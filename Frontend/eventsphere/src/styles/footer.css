@@ -1,22 +1,15 @@
 /* =================================================
-   FOOTER
+   FOOTER – EVENTSPHERE COLOR SCHEME
 ================================================= */
 
 .footer-section {
-  @apply pt-14 sm:pt-20 
-         pb-8 sm:pb-10 
-         px-4 sm:px-6
-         bg-slate-200
-         text-gray-800
-         border-t border-slate-300
-         transition-colors duration-300;
-}
-
-/* Dark Mode */
-.dark .footer-section {
-  @apply bg-gray-950
-         text-gray-300
-         border-t border-gray-800;
+  padding-top: 70px;
+  padding-bottom: 35px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  background-color: #EED8D6; /* Soft Blush */ 
+  color: #3F3D56; /* Deep Slate */
+  border-top: 1px solid #9B96E5; /* Lavender accent */ 
 }
 
 /* ==============================================
@@ -24,10 +17,24 @@
 ============================================== */
 
 .footer-container {
-  @apply max-w-7xl mx-auto 
-         grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 
-         gap-10 sm:gap-12 md:gap-16 
-         mb-10 sm:mb-14;
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 60px;
+  margin-bottom: 50px;
+}
+
+@media (min-width: 640px) {
+  .footer-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .footer-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 /* ==============================================
@@ -35,15 +42,21 @@
 ============================================== */
 
 .footer-about {
-  @apply text-center sm:text-left;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .footer-about {
+    text-align: left;
+  }
 }
 
 .footer-about p {
-  @apply mt-5 sm:mt-6 
-         text-sm sm:text-base 
-         text-gray-600 dark:text-gray-400
-         leading-relaxed 
-         max-w-xs sm:max-w-sm mx-auto sm:mx-0;
+  margin-top: 22px;
+  font-size: 15px;
+  color: #6B6A80;
+  line-height: 1.7;
+  max-width: 320px;
 }
 
 /* ==============================================
@@ -52,43 +65,44 @@
 
 .footer-links h4,
 .footer-contact h4 {
-  @apply text-xs sm:text-sm 
-         font-semibold tracking-wider 
-         text-gray-900 dark:text-white 
-         mb-4 sm:mb-6
-         text-center sm:text-left;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 24px;
+  color: #3F3D56;
 }
 
 /* ==============================================
    LINKS
 ============================================== */
 
-.footer-links {
-  @apply text-center sm:text-left;
+.footer-links a {
+  display: block;
+  margin-bottom: 14px;
+  font-size: 15px;
+  color: #6B6A80;
+  transition: 0.3s ease;
 }
 
-.footer-links a {
-  @apply block mb-3 sm:mb-4 
-         text-sm sm:text-base
-         text-gray-600 dark:text-gray-400
-         hover:text-[#6D28D9]
-         transition duration-300;
+.footer-links a:hover {
+  color: #F08A6C; /* Coral */
 }
 
 /* ==============================================
    CONTACT
 ============================================== */
 
-.footer-contact {
-  @apply text-center sm:text-left;
+.footer-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  font-size: 15px;
+  color: #6B6A80;
 }
 
-.footer-contact-item {
-  @apply flex items-center 
-         justify-center sm:justify-start
-         gap-3 mb-4 sm:mb-5 
-         text-sm sm:text-base
-         text-gray-600 dark:text-gray-400;
+.footer-contact-item svg {
+  color: #9B96E5; /* Lavender icons */
 }
 
 /* ==============================================
@@ -96,26 +110,39 @@
 ============================================== */
 
 .footer-bottom {
-  @apply max-w-7xl mx-auto 
-         flex flex-col md:flex-row
-         justify-between items-center
-         gap-4 md:gap-0
-         border-t border-gray-300 dark:border-gray-800
-         pt-6
-         text-xs sm:text-sm 
-         text-center md:text-left
-         text-gray-600 dark:text-gray-400;
+  max-width: 1280px;
+  margin: 0 auto;
+  border-top: 1px solid #EED8D6;
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  font-size: 14px;
+  color: #6B6A80;
+}
+
+@media (min-width: 768px) {
+  .footer-bottom {
+    flex-direction: row;
+    justify-content: space-between;
+  }
 }
 
 .footer-socials {
-  @apply flex gap-5 sm:gap-6
-         text-gray-500 dark:text-gray-400;
+  display: flex;
+  gap: 20px;
 }
 
 .footer-socials svg {
-  @apply hover:text-[#6D28D9]
-         transition duration-300 
-         cursor-pointer;
+  color: #3F3D56;
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+
+.footer-socials svg:hover {
+  color: #F08A6C; /* Coral hover */
+  transform: translateY(-3px);
 }
 
 /* ==============================================
@@ -123,28 +150,17 @@
 ============================================== */
 
 .footer-logo-image {
-  @apply w-10 h-10 sm:w-14 sm:h-14 object-contain;
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
 }
 
 .brand-name {
-  @apply text-base sm:text-lg font-semibold 
-         text-gray-800 dark:text-white;
+  font-size: 18px;
+  font-weight: 700;
+  color: #3F3D56;
 }
 
 .brand-highlight {
-  @apply text-[#0D9488];
-}
-
-/* ==============================================
-   EXTRA SMALL DEVICES SAFETY
-============================================== */
-
-@media (max-width: 400px) {
-  .footer-container {
-    gap: 2rem;
-  }
-
-  .footer-about p {
-    font-size: 0.85rem;
-  }
+  color: #9B96E5; /* Lavender */
 }

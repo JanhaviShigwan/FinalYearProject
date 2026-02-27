@@ -1,5 +1,7 @@
 import React from "react";
 import "../styles/home.css";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import {
   CalendarCheck,
   Users,
@@ -22,6 +24,8 @@ import {
 
 export default function Home() {
   return (
+    <>
+      <Navbar/>
     <div className="home-wrapper">
 
       {/* ================= HERO ================= */}
@@ -186,42 +190,56 @@ export default function Home() {
           </p>
 
           <div className="timeline">
-            <div className="timeline-item">
-              <UserPlus size={20} />
-              <div className="timeline-card green-bg">
-                <span>STEP 01</span>
-                <h3>Create Account</h3>
-                <p>Sign up using your student credentials.</p>
-              </div>
-            </div>
 
-            <div className="timeline-item">
-              <Search size={20} />
-              <div className="timeline-card blush-bg">
-                <span>STEP 02</span>
-                <h3>Explore Events</h3>
-                <p>Browse trending events and view detailed information.</p>
-              </div>
-            </div>
+  <div className="timeline-item">
+    <div className="timeline-icon">
+      <UserPlus size={22} />
+    </div>
 
-            <div className="timeline-item">
-              <MousePointerClick size={20} />
-              <div className="timeline-card neutral-bg">
-                <span>STEP 03</span>
-                <h3>Register Instantly</h3>
-                <p>Reserve your seat with a single click.</p>
-              </div>
-            </div>
+    <div className="timeline-content green-bg">
+      <span>STEP 01</span>
+      <h3>Create Account</h3>
+      <p>Sign up using your student credentials.</p>
+    </div>
+  </div>
 
-            <div className="timeline-item">
-              <BarChart3 size={20} />
-              <div className="timeline-card light-bg">
-                <span>STEP 04</span>
-                <h3>Participate & Track</h3>
-                <p>Manage registrations from your dashboard.</p>
-              </div>
-            </div>
-          </div>
+  <div className="timeline-item">
+    <div className="timeline-icon">
+      <Search size={22} />
+    </div>
+
+    <div className="timeline-content blush-bg">
+      <span>STEP 02</span>
+      <h3>Explore Events</h3>
+      <p>Browse trending events and view detailed information.</p>
+    </div>
+  </div>
+
+  <div className="timeline-item">
+    <div className="timeline-icon">
+      <MousePointerClick size={22} />
+    </div>
+
+    <div className="timeline-content neutral-bg">
+      <span>STEP 03</span>
+      <h3>Register Instantly</h3>
+      <p>Reserve your seat with a single click.</p>
+    </div>
+  </div>
+
+  <div className="timeline-item">
+    <div className="timeline-icon">
+      <BarChart3 size={22} />
+    </div>
+
+    <div className="timeline-content light-bg">
+      <span>STEP 04</span>
+      <h3>Participate & Track</h3>
+      <p>Manage registrations from your dashboard.</p>
+    </div>
+  </div>
+
+</div>
         </div>
       </section>
 
@@ -270,5 +288,7 @@ export default function Home() {
       </section>
 
     </div>
+    <Footer/>
+    </>
   );
 }
