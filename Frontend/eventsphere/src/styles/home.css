@@ -6,11 +6,72 @@
 /* GLOBAL SETTINGS */
 /* ========================================= */
 
+/* ========================================= */
+/* ANIMATED GRID BACKGROUND */
+/* ========================================= */
+
 .home-wrapper {
+  position: relative;
   background-color: #F6F1EB; /* Warm Cream */
-  font-family: "Inter", sans-serif;
+  overflow-x: hidden;
 }
 
+
+/* Keep original grid style */
+.home-wrapper::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+
+  background-image:
+    linear-gradient(to right, rgba(155,150,229,0.14) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(155,150,229,0.14) 1px, transparent 1px);
+
+  background-size: 50px 50px;
+
+  transition: all 0.4s ease;
+}
+
+/* Glow layer (subtle, no layout change) */
+.home-wrapper::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+
+  background: radial-gradient(
+    circle at center,
+    rgba(155,150,229,0.20) 0%,
+    transparent 60%
+  );
+
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* Only activate on hover */
+.home-wrapper:hover::before {
+  animation: moveGrid 12s linear infinite;
+}
+
+.home-wrapper:hover::after {
+  opacity: 1;
+}
+
+/* Movement animation */
+@keyframes moveGrid {
+  from { transform: translate(0, 0); }
+  to { transform: translate(-50px, -50px); }
+}
+
+/* Keep content above */
+.home-wrapper > * {
+  position: relative;
+  z-index: 1;
+}
 .container {
   @apply max-w-7xl mx-auto px-16;
 }
@@ -517,6 +578,30 @@
   font-size: 15px;
   color: #6B6A80;
   line-height: 1.6;
+}
+
+/* ========================================= */
+/* HOW IT WORKS – HOVER EFFECT */
+/* ========================================= */
+
+.timeline-content {
+  transition: all 0.35s ease;
+  cursor: pointer;
+}
+
+.timeline-content:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.08);
+}
+
+/* Optional: Slight icon interaction */
+.timeline-item:hover .timeline-icon {
+  transform: scale(1.08);
+  box-shadow: 0 10px 25px rgba(155,150,229,0.25);
+}
+
+.timeline-icon {
+  transition: all 0.3s ease;
 }
 
 /* Background Variants */

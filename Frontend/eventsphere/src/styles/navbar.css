@@ -1,20 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap');
 /* ==============================================
    NAVBAR MAIN
 ============================================== */
 
+/* ==============================================
+   FLOATING NAVBAR
+============================================== */
+
 .navbar-main {
-  @apply sticky top-0 z-50 
-         backdrop-blur-md shadow-sm 
-         transition-all duration-300;
-  background-color: #FFFFFF;
-  border-bottom: 1px solid #9B96E5;
+  position: sticky;
+  top: 20px; /* space from top */
+  z-index: 50;
+
+  max-width: 1200px;
+  margin: 0 auto;
+
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+
+  border: 1px solid rgba(155, 150, 229, 0.15);
+
+  transition: all 0.3s ease;
 }
 
 .navbar-inner {
-  @apply max-w-7xl mx-auto 
-         px-4 sm:px-6 md:px-8 
-         py-4 
-         flex justify-between items-center;
+  padding: 16px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* ==============================================
@@ -30,7 +46,8 @@
 }
 
 .brand-text {
-  font-size: 20px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 22px;
   font-weight: 700;
   color: #3F3D56;
   letter-spacing: 0.5px;
@@ -38,6 +55,7 @@
 
 .brand-accent {
   color: #9B96E5; /* Lavender */
+  font-weight: 800;
 }
 
 /* ==============================================
@@ -50,7 +68,7 @@
 
 .nav-link {
   position: relative;
-  font-size: 15px;
+  font-size: 16px;
   color: #3F3D56;
   transition: all 0.3s ease;
 }
@@ -78,7 +96,7 @@
 }
 
 .nav-login-btn {
-  font-size: 14px;
+  font-size: 15px;
   color: #3F3D56;
   transition: 0.3s ease;
 }
@@ -88,10 +106,10 @@
 }
 
 .nav-register-btn {
-  padding: 8px 18px;
+  padding: 9px 20px;
   border-radius: 10px;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
   border: 1.5px solid #9B96E5;
   color: #9B96E5;
   transition: 0.3s ease;
@@ -131,7 +149,7 @@
 
 .mobile-link {
   font-weight: 500;
-  font-size: 15px;
+  font-size: 16px;
   color: #3F3D56;
   transition: 0.3s ease;
 }
