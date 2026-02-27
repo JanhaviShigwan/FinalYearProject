@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import "../styles/faq.css";
 
 export default function Faq() {
   const [openIndex, setOpenIndex] = useState(null);
@@ -55,55 +56,50 @@ export default function Faq() {
 
   return (
     <>
-    <Navbar/>
-    <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] to-[#EDE9FE] dark:from-gray-900 dark:to-gray-800 py-16 px-6">
-      
-      {/* Header */}
-      <div className="max-w-3xl mx-auto text-center mb-12">
-        <h1 className="text-4xl font-bold text-[#6D28D9] dark:text-purple-400 mb-4">
-          Frequently Asked Questions
-        </h1>
-        <p className="text-gray-600 dark:text-gray-300">
-          Find answers to common questions about EventSphere.
-        </p>
-      </div>
+      <Navbar />
 
-      {/* FAQ Section */}
-      <div className="max-w-3xl mx-auto space-y-4">
-        {faqs.map((faq, index) => (
-          <div
-            key={index}
-            className="bg-white dark:bg-gray-900 rounded-2xl shadow-md transition-all duration-300"
-          >
-            <button
-              onClick={() => toggleFAQ(index)}
-              className="w-full flex justify-between items-center p-5 text-left"
-            >
-              <span className="font-medium text-gray-800 dark:text-gray-200">
-                {faq.question}
-              </span>
-              <ChevronDown
-                className={`transition-transform duration-300 ${
-                  openIndex === index ? "rotate-180 text-[#0D9488]" : ""
-                }`}
-              />
-            </button>
+      <div className="faq-wrapper">
+        <div className="faq-header">
+          <h1 className="faq-title">Frequently Asked Questions</h1>
+          <p className="faq-subtitle">
+            Find answers to common questions about EventSphere.
+          </p>
+        </div>
 
+        <div className="faq-container">
+          {faqs.map((faq, index) => (
             <div
-              className={`overflow-hidden transition-all duration-300 ${
-                openIndex === index ? "max-h-40 px-5 pb-5" : "max-h-0"
+              key={index}
+              className={`faq-card ${
+                openIndex === index ? "faq-card-open" : ""
               }`}
             >
-              <p className="text-gray-600 dark:text-gray-400">
-                {faq.answer}
-              </p>
+              <button
+                onClick={() => toggleFAQ(index)}
+                className="faq-button"
+              >
+                <span className="faq-question">{faq.question}</span>
+
+                <ChevronDown
+                  className={`faq-icon ${
+                    openIndex === index ? "faq-icon-open" : ""
+                  }`}
+                />
+              </button>
+
+              <div
+                className={`faq-answer-wrapper ${
+                  openIndex === index ? "faq-answer-open" : ""
+                }`}
+              >
+                <p className="faq-answer">{faq.answer}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
-    </div>
-    <Footer/>
+      <Footer />
     </>
   );
 }

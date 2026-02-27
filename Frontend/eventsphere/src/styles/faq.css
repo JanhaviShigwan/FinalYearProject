@@ -1,0 +1,114 @@
+@tailwind components;
+
+@layer components {
+
+  /* ================= PAGE WRAPPER ================= */
+
+  .faq-wrapper {
+  @apply relative min-h-screen py-16 px-6 overflow-hidden
+         bg-gradient-to-br
+         from-[#FFFFFF] via-[#F6F1EB] to-[#F9F5FF]
+         dark:from-[#3F3D56] dark:to-[#2e2c42];
+}
+
+  /* ================= ANIMATED GRID BACKGROUND ================= */
+
+  .faq-wrapper::before {
+    content: "";
+    @apply absolute inset-0 pointer-events-none;
+    background-image:
+      linear-gradient(to right, rgba(155,150,229,0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(155,150,229,0.08) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: gridMove 20s linear infinite;
+  }
+
+  .dark .faq-wrapper::before {
+    background-image:
+      linear-gradient(to right, rgba(216,232,209,0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(216,232,209,0.08) 1px, transparent 1px);
+  }
+
+  @keyframes gridMove {
+    0% {
+      transform: translateY(0px);
+    }
+    100% {
+      transform: translateY(40px);
+    }
+  }
+
+  /* Make content appear above grid */
+  .faq-wrapper > * {
+    @apply relative z-10;
+  }
+
+  /* ================= HEADER ================= */
+
+  .faq-header {
+    @apply max-w-3xl mx-auto text-center mb-12;
+  }
+
+  .faq-title {
+    @apply text-4xl font-bold mb-4 text-[#9B96E5];
+  }
+
+  .faq-subtitle {
+    @apply text-[#3F3D56] dark:text-[#D8E8D1];
+  }
+
+  /* ================= FAQ CONTAINER ================= */
+
+  .faq-container {
+    @apply max-w-3xl mx-auto space-y-4;
+  }
+
+  /* ================= FAQ CARD ================= */
+
+  .faq-card {
+    @apply rounded-2xl transition-all duration-300
+           bg-white dark:bg-[#3F3D56]
+           shadow-md;
+  }
+
+  .faq-card-open {
+    @apply shadow-lg;
+    box-shadow: 0 0 20px rgba(155, 150, 229, 0.4);
+  }
+
+  /* ================= BUTTON ================= */
+
+  .faq-button {
+    @apply w-full flex justify-between items-center p-5 text-left;
+  }
+
+  .faq-question {
+    @apply font-medium text-[#3F3D56] dark:text-white;
+  }
+
+  /* ================= ICON ================= */
+
+  .faq-icon {
+    @apply transition-all duration-300 text-[#9B96E5];
+  }
+
+  .faq-icon-open {
+    @apply rotate-180 text-[#F08A6C];
+    filter: drop-shadow(0 0 6px rgba(240, 138, 108, 0.8));
+  }
+
+  /* ================= ANSWER ================= */
+
+  .faq-answer-wrapper {
+    @apply overflow-hidden transition-all duration-300 max-h-0;
+  }
+
+  .faq-answer-open {
+    @apply max-h-40 px-5 pb-5;
+  }
+
+  .faq-answer {
+    @apply text-[#3F3D56] dark:text-[#D8E8D1];
+  }
+
+}
