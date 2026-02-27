@@ -1,325 +1,274 @@
-import { motion } from "framer-motion";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import AnimatedSection from "../components/AnimatedSection";
-import { UserPlus, Search, Ticket, PartyPopper } from "lucide-react";
-import hackathon from "../assets/hackathon.jpg";
-import cultural from "../assets/cultural.jpg";
-import tech from "../assets/tech.jpg";
-import "../styles/home.css"
+import React from "react";
+import "../styles/home.css";
+import {
+  CalendarCheck,
+  Users,
+  Code,
+  Music,
+  Trophy,
+  Lightbulb,
+  Cpu,
+  CalendarDays,
+  MapPin,
+  UserPlus,
+  Search,
+  MousePointerClick,
+  BarChart3,
+  LayoutDashboard,
+  Zap,
+  Bell,
+  ShieldCheck,
+} from "lucide-react";
 
-function Home() {
-  const events = [
-      {
-        title: "Hackathon 2026",
-        date: "Mar 15",
-        image: hackathon,
-      },
-      {
-        title: "Cultural Fest",
-        date: "Apr 02",
-        image: cultural,
-      },
-      {
-        title: "Tech Summit",
-        date: "May 10",
-        image: tech,
-      },
-    ];
-
-     const trendingEvents = [
-    {
-      title: "Code Clash 2026",
-      date: "March 15, 2026",
-      location: "MIT Auditorium",
-      registered: "342 registered",
-      image:
-        "https://images.unsplash.com/photo-1518770660439-4636190af475",
-    },
-    {
-      title: "Cultural Nite",
-      date: "April 2, 2026",
-      location: "Central Arena",
-      registered: "578 registered",
-      image:
-        "https://ln.run/nku0G",
-    },
-    {
-      title: "AI Workshop",
-      date: "April 18, 2026",
-      location: "Tech Lab 3",
-      registered: "215 registered",
-      image:
-        "https://images.unsplash.com/photo-1531482615713-2afd69097998",
-    },
-    {
-      title: "Sports Fest",
-      date: "May 5, 2026",
-      location: "Main Stadium",
-      registered: "890 registered",
-      image:
-        "https://images.unsplash.com/photo-1517649763962-0c623066013b",
-    },
-  ];
-
-const categories = [
-    {
-      title: "Technical",
-      description: "Coding contests & tech talks",
-      icon: "💻",
-    },
-    {
-      title: "Cultural",
-      description: "Dance, music & art events",
-      icon: "🎵",
-    },
-    {
-      title: "Sports",
-      description: "Tournaments & fitness challenges",
-      icon: "🏆",
-    },
-    {
-      title: "Workshops",
-      description: "Hands-on learning sessions",
-      icon: "🛠",
-    },
-    {
-      title: "Hackathons",
-      description: "Build, innovate & compete",
-      icon: "🚀",
-    },
-  ];
-
-const steps = [
-    {
-      icon: <UserPlus size={28} />,
-      title: "Register",
-      desc: "Create your free account in seconds",
-    },
-    {
-      icon: <Search size={28} />,
-      title: "Browse Events",
-      desc: "Explore events by category or college",
-    },
-    {
-      icon: <Ticket size={28} />,
-      title: "Book Ticket",
-      desc: "Reserve your spot with one click",
-    },
-    {
-      icon: <PartyPopper size={28} />,
-      title: "Attend & Enjoy",
-      desc: "Show up and have a great time",
-    },
-  ];
-
+export default function Home() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
-      className="relative bg-[#F3F4F6] dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300 overflow-hidden"
-    >
+    <div className="home-wrapper">
 
-      <div className="absolute inset-0 bg-gradient-to-r 
-        from-[#6D28D9]/10 
-        via-[#0D9488]/10 
-        to-[#FDBA74]/10
-        dark:from-[#6D28D9]/20 
-        dark:via-[#0D9488]/20 
-        dark:to-[#FDBA74]/20
-        blur-3xl pointer-events-none">
-    </div>
+      {/* ================= HERO ================= */}
+      <section className="hero-section">
+        <div className="container hero-container">
+          <div className="hero-left">
+            <h1>
+              Discover, Register <br />
+              & Experience <br />
+              Campus Events <br />
+              <span className="highlight">Seamlessly</span>
+            </h1>
 
-    {/* Content Layer */}
-    <div className="relative z-10">
-      <Navbar />
+            <p>
+              Explore trending events, manage registrations effortlessly, and
+              stay connected with your campus community.
+            </p>
 
-      <AnimatedSection>
-        <section className="hero-section">
-      <motion.div
-        className="hero-container"
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
+            <button className="primary-btn">Explore Events →</button>
+          </div>
 
-        {/* Trusted Badge */}
-        <div className="hero-badge">
-          ✨ Trusted by 20+ colleges nationwide
-        </div>
-
-        {/* Main Heading */}
-        <h1 className="hero-title">
-          Simplifying College Events,{" "}
-          <span className="hero-gradient">
-            One Click Away
-          </span>
-      </h1>
-
-        {/* Subtitle */}
-        <p className="hero-subtitle">
-          Discover exciting events, connect with fellow students, and manage
-          everything from registrations to attendance — all in one powerful platform.
-        </p>
-
-        {/* Buttons */}
-        <div className="hero-buttons">
-          <button className="hero-btn-primary">
-            Explore Events →
-          </button>
-        </div>
-
-      </motion.div>
-        </section>
-      </AnimatedSection>
-
-      <AnimatedSection delay={0.1}>
-       <section className="event-preview-section">
-      <div className="event-preview-container">
-        {events.map((event, index) => (
-          <div key={index} className="event-preview-card">
-            <div className="event-preview-image-wrapper">
-              <img
-                src={event.image}
-                alt={event.title}
-                className="event-preview-image"
-              />
+          <div className="hero-right">
+            <div className="stat-card green-bg">
+              <CalendarCheck size={20} />
+              <div>
+                <h3>120+</h3>
+                <p>Events Hosted</p>
+              </div>
             </div>
 
-            <div className="event-preview-content">
-              <h3>{event.title}</h3>
-              <p>{event.date}</p>
+            <div className="stat-card blush-bg">
+              <Users size={20} />
+              <div>
+                <h3>3,000+</h3>
+                <p>Students Registered</p>
+              </div>
             </div>
           </div>
-        ))}
-      </div>
-        </section>
-      </AnimatedSection>
+        </div>
+      </section>
 
-      <AnimatedSection delay={0.2}>
-        <section className="trending-section">
-      <div className="trending-container">
+      {/* ================= BROWSE ================= */}
+      <section className="section">
+        <div className="container center-text">
+          <h2>Browse Categories</h2>
+          <p className="subtitle">
+            Find events that match your interests and passions.
+          </p>
 
-        <h2 className="trending-title">
-          Trending <span className="trending-gradient">Events</span>
-        </h2>
-
-        <p className="trending-subtitle">
-          Don't miss out on the most popular events happening now
-        </p>
-
-        <div className="trending-grid">
-          {trendingEvents.map((event, index) => (
-            <div key={index} className="trending-card">
-
-              <div className="trending-image-wrapper">
-                <img
-                  src={event.image}
-                  alt={event.title}
-                  className="trending-image"
-                />
-              </div>
-
-              <div className="trending-content">
-                <h3>{event.title}</h3>
-
-                <div className="trending-info">
-                  <p>📅 {event.date}</p>
-                  <p>📍 {event.location}</p>
-                  <p>👥 {event.registered}</p>
-                </div>
-
-                <button className="trending-btn">
-                  Register Now
-                </button>
-              </div>
-
+          <div className="categories-grid">
+            <div className="category-card tech">
+              <Code size={24} />
+              <h3>Technical</h3>
+              <p>Coding contests & innovation</p>
             </div>
-          ))}
-        </div>
 
-      </div>
-        </section>
-      </AnimatedSection>
-
-      <AnimatedSection delay={0.3}>
-        <section className="categories-section">
-      <div className="categories-container">
-
-        <h2 className="categories-title">
-          Browse <span className="categories-gradient">Categories</span>
-        </h2>
-
-        <p className="categories-subtitle">
-          Find events that match your interests and passions
-        </p>
-
-        <div className="categories-grid">
-          {categories.map((cat, index) => (
-            <div key={index} className="category-card">
-              <div className="category-icon">
-                {cat.icon}
-              </div>
-
-              <h3>{cat.title}</h3>
-              <p>{cat.description}</p>
+            <div className="category-card cultural">
+              <Music size={24} />
+              <h3>Cultural</h3>
+              <p>Dance, music & creativity</p>
             </div>
-          ))}
+
+            <div className="category-card sports">
+              <Trophy size={24} />
+              <h3>Sports</h3>
+              <p>Competition & fitness</p>
+            </div>
+
+            <div className="category-card neutral">
+              <Lightbulb size={24} />
+              <h3>Workshops</h3>
+              <p>Skill development sessions</p>
+            </div>
+
+            <div className="category-card hack">
+              <Cpu size={24} />
+              <h3>Hackathons</h3>
+              <p>Build & compete</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= TRENDING ================= */}
+      <section className="trending-section">
+  <div className="container">
+    <div className="trending-header">
+      <h2>Trending Events</h2>
+      <p>Explore the most popular events happening on campus.</p>
+    </div>
+
+    {/* The main grid container */}
+    <div className="trending-grid-layout">
+      
+      {/* LEFT SIDE: Large Hackathon Card */}
+      <div className="event-card large-card">
+        <div>
+          <span className="pill technical-pill">Technical</span>
+          <h3>Hackathon 2026</h3>
+          <p className="event-desc">
+            24-hour innovation challenge for developers to build solutions for real-world problems.
+          </p>
+        </div>
+
+        <div className="event-bottom">
+          <div className="event-meta">
+            <div><CalendarDays size={18} /> <span>25 March 2026</span></div>
+            <div><MapPin size={18} /> <span>Main Auditorium</span></div>
+            <div><Users size={18} /> <span>180 Registered</span></div>
+          </div>
+          <button className="register-now-btn full-btn">Register Now</button>
+        </div>
+      </div>
+
+      {/* RIGHT SIDE: Two Stacked Cards */}
+      <div className="right-stack">
+        
+        <div className="event-card small-card">
+          <div>
+            <span className="pill cultural-pill">Cultural</span>
+            <h3>Cultural Fest</h3>
+            <p className="event-desc">Celebration of art and music.</p>
+          </div>
+          <div className="event-bottom">
+            <div className="event-meta">
+              <div><CalendarDays size={16} /> <span>10 April 2026</span></div>
+              <div><MapPin size={18} /> <span>Amphitheatre</span></div>
+              <div><Users size={16} /> <span>320 Registered</span></div>
+            </div>
+            <button className="register-now-btn full-btn">Register Now</button>
+          </div>
+        </div>
+
+        <div className="event-card small-card">
+          <div>
+            <span className="pill workshop-pill">Workshop</span>
+            <h3>AI Workshop</h3>
+            <p className="event-desc">Hands-on ML fundamentals.</p>
+          </div>
+          <div className="event-bottom">
+            <div className="event-meta">
+              <div><CalendarDays size={16} /> <span>5 April 2026</span></div>
+              <div><MapPin size={18} /> <span>CS Lab Block B</span></div>
+              <div><Users size={16} /> <span>95 Registered</span></div>
+            </div>
+            <button className="register-now-btn full-btn">Register Now</button>
+          </div>
         </div>
 
       </div>
-    </section>
-      </AnimatedSection>
-
-      <AnimatedSection delay={0.5}>
-        <section className="how-section">
-      <div className="how-container">
-
-        <h2 className="how-title">
-          How It <span className="how-gradient">Works</span>
-        </h2>
-
-        <p className="how-subtitle">
-          Get started in four simple steps
-        </p>
-
-        {/* Timeline */}
-        <div className="how-timeline">
-          <div className="how-line"></div>
-
-          {steps.map((step, index) => (
-            <motion.div
-              key={index}
-              className="how-step"
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.2 }}
-              viewport={{ once: true }}
-            >
-              <div className="how-circle">
-                <div className="how-number">{index + 1}</div>
-                {step.icon}
-              </div>
-
-              <h3>{step.title}</h3>
-              <p>{step.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-
-      </div>
-    </section>
-      </AnimatedSection>
-
-      <AnimatedSection delay={0.6}>
-        <Footer />
-      </AnimatedSection>
-
+    </div>
   </div>
+</section>
 
-    </motion.div>
+
+      {/* ================= HOW IT WORKS ================= */}
+      <section className="section">
+        <div className="container center-text">
+          <h2>How It Works</h2>
+          <p className="subtitle">
+            Get started in four simple steps and never miss an event again.
+          </p>
+
+          <div className="timeline">
+            <div className="timeline-item">
+              <UserPlus size={20} />
+              <div className="timeline-card green-bg">
+                <span>STEP 01</span>
+                <h3>Create Account</h3>
+                <p>Sign up using your student credentials.</p>
+              </div>
+            </div>
+
+            <div className="timeline-item">
+              <Search size={20} />
+              <div className="timeline-card blush-bg">
+                <span>STEP 02</span>
+                <h3>Explore Events</h3>
+                <p>Browse trending events and view detailed information.</p>
+              </div>
+            </div>
+
+            <div className="timeline-item">
+              <MousePointerClick size={20} />
+              <div className="timeline-card neutral-bg">
+                <span>STEP 03</span>
+                <h3>Register Instantly</h3>
+                <p>Reserve your seat with a single click.</p>
+              </div>
+            </div>
+
+            <div className="timeline-item">
+              <BarChart3 size={20} />
+              <div className="timeline-card light-bg">
+                <span>STEP 04</span>
+                <h3>Participate & Track</h3>
+                <p>Manage registrations from your dashboard.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= WHY STUDENTS ================= */}
+      <section className="section">
+        <div className="container center-text">
+          <h2>Why Students Prefer Our Platform</h2>
+          <p className="subtitle">
+            Everything you need to make the most of your campus experience.
+          </p>
+
+          <div className="why-grid">
+            <div className="why-card purple-top">
+              <LayoutDashboard size={20} />
+              <div>
+                <h3>Smart Dashboard</h3>
+                <p>Access all your event registrations and schedules in one place.</p>
+              </div>
+            </div>
+
+            <div className="why-card coral-top">
+              <Zap size={20} />
+              <div>
+                <h3>Seamless Registration</h3>
+                <p>Register quickly without complicated forms.</p>
+              </div>
+            </div>
+
+            <div className="why-card green-top">
+              <Bell size={20} />
+              <div>
+                <h3>Real-Time Updates</h3>
+                <p>Stay informed with reminders and instant notifications.</p>
+              </div>
+            </div>
+
+            <div className="why-card blush-top">
+              <ShieldCheck size={20} />
+              <div>
+                <h3>Secure & Reliable</h3>
+                <p>Built with modern technology ensuring data safety.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
   );
 }
-
-export default Home;
