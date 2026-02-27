@@ -4,47 +4,67 @@
 
 @layer components {
 
-  /* ===== Wrapper ===== */
+  /* ===== Wrapper (LIGHT BACKGROUND) ===== */
   .forgot-wrapper {
     @apply relative min-h-screen flex items-center justify-center overflow-hidden px-4 py-10;
-    background: linear-gradient(
-      135deg,
-      #6D28D9 0%,
-      #0D9488 50%,
-      #FDBA74 100%
-    );
+    background-color: #F6F1EB; /* Warm Cream */
   }
 
-  .dark .forgot-wrapper {
-    background: linear-gradient(
-      135deg,
-      #1F2937 0%,
-      #111827 50%,
-      #000000 100%
-    );
+  /* ===== Animated Moving Grid ===== */
+  .forgot-wrapper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+
+    background-image:
+      linear-gradient(rgba(155,150,229,0.12) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(155,150,229,0.12) 1px, transparent 1px);
+
+    background-size: 60px 60px;
+    animation: gridMove 20s linear infinite;
   }
 
-  /* ===== Floating Blobs (smaller on mobile) ===== */
+  @keyframes gridMove {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 60px 60px;
+    }
+  }
+
+  /* ===== Floating Blobs ===== */
   .forgot-blob {
     @apply absolute rounded-full blur-3xl opacity-30 animate-pulse;
   }
 
   .blob-1 {
-    @apply w-40 h-40 sm:w-72 sm:h-72 bg-[#6D28D9] top-0 left-0;
+    @apply w-40 h-40 sm:w-72 sm:h-72;
+    background: #9B96E5; /* Lavender */
+    top: 0;
+    left: 0;
   }
 
   .blob-2 {
-    @apply w-40 h-40 sm:w-72 sm:h-72 bg-[#0D9488] bottom-0 right-0;
+    @apply w-40 h-40 sm:w-72 sm:h-72;
+    background: #F08A6C; /* Coral */
+    bottom: 0;
+    right: 0;
   }
 
   .blob-3 {
-    @apply hidden sm:block w-60 h-60 bg-[#FDBA74] top-1/2 left-1/3;
+    @apply hidden sm:block w-60 h-60;
+    background: #D8E8D1; /* Pastel Green */
+    top: 50%;
+    left: 33%;
   }
 
   /* ===== Card ===== */
   .forgot-card {
     @apply relative z-10 w-full max-w-md p-6 sm:p-8 rounded-2xl shadow-2xl;
-    @apply bg-white dark:bg-gray-800;
+    background: #FFFFFF;
     @apply transition-all duration-300;
   }
 
@@ -55,11 +75,12 @@
   /* ===== Typography ===== */
   .forgot-title {
     @apply text-2xl sm:text-3xl font-bold text-center mb-2;
-    @apply text-[#6D28D9] dark:text-white;
+    color: #3F3D56; /* Deep Slate */
   }
 
   .forgot-subtitle {
-    @apply text-center text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-6;
+    @apply text-center text-sm sm:text-base mb-6;
+    color: #3F3D56;
   }
 
   /* ===== Form ===== */
@@ -68,37 +89,50 @@
   }
 
   .form-group label {
-    @apply block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300;
+    @apply block text-sm font-medium mb-2;
+    color: #3F3D56;
   }
 
   .input-box {
     @apply flex items-center border rounded-lg px-3 py-2;
-    @apply border-gray-300 dark:border-gray-600;
-    @apply focus-within:ring-2 focus-within:ring-[#6D28D9];
+    border-color: #EED8D6; /* Soft Blush */
+    @apply focus-within:ring-2;
+    --tw-ring-color: #9B96E5; /* Lavender */
   }
 
   .input-box input {
     @apply w-full bg-transparent outline-none text-sm;
-    @apply text-gray-800 dark:text-white;
+    color: #3F3D56;
   }
 
   .input-icon {
-    @apply text-gray-400 mr-2;
+    @apply mr-2;
+    color: #9B96E5;
   }
 
   /* ===== Button ===== */
   .forgot-btn {
-    @apply w-full py-3 rounded-lg font-semibold text-white text-sm sm:text-base;
-    @apply bg-[#6D28D9] hover:bg-purple-800 transition duration-300;
+    @apply w-full py-3 rounded-lg font-semibold text-white text-sm sm:text-base transition duration-300;
+    background: linear-gradient(90deg, #9B96E5, #F08A6C);
+  }
+
+  .forgot-btn:hover {
+    opacity: 0.9;
   }
 
   /* ===== Back to Login ===== */
   .back-login-text {
-    @apply text-center text-xs sm:text-sm text-gray-600 dark:text-gray-400;
+    @apply text-center text-xs sm:text-sm;
+    color: #3F3D56;
   }
 
   .back-login-text a {
-    @apply text-[#0D9488] font-medium hover:underline;
+    color: #F08A6C; /* Coral */
+    font-weight: 500;
+  }
+
+  .back-login-text a:hover {
+    text-decoration: underline;
   }
 
 }

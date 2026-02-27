@@ -6,7 +6,12 @@
 
   .auth-wrapper {
     @apply relative min-h-screen flex items-center justify-center px-6 py-12
-           bg-gray-100 dark:bg-[#0f172a] overflow-hidden;
+           overflow-hidden;
+    background-color: #F6F1EB; /* Warm Cream */
+  }
+
+  .dark .auth-wrapper {
+    background-color: #3F3D56; /* Deep Slate */
   }
 
   /* ================= MAIN CARD ================= */
@@ -35,25 +40,31 @@
 
   /* ================= LOGIN LEFT PANEL ================= */
 
-.auth-left {
-  @apply w-1/2 bg-white dark:bg-[#111827]
-         px-16 py-16 flex items-center;
+  .auth-left {
+    @apply w-1/2 px-16 py-16 flex items-center;
+    background-color: #FFFFFF;
 
-  border-top-left-radius: 40px;
-  border-bottom-left-radius: 40px;
-}
+    border-top-left-radius: 40px;
+    border-bottom-left-radius: 40px;
+  }
 
-  /* Overlay */
+  .dark .auth-left {
+    background-color: #3F3D56;
+  }
+
+  /* ================= OVERLAY ================= */
+
   .auth-overlay {
     @apply absolute inset-0;
     background: linear-gradient(
       135deg,
-      rgba(109,40,217,0.55),
-      rgba(13,148,136,0.45)
+      rgba(155,150,229,0.75),  /* Lavender */
+      rgba(240,138,108,0.65)   /* Coral */
     );
   }
 
-  /* Image Content */
+  /* ================= IMAGE CONTENT ================= */
+
   .auth-image-content {
     @apply relative z-10 text-center max-w-lg px-8 text-white
            flex flex-col items-center justify-center;
@@ -79,7 +90,7 @@
   }
 
   .feature-item svg {
-    @apply text-[#FDBA74];
+    color: #F08A6C; /* Coral */
   }
 
   .feature-item:hover {
@@ -90,61 +101,81 @@
   /* ================= RIGHT PANEL (FORM) ================= */
 
   .auth-form-right {
-    @apply w-1/2 bg-white dark:bg-[#111827]
-           px-16 py-16 flex items-center;
+    @apply w-1/2 px-16 py-16 flex items-center;
+    background-color: #FFFFFF;
     
     border-top-right-radius: 40px;
     border-bottom-right-radius: 40px;
   }
 
+  .dark .auth-form-right {
+    background-color: #3F3D56;
+  }
+
   /* ================= LOGIN RIGHT PANEL ================= */
 
-.auth-right {
-  @apply w-1/2 relative flex items-center justify-center overflow-hidden;
+  .auth-right {
+    @apply w-1/2 relative flex items-center justify-center overflow-hidden;
 
-  background-image: url("https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=2000&auto=format&fit=crop");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+    background-image: url("https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=2000&auto=format&fit=crop");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 
-  border-top-right-radius: 40px;
-  border-bottom-right-radius: 40px;
-}
+    border-top-right-radius: 40px;
+    border-bottom-right-radius: 40px;
+  }
 
   .auth-form-card {
     @apply w-full max-w-md mx-auto;
   }
 
   .auth-title {
-    @apply text-3xl font-bold mb-8
-           text-[#6D28D9] dark:text-white;
+    @apply text-3xl font-bold mb-8;
+    color: #3F3D56; /* Deep Slate */
+  }
+
+  .dark .auth-title {
+    color: #FFFFFF;
   }
 
   .auth-error {
-    @apply text-sm text-red-500 mb-4;
+    @apply text-sm mb-4;
+    color: #F08A6C; /* Coral */
   }
 
   /* ================= INPUT ================= */
 
   .input-box {
     @apply flex items-center
-           border border-gray-300 dark:border-gray-600
            rounded-full px-5 py-3
-           bg-white dark:bg-gray-800
            transition-all duration-200;
+    border: 1px solid #EED8D6; /* Soft Blush */
+    background-color: #FFFFFF;
+  }
+
+  .dark .input-box {
+    background-color: #3F3D56;
+    border: 1px solid #9B96E5;
   }
 
   .input-box:focus-within {
-    @apply ring-2 ring-[#6D28D9] border-transparent;
+    @apply ring-2 border-transparent;
+    ring-color: #9B96E5; /* Lavender */
   }
 
   .input-box input {
-    @apply w-full outline-none bg-transparent text-sm
-           text-gray-800 dark:text-white;
+    @apply w-full outline-none bg-transparent text-sm;
+    color: #3F3D56;
+  }
+
+  .dark .input-box input {
+    color: #FFFFFF;
   }
 
   .input-icon {
-    @apply text-gray-400 mr-3;
+    @apply mr-3;
+    color: #9B96E5; /* Lavender */
   }
 
   /* ================= LINKS ================= */
@@ -154,15 +185,29 @@
   }
 
   .forgot-link {
-    @apply text-[#0D9488] hover:underline;
+    color: #F08A6C; /* Coral */
+  }
+
+  .forgot-link:hover {
+    text-decoration: underline;
   }
 
   .register-text {
-    @apply text-sm text-gray-600 dark:text-gray-400 mt-6;
+    @apply text-sm mt-6;
+    color: #3F3D56;
+  }
+
+  .dark .register-text {
+    color: #EED8D6;
   }
 
   .register-text a {
-    @apply text-[#6D28D9] hover:underline ml-1;
+    color: #9B96E5; /* Lavender */
+    margin-left: 4px;
+  }
+
+  .register-text a:hover {
+    text-decoration: underline;
   }
 
   /* ================= BUTTON ================= */
@@ -170,7 +215,7 @@
   .auth-btn {
     @apply w-full py-3 rounded-full text-white font-semibold
            transition-all duration-300;
-    background: linear-gradient(90deg, #6D28D9, #0D9488);
+    background: linear-gradient(90deg, #9B96E5, #F08A6C);
   }
 
   .auth-btn:hover {
@@ -190,7 +235,7 @@
     height: 400px;
     top: 10%;
     left: 5%;
-    background: radial-gradient(circle, #6D28D9, transparent 70%);
+    background: radial-gradient(circle, #9B96E5, transparent 70%);
   }
 
   .blob-2 {
@@ -198,16 +243,16 @@
     height: 350px;
     bottom: 10%;
     right: 8%;
-    background: radial-gradient(circle, #0D9488, transparent 70%);
+    background: radial-gradient(circle, #F08A6C, transparent 70%);
   }
 
   .dark .blob-1 {
-    background: radial-gradient(circle, #7c3aed, transparent 70%);
+    background: radial-gradient(circle, #9B96E5, transparent 70%);
     opacity: 0.5;
   }
 
   .dark .blob-2 {
-    background: radial-gradient(circle, #14b8a6, transparent 70%);
+    background: radial-gradient(circle, #F08A6C, transparent 70%);
     opacity: 0.5;
   }
 
@@ -219,61 +264,87 @@
 
   /* ================= MOBILE ================= */
 
-  /* ================= MOBILE FIX (FOR BOTH LOGIN & REGISTER) ================= */
+  @media (max-width: 1024px) {
 
-@media (max-width: 1024px) {
+    .auth-main-card {
+      @apply flex-col;
+      min-height: auto;
+      border-radius: 30px;
+    }
 
-  .auth-main-card {
-    @apply flex-col;
-    min-height: auto;
-    border-radius: 30px;
+    .auth-image-left,
+    .auth-right {
+      display: none !important;
+    }
+
+    .auth-left,
+    .auth-form-right {
+      @apply w-full px-6 py-10;
+      border-radius: 30px;
+    }
+
+    .auth-title {
+      @apply text-2xl text-center mb-6;
+    }
+
+    .auth-form-card {
+      @apply max-w-full;
+    }
+
+    .input-box {
+      @apply px-4 py-2.5;
+    }
+
+    .auth-btn {
+      @apply py-2.5 text-sm;
+    }
+
+    .register-text {
+      @apply text-center;
+    }
+
+    .blob-1 {
+      width: 220px;
+      height: 220px;
+    }
+
+    .blob-2 {
+      width: 200px;
+      height: 200px;
+    }
+
   }
 
-  /* HIDE IMAGE PANEL (LOGIN + REGISTER) */
-  .auth-image-left,
-  .auth-right {
-    display: none !important;
-  }
+/* ================= ANIMATED GRID BACKGROUND ================= */
 
-  /* FORM FULL WIDTH */
-  .auth-left,
-  .auth-form-right {
-    @apply w-full px-6 py-10;
-    border-radius: 30px;
-  }
+.animated-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
 
-  .auth-title {
-    @apply text-2xl text-center mb-6;
-  }
+  background-image:
+    linear-gradient(rgba(155,150,229,0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(155,150,229,0.15) 1px, transparent 1px);
 
-  .auth-form-card {
-    @apply max-w-full;
-  }
+  background-size: 60px 60px;
 
-  .input-box {
-    @apply px-4 py-2.5;
-  }
-
-  .auth-btn {
-    @apply py-2.5 text-sm;
-  }
-
-  .register-text {
-    @apply text-center;
-  }
-
-  /* Optional: Slightly smaller blobs */
-  .blob-1 {
-    width: 220px;
-    height: 220px;
-  }
-
-  .blob-2 {
-    width: 200px;
-    height: 200px;
-  }
-
+  animation: gridMove 18s linear infinite;
 }
 
-  
+.dark .animated-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+}
+
+@keyframes gridMove {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 60px 60px;
+  }
+}
+
 }

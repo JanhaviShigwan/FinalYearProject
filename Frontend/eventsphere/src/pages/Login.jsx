@@ -59,6 +59,9 @@ export default function Login() {
         <div className="blob blob-1"></div>
         <div className="blob blob-2"></div>
 
+         {/* NEW GRID */}
+        <div className="animated-grid"></div>
+
         <div className="auth-main-card">
 
           {/* LEFT SIDE - LOGIN */}
