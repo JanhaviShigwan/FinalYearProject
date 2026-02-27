@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap');
 /* =================================================
    FOOTER – EVENTSPHERE COLOR SCHEME
 ================================================= */
@@ -53,7 +54,7 @@
 
 .footer-about p {
   margin-top: 22px;
-  font-size: 15px;
+  font-size: 16px;
   color: #6B6A80;
   line-height: 1.7;
   max-width: 320px;
@@ -65,9 +66,9 @@
 
 .footer-links h4,
 .footer-contact h4 {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   margin-bottom: 24px;
   color: #3F3D56;
 }
@@ -79,7 +80,7 @@
 .footer-links a {
   display: block;
   margin-bottom: 14px;
-  font-size: 15px;
+  font-size: 16px;
   color: #6B6A80;
   transition: 0.3s ease;
 }
@@ -97,7 +98,7 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 18px;
-  font-size: 15px;
+  font-size: 16px;
   color: #6B6A80;
 }
 
@@ -118,7 +119,7 @@
   flex-direction: column;
   gap: 15px;
   align-items: center;
-  font-size: 14px;
+  font-size: 15px;
   color: #6B6A80;
 }
 
@@ -156,7 +157,8 @@
 }
 
 .brand-name {
-  font-size: 18px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 20px;
   font-weight: 700;
   color: #3F3D56;
 }
