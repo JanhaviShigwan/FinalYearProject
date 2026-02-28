@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import About from "./pages/AboutUs";
 import Faq from "./pages/FAQ";
 import ForgotPassword from "./pages/forgotpass";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/events" element={<Events />} />
         <Route path="/events/:id" element={<EventDetails />} />
+        <Route path="/dashboard" element={<Dashboard/>} />
         <Route path="/about" element={<About />} />
         <Route path="/faq" element={<Faq />} />
       </Routes>

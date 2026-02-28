@@ -347,4 +347,9 @@
   }
 }
 
+.auth-success {
+  color: #16a34a;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
 }

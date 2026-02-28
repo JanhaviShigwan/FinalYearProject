@@ -9,12 +9,16 @@ import {
   Users,
   Ticket,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/auth.css";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const API_URL = "http://localhost:5000";
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -22,6 +26,7 @@ export default function Login() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const emailRegex = /^[a-zA-Z0-9._%+-]+@somaiya\.edu$/;
 
@@ -32,7 +37,7 @@ export default function Login() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -46,7 +51,29 @@ export default function Login() {
       return;
     }
 
-    console.log("Login Success:", formData);
+    try {
+      setLoading(true);
+
+      const res = await axios.post(`${API_URL}/api/auth/login`, {
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password,
+      });
+
+      // Store logged-in student
+      localStorage.setItem(
+        "eventSphereStudent",
+        JSON.stringify(res.data.student)
+      );
+
+      navigate("/dashboard");
+
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Invalid email or password."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -54,12 +81,8 @@ export default function Login() {
       <Navbar />
 
       <div className="auth-wrapper">
-
-        {/* BLOBS */}
         <div className="blob blob-1"></div>
         <div className="blob blob-2"></div>
-
-         {/* NEW GRID */}
         <div className="animated-grid"></div>
 
         <div className="auth-main-card">
@@ -74,9 +97,7 @@ export default function Login() {
             >
               <h2 className="auth-title">Sign In</h2>
 
-              {error && (
-                <p className="auth-error">{error}</p>
-              )}
+              {error && <p className="auth-error">{error}</p>}
 
               <form onSubmit={handleSubmit} className="space-y-6">
 
@@ -88,6 +109,7 @@ export default function Login() {
                     placeholder="Somaiya Email"
                     value={formData.email}
                     onChange={handleChange}
+                    required
                   />
                 </div>
 
@@ -99,6 +121,7 @@ export default function Login() {
                     placeholder="Password"
                     value={formData.password}
                     onChange={handleChange}
+                    required
                   />
                   <div
                     className="cursor-pointer"
@@ -114,8 +137,8 @@ export default function Login() {
                   </Link>
                 </div>
 
-                <button type="submit" className="auth-btn">
-                  Sign In
+                <button type="submit" className="auth-btn" disabled={loading}>
+                  {loading ? "Signing In..." : "Sign In"}
                 </button>
 
                 <p className="register-text">
