@@ -1,86 +1,196 @@
-import Navbar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Search,
+  ClipboardList,
+  Calendar,
+  BarChart3,
+  Megaphone,
+  Settings,
+  Bell,
+  MessageSquare,
+} from "lucide-react";
+
 import Footer from "../components/Footer";
 import "../styles/dashboard.css";
 
 export default function Dashboard() {
-  // Temporary static student data (later connect with backend)
+  const navigate = useNavigate();
+
   const student = {
     name: "Cherry Sharma",
-    email: "cherry@example.com",
-    rollNo: "CS2025001",
     department: "Computer Science",
-    year: "3rd Year",
-    phone: "+91 9876543210",
-    profilePic: "https://i.pravatar.cc/150?img=5",
+    role: "Student",
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/");
   };
 
   return (
     <>
-      <Navbar />
+      <div className="dashboard-layout">
 
-      <div className="dashboard-container">
-        <h1 className="dashboard-title">Student Dashboard</h1>
+        {/* Sidebar */}
+        <aside className="sidebar">
+          <div>
+            {/* Logo */}
+            <div className="sidebar-logo">
+              <div className="logo-icon">✨</div>
+              <h2>
+                Event<span>Sphere</span>
+              </h2>
+            </div>
 
-        <div className="dashboard-grid">
+            {/* Menu */}
+            <nav className="sidebar-menu">
+              <a className="menu-item active">
+                <LayoutDashboard size={20} />
+                Dashboard
+              </a>
 
-          {/* Profile Card */}
-          <div className="profile-card">
-            <img
-              src={student.profilePic}
-              alt="Profile"
-              className="profile-image"
-            />
-            <h2>{student.name}</h2>
-            <p>{student.department}</p>
+              <a className="menu-item">
+                <Search size={20} />
+                Browse Events
+              </a>
+
+              <a className="menu-item">
+                <ClipboardList size={20} />
+                My Registrations
+              </a>
+
+              <a className="menu-item">
+                <Calendar size={20} />
+                Calendar
+              </a>
+
+              <a className="menu-item">
+                <BarChart3 size={20} />
+                Analytics
+              </a>
+
+              <a className="menu-item">
+                <Megaphone size={20} />
+                Announcements
+              </a>
+
+              <a className="menu-item">
+                <Settings size={20} />
+                Settings
+              </a>
+            </nav>
           </div>
 
-          {/* Student Info */}
-          <div className="info-card">
-            <h3>Student Information</h3>
-
-            <div className="info-row">
-              <span>Roll No:</span>
-              <p>{student.rollNo}</p>
+          {/* Bottom Section */}
+          <div className="sidebar-bottom">
+            <div className="sidebar-profile">
+              <div className="profile-avatar">
+                {student.name.charAt(0)}
+              </div>
+              <div>
+                <p className="profile-name">{student.name}</p>
+                <span className="profile-role">{student.role}</span>
+              </div>
             </div>
 
-            <div className="info-row">
-              <span>Email:</span>
-              <p>{student.email}</p>
-            </div>
+            <button className="logout-btn-sidebar" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+        </aside>
 
-            <div className="info-row">
-              <span>Year:</span>
-              <p>{student.year}</p>
-            </div>
+        {/* Main Content */}
+        <main className="dashboard-main">
 
-            <div className="info-row">
-              <span>Phone:</span>
-              <p>{student.phone}</p>
+          {/* 🔥 Top Header Bar */}
+          <div className="dashboard-topbar">
+            <h2 className="topbar-title">Dashboard</h2>
+
+            <div className="topbar-right">
+              <input
+                type="text"
+                placeholder="Search events..."
+                className="topbar-search"
+              />
+
+              <div className="topbar-icon">
+                <Bell size={18} />
+              </div>
+
+              <div className="topbar-icon">
+                <MessageSquare size={18} />
+              </div>
+
+              <div className="topbar-profile">
+                {student.name.charAt(0)}
+              </div>
             </div>
           </div>
 
-          {/* Quick Stats (basic) */}
-          <div className="stats-card">
-            <h3>Quick Overview</h3>
-            <div className="stats-grid">
-              <div className="stat-box">
-                <h4>5</h4>
-                <p>Registered Events</p>
-              </div>
+          {/* Welcome Section */}
+          <div className="welcome-card">
+            <div>
+              <h1 className="welcome-title">
+                Welcome back, {student.name}
+              </h1>
+              <p className="welcome-subtext">
+                Here’s what’s happening in your campus today.
+              </p>
+            </div>
 
-              <div className="stat-box">
-                <h4>2</h4>
-                <p>Upcoming Events</p>
-              </div>
-
-              <div className="stat-box">
-                <h4>3</h4>
-                <p>Completed Events</p>
-              </div>
+            {/* Decorative Shapes (like your screenshot) */}
+            <div className="welcome-shapes">
+              <div className="shape lavender"></div>
+              <div className="shape coral"></div>
+              <div className="shape green"></div>
             </div>
           </div>
 
-        </div>
+          {/* Stats Section */}
+          <div className="stats-section">
+
+            <div className="stat-card">
+              <div className="stat-top">
+                <div className="icon lavender-bg">📅</div>
+                <span className="trend positive">+3 this month</span>
+              </div>
+              <h2>12</h2>
+              <p>My Registered Events</p>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-top">
+                <div className="icon coral-bg">⏰</div>
+                <span className="trend positive">+2 this week</span>
+              </div>
+              <h2>5</h2>
+              <p>Upcoming Events</p>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-top">
+                <div className="icon green-bg">✔</div>
+                <span className="trend positive">+8 this semester</span>
+              </div>
+              <h2>24</h2>
+              <p>Events Attended</p>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-top">
+                <div className="icon coral-bg">⚠</div>
+                <span className="trend negative">-1 from last week</span>
+              </div>
+              <h2>2</h2>
+              <p>Pending Approvals</p>
+            </div>
+
+          </div>
+
+        </main>
+
       </div>
 
       <Footer />
