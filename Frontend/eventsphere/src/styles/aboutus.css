@@ -90,7 +90,7 @@
 
 .about-tab {
   @apply px-6 py-3 rounded-2xl font-medium transition-all duration-300 
-         bg-white dark:bg-[#2E2C45] 
+         bg-white
          hover:bg-[#EED8D6]/40;
 }
 
@@ -144,8 +144,8 @@
 }
 
 .feature-card {
-  @apply bg-white mb-4 dark:bg-[#3F3D56]/70 
-         border border-[#EED8D6]/60 dark:border-white/10 
+  @apply bg-white mb-4
+         border border-[#EED8D6]/60
          p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1;
 }
 
@@ -322,8 +322,8 @@
 .dev-card {
   @apply rounded-3xl p-10
          transition-all duration-300
-         bg-white dark:bg-[#3F3D56]/70
-         border border-[#EED8D6]/50 dark:border-white/10
+         bg-white 
+         border border-[#EED8D6]/50 
          backdrop-blur-xl;
 }
 
@@ -392,9 +392,9 @@
 
 .tech-pill {
   @apply px-4 py-2 rounded-full text-sm font-medium
-         bg-[#EED8D6]/40 dark:bg-[#2E2C45]
+         bg-[#EED8D6]/40 
          border border-[#9B96E5]/30
-         text-[#3F3D56] dark:text-gray-300
+         text-[#3F3D56] 
          transition-all duration-300
          hover:border-[#9B96E5]/50
          hover:shadow-[0_0_15px_rgba(155,150,229,0.3)];
