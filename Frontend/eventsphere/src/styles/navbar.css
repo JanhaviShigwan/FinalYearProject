@@ -10,8 +10,9 @@
   z-index: 50;
 
   max-width: 1200px;
-  margin: 20px 20px 0 20px;   /* top spacing only */
-  padding: 0 20px;
+  width: 100%;
+  margin: 20px auto 0 auto;   /* perfectly centered */
+  padding: 0 24px;
 
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(12px);
@@ -169,6 +170,9 @@
   gap: 18px;
   padding: 20px;
   background-color: #FFFFFF;
+  margin-top: 12px;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
 }
 
 .mobile-open {
@@ -197,4 +201,13 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+@media (max-width: 767px) {
+  .navbar-main {
+    width: calc(100% - 28px);   /* proper side spacing */
+    margin: 20px auto;          /* vertical spacing restored */
+    padding: 0 16px;
+    border-radius: 16px;
+  }
 }
