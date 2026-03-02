@@ -348,8 +348,10 @@
 }
 
 .dev-name {
-  @apply text-2xl font-semibold
-         text-[#3F3D56] dark:text-white;
+  font-size: 22px;
+  font-weight: 700;
+  color: #3F3D56;   /* Dark solid color */
+  line-height: 1.4;
 }
 
 .dev-role {
@@ -392,8 +394,9 @@
 }
 
 .project-title {
-  @apply text-2xl font-semibold
-         text-[#3F3D56] dark:text-white;
+  font-size: 22px;
+  font-weight: 700;
+  color: #3F3D56;
 }
 
 .tech-stack {
@@ -464,6 +467,11 @@
 
   .stat {
     font-size: 18px;
+  }
+
+  .dev-name,
+  .project-title {
+    font-size: 20px;
   }
 
 }

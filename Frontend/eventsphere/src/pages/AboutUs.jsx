@@ -208,7 +208,7 @@ const AboutUs = () => {
                         </div>
 
                         <div>
-                          <h3 className="dev-name">Your Name</h3>
+                          <h3 className="dev-name">Janhavi Shigwan</h3>
                           <p className="dev-role">MERN Stack Developer</p>
                         </div>
                       </div>
