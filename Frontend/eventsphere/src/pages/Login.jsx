@@ -17,7 +17,7 @@ import "../styles/auth.css";
 
 export default function Login() {
   const navigate = useNavigate();
-  const API_URL = "http://localhost:5000";
+  const API_URL = "https://eventsphere-8sgd.onrender.com";
 
   const [formData, setFormData] = useState({
     email: "",

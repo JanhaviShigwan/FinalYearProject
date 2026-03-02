@@ -21,7 +21,7 @@ import "../styles/auth.css";
 export default function Register() {
   const navigate = useNavigate();
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  const API_URL = import.meta.env.VITE_API_URL || "https://eventsphere-8sgd.onrender.com";
 
   const [formData, setFormData] = useState({
     name: "",
