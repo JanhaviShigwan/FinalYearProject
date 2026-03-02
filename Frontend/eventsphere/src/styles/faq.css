@@ -5,11 +5,10 @@
   /* ================= PAGE WRAPPER ================= */
 
   .faq-wrapper {
-  @apply relative min-h-screen py-16 px-6 overflow-hidden
-         bg-gradient-to-br
-         from-[#FFFFFF] via-[#F6F1EB] to-[#F9F5FF]
-         dark:from-[#3F3D56] dark:to-[#2e2c42];
-}
+    @apply relative min-h-screen py-16 px-6 overflow-hidden
+           bg-gradient-to-br
+           from-[#FFFFFF] via-[#F6F1EB] to-[#F9F5FF];
+  }
 
   /* ================= ANIMATED GRID BACKGROUND ================= */
 
@@ -48,7 +47,7 @@
   }
 
   .faq-subtitle {
-    @apply text-[#3F3D56] dark:text-[#D8E8D1];
+    @apply text-[#3F3D56];
   }
 
   /* ================= FAQ CONTAINER ================= */
@@ -61,8 +60,7 @@
 
   .faq-card {
     @apply rounded-2xl transition-all duration-300
-           bg-white dark:bg-[#3F3D56]
-           shadow-md;
+           bg-white shadow-md;
   }
 
   .faq-card-open {
@@ -77,7 +75,7 @@
   }
 
   .faq-question {
-    @apply font-medium text-[#3F3D56] dark:text-white;
+    @apply font-medium text-[#3F3D56];
   }
 
   /* ================= ICON ================= */
@@ -102,7 +100,7 @@
   }
 
   .faq-answer {
-    @apply text-[#3F3D56] dark:text-[#D8E8D1];
+    @apply text-[#3F3D56];
   }
 
 }
