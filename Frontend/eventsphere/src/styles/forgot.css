@@ -4,13 +4,20 @@
 
 @layer components {
 
-  /* ===== Wrapper (LIGHT BACKGROUND) ===== */
-  .forgot-wrapper {
-    @apply relative min-h-screen flex items-center justify-center overflow-hidden px-4 py-10;
-    background-color: #F6F1EB; /* Warm Cream */
+  /* ===== FORCE LIGHT MODE ===== */
+  html, body {
+    background-color: #F6F1EB !important;
+    color: #3F3D56 !important;
   }
 
-  /* ===== Animated Moving Grid ===== */
+  /* ===== Wrapper ===== */
+  .forgot-wrapper {
+    @apply relative min-h-screen flex items-center justify-center overflow-hidden;
+    @apply px-4 sm:px-6 py-10;
+    background-color: #F6F1EB !important;
+  }
+
+  /* ===== Animated Grid ===== */
   .forgot-wrapper::before {
     content: "";
     position: absolute;
@@ -19,90 +26,88 @@
     pointer-events: none;
 
     background-image:
-      linear-gradient(rgba(155,150,229,0.12) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(155,150,229,0.12) 1px, transparent 1px);
+      linear-gradient(rgba(155,150,229,0.10) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(155,150,229,0.10) 1px, transparent 1px);
 
-    background-size: 60px 60px;
-    animation: gridMove 20s linear infinite;
+    background-size: 50px 50px;
+    animation: gridMove 25s linear infinite;
   }
 
   @keyframes gridMove {
-    0% {
-      background-position: 0 0;
-    }
-    100% {
-      background-position: 60px 60px;
-    }
+    0% { background-position: 0 0; }
+    100% { background-position: 50px 50px; }
   }
 
   /* ===== Floating Blobs ===== */
   .forgot-blob {
-    @apply absolute rounded-full blur-3xl opacity-30 animate-pulse;
+    @apply absolute rounded-full blur-3xl opacity-25 animate-pulse;
   }
 
   .blob-1 {
-    @apply w-40 h-40 sm:w-72 sm:h-72;
-    background: #9B96E5; /* Lavender */
-    top: 0;
-    left: 0;
+    @apply w-32 h-32 sm:w-64 sm:h-64;
+    background: #9B96E5;
+    top: -30px;
+    left: -30px;
   }
 
   .blob-2 {
-    @apply w-40 h-40 sm:w-72 sm:h-72;
-    background: #F08A6C; /* Coral */
-    bottom: 0;
-    right: 0;
+    @apply w-32 h-32 sm:w-64 sm:h-64;
+    background: #F08A6C;
+    bottom: -30px;
+    right: -30px;
   }
 
   .blob-3 {
-    @apply hidden sm:block w-60 h-60;
-    background: #D8E8D1; /* Pastel Green */
-    top: 50%;
-    left: 33%;
+    @apply hidden sm:block w-52 h-52;
+    background: #D8E8D1;
+    top: 45%;
+    left: 35%;
   }
 
   /* ===== Card ===== */
   .forgot-card {
-    @apply relative z-10 w-full max-w-md p-6 sm:p-8 rounded-2xl shadow-2xl;
-    background: #FFFFFF;
-    @apply transition-all duration-300;
+    @apply relative z-10 w-full max-w-sm sm:max-w-md;
+    @apply p-6 sm:p-8 rounded-2xl shadow-xl;
+    background: #FFFFFF !important;
+    transition: 0.3s ease;
   }
 
   .forgot-card:hover {
-    transform: translateY(-4px) scale(1.01);
+    transform: translateY(-3px);
   }
 
   /* ===== Typography ===== */
   .forgot-title {
-    @apply text-2xl sm:text-3xl font-bold text-center mb-2;
-    color: #3F3D56; /* Deep Slate */
+    @apply text-xl sm:text-3xl font-bold text-center mb-2;
+    color: #3F3D56 !important;
   }
 
   .forgot-subtitle {
     @apply text-center text-sm sm:text-base mb-6;
-    color: #3F3D56;
+    color: #3F3D56 !important;
   }
 
   /* ===== Form ===== */
   .forgot-form {
-    @apply space-y-5;
+    @apply space-y-4;
   }
 
   .form-group label {
     @apply block text-sm font-medium mb-2;
-    color: #3F3D56;
+    color: #3F3D56 !important;
   }
 
   .input-box {
     @apply flex items-center border rounded-lg px-3 py-2;
-    border-color: #EED8D6; /* Soft Blush */
+    border-color: #EED8D6;
     @apply focus-within:ring-2;
-    --tw-ring-color: #9B96E5; /* Lavender */
+    --tw-ring-color: #9B96E5;
+    background: #FFFFFF !important;
   }
 
   .input-box input {
     @apply w-full bg-transparent outline-none text-sm;
-    color: #3F3D56;
+    color: #3F3D56 !important;
   }
 
   .input-icon {
@@ -112,22 +117,29 @@
 
   /* ===== Button ===== */
   .forgot-btn {
-    @apply w-full py-3 rounded-lg font-semibold text-white text-sm sm:text-base transition duration-300;
+    @apply w-full py-3 rounded-lg font-semibold text-white text-sm sm:text-base;
     background: linear-gradient(90deg, #9B96E5, #F08A6C);
+    transition: 0.3s ease;
   }
 
   .forgot-btn:hover {
     opacity: 0.9;
   }
 
+  /* ===== Message ===== */
+  .response-message {
+    @apply text-center mt-4 text-sm;
+    color: #9B96E5;
+  }
+
   /* ===== Back to Login ===== */
   .back-login-text {
-    @apply text-center text-xs sm:text-sm;
-    color: #3F3D56;
+    @apply text-center text-xs sm:text-sm mt-5;
+    color: #3F3D56 !important;
   }
 
   .back-login-text a {
-    color: #F08A6C; /* Coral */
+    color: #F08A6C;
     font-weight: 500;
   }
 
