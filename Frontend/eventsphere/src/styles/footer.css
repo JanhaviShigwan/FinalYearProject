@@ -3,12 +3,14 @@
    FOOTER – EVENTSPHERE COLOR SCHEME
 ================================================= */
 
+
+
 .footer-section {
   padding-top: 70px;
   padding-bottom: 35px;
   padding-left: 1rem;
   padding-right: 1rem;
-  background-color: #ffbeb9; /* Soft Blush */ 
+  background-color: #f9c7c3f6; /* Soft Blush */ 
   color: #3F3D56; /* Deep Slate */
   border-top: 1px solid #9B96E5; /* Lavender accent */ 
 }

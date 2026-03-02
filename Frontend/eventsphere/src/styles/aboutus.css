@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .about-wrapper {
-  @apply relative bg-[#F6F1EB] dark:bg-[#3F3D56]
+  @apply relative bg-transparent
          text-[#3F3D56] dark:text-gray-200
          overflow-hidden transition-colors duration-300;
 }
@@ -11,17 +11,16 @@
 /* ================= Animated Grid + Glow Background ================= */
 
 .about-bg-glow {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 0;
-  pointer-events: none;
 
   /* Moving Grid */
   background-image:
     linear-gradient(rgba(155,150,229,0.15) 1px, transparent 1px),
     linear-gradient(90deg, rgba(155,150,229,0.15) 1px, transparent 1px);
 
-  background-size: 40px 40px;
+  background-size: 50px 50px;
 
   animation: gridMove 25s linear infinite;
 
@@ -46,8 +45,9 @@
 .about-bg-glow::before {
   content: "";
   position: absolute;
-  inset: -20%;
-  z-index: -1;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
 
   background: radial-gradient(
       circle at 20% 30%,

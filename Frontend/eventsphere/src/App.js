@@ -25,6 +25,7 @@ function App() {
         <Route path="/faq" element={<Faq />} />
       </Routes>
     </Router>
+  
   );
 }
 

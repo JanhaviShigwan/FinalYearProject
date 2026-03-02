@@ -17,3 +17,13 @@ body {
 .dark body {
   @apply bg-gray-900 text-gray-200;
 }
+/* ===== GLOBAL GRID BACKGROUND ===== */
+
+.app-background {
+  min-height: 100vh;
+  background-color: #F6F1EB; /* your Warm Cream */
+  background-image: 
+    linear-gradient(rgba(155,150,229,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(155,150,229,0.08) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
