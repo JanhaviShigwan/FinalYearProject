@@ -4,7 +4,7 @@
 
 .about-wrapper {
   @apply relative bg-transparent
-         text-[#3F3D56] dark:text-gray-200
+         text-[#3F3D56]
          overflow-hidden transition-colors duration-300;
 }
 
@@ -15,19 +15,15 @@
   inset: 0;
   z-index: 0;
 
-  /* Moving Grid */
   background-image:
     linear-gradient(rgba(155,150,229,0.15) 1px, transparent 1px),
     linear-gradient(90deg, rgba(155,150,229,0.15) 1px, transparent 1px);
 
   background-size: 50px 50px;
-
   animation: gridMove 25s linear infinite;
-
   transition: all 0.5s ease;
 }
 
-/* Grid movement */
 @keyframes gridMove {
   from { background-position: 0 0; }
   to   { background-position: 40px 40px; }
@@ -62,7 +58,6 @@
   animation: glowMove 18s ease-in-out infinite alternate;
 }
 
-/* Glow floating movement */
 @keyframes glowMove {
   from {
     transform: translateY(-10px) translateX(-10px);
@@ -104,7 +99,7 @@
 }
 
 .about-card {
-  @apply bg-white dark:bg-[#2E2C45] 
+  @apply bg-white 
          rounded-3xl p-12 shadow-xl transition-all duration-500;
 }
 
@@ -121,11 +116,11 @@
 }
 
 .text-muted {
-  @apply text-[#3F3D56]/80 dark:text-gray-300 leading-relaxed mb-6;
+  @apply text-[#3F3D56] leading-relaxed mb-6;
 }
 
 .text-muted-light {
-  @apply text-[#3F3D56]/70 dark:text-gray-400 leading-relaxed mb-6;
+  @apply text-[#3F3D56]/90 leading-relaxed mb-6;
 }
 
 .stats {
@@ -192,9 +187,43 @@
 .mission-card {
   @apply rounded-2xl p-8 text-left
          transition-all duration-300 hover:-translate-y-1
-         bg-white dark:bg-[#3F3D56]/70
-         border border-[#EED8D6]/50 dark:border-white/10
+         bg-white
+         border border-[#EED8D6]/50
          backdrop-blur-xl;
+}
+
+/* Mission Icon Colors */
+.mission-icon.purple { color: #9B96E5; }
+.mission-icon.teal   { color: #22B8CF; }
+.mission-icon.peach  { color: #F08A6C; }
+
+/* Mission Card Heading Color Match Icon */
+.mission-card:has(.mission-icon.purple) h3 {
+  color: #9B96E5;
+}
+
+.mission-card:has(.mission-icon.teal) h3 {
+  color: #22B8CF;
+}
+
+.mission-card:has(.mission-icon.peach) h3 {
+  color: #F08A6C;
+}
+
+/* Glow Hover Effect */
+.mission-card:has(.mission-icon.purple):hover {
+  box-shadow: 0 0 0 1px rgba(155,150,229,.35),
+              0 0 30px rgba(155,150,229,.45);
+}
+
+.mission-card:has(.mission-icon.teal):hover {
+  box-shadow: 0 0 0 1px rgba(71, 217, 240, 0.35),
+              0 0 30px rgba(63, 220, 244, 0.849);
+}
+
+.mission-card:has(.mission-icon.peach):hover {
+  box-shadow: 0 0 0 1px rgba(240,138,108,.35),
+              0 0 30px rgba(240,138,108,.45);
 }
 
 .mission-card h3 {
@@ -206,20 +235,6 @@
 .mission-card p {
   @apply text-sm leading-relaxed 
          text-[#3F3D56]/80 dark:text-gray-400;
-}
-
-.mission-icon.purple { @apply text-[#9B96E5]; }
-.mission-icon.teal   { @apply text-[#D8E8D1]; }
-.mission-icon.peach  { @apply text-[#F08A6C]; }
-
-.mission-card:has(.mission-icon.purple):hover {
-  box-shadow: 0 0 0 1px rgba(155,150,229,.3), 0 0 25px rgba(155,150,229,.3);
-}
-.mission-card:has(.mission-icon.teal):hover {
-  box-shadow: 0 0 0 1px rgba(216,232,209,.3), 0 0 25px rgba(216,232,209,.35);
-}
-.mission-card:has(.mission-icon.peach):hover {
-  box-shadow: 0 0 0 1px rgba(240,138,108,.3), 0 0 25px rgba(240,138,108,.35);
 }
 
 /* ================= OFFER ================= */
@@ -244,9 +259,43 @@
 .offer-card {
   @apply rounded-2xl p-8 text-left
          transition-all duration-300 hover:-translate-y-1
-         bg-white dark:bg-[#3F3D56]/70
-         border border-[#EED8D6]/50 dark:border-white/10
+         bg-white
+         border border-[#EED8D6]/50
          backdrop-blur-xl;
+}
+
+/* Offer Icon Colors */
+.offer-icon.purple { color: #9B96E5; }
+.offer-icon.teal   { color: #22B8CF; }
+.offer-icon.peach  { color: #F08A6C; }
+
+/* Offer Heading Color Match Icon */
+.offer-card:has(.offer-icon.purple) h3 {
+  color: #9B96E5;
+}
+
+.offer-card:has(.offer-icon.teal) h3 {
+  color: #22B8CF;
+}
+
+.offer-card:has(.offer-icon.peach) h3 {
+  color: #F08A6C;
+}
+
+/* Glow Hover Effect */
+.offer-card:has(.offer-icon.purple):hover {
+  box-shadow: 0 0 0 1px rgba(155,150,229,.35),
+              0 0 32px rgba(155,150,229,.45);
+}
+
+.offer-card:has(.offer-icon.teal):hover {
+  box-shadow: 0 0 0 1px rgba(34,184,207,.35),
+              0 0 32px rgba(34,184,207,.45);
+}
+
+.offer-card:has(.offer-icon.peach):hover {
+  box-shadow: 0 0 0 1px rgba(240,138,108,.35),
+              0 0 32px rgba(240,138,108,.45);
 }
 
 .offer-card h3 {
@@ -258,20 +307,6 @@
 .offer-card p {
   @apply text-sm leading-relaxed 
          text-[#3F3D56]/80 dark:text-gray-400;
-}
-
-.offer-icon.purple { @apply text-[#9B96E5]; }
-.offer-icon.teal   { @apply text-[#D8E8D1]; }
-.offer-icon.peach  { @apply text-[#F08A6C]; }
-
-.offer-card:has(.offer-icon.purple):hover {
-  box-shadow: 0 0 0 1px rgba(155,150,229,.3), 0 0 28px rgba(155,150,229,.3);
-}
-.offer-card:has(.offer-icon.teal):hover {
-  box-shadow: 0 0 0 1px rgba(216,232,209,.3), 0 0 28px rgba(216,232,209,.35);
-}
-.offer-card:has(.offer-icon.peach):hover {
-  box-shadow: 0 0 0 1px rgba(240,138,108,.3), 0 0 28px rgba(240,138,108,.35);
 }
 
 /* ================= DEV SECTION ================= */
@@ -363,4 +398,62 @@
          transition-all duration-300
          hover:border-[#9B96E5]/50
          hover:shadow-[0_0_15px_rgba(155,150,229,0.3)];
+}
+
+/* ================= MOBILE RESPONSIVE FIX ================= */
+
+@media (max-width: 768px) {
+
+  .about-container {
+    padding: 60px 20px;
+  }
+
+  .about-title {
+    font-size: 32px;
+    text-align: center;
+  }
+
+  .about-subtitle {
+    font-size: 15px;
+    text-align: center;
+  }
+
+  .about-tabs {
+    gap: 10px;
+    margin-bottom: 40px;
+  }
+
+  .about-tab {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .about-card {
+    padding: 28px 20px;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .section-title {
+    font-size: 22px;
+    text-align: center;
+  }
+
+  .text-muted,
+  .text-muted-light {
+    font-size: 15px;
+  }
+
+  .stats {
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .stat {
+    font-size: 18px;
+  }
+
 }
