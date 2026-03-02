@@ -1,6 +1,6 @@
 import { Mail, MapPin, Github, Linkedin, Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
-import logo from "../assets/logoo.png";
+import logo from "../assets/EventSphereLogo.png";
 import "../styles/footer.css";
 
 export default function Footer() {

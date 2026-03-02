@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logo from "../assets/logoo.png";
+import logo from "../assets/EventSphereLogo.png";
 import "../styles/navbar.css";
 
 export default function Navbar() {
