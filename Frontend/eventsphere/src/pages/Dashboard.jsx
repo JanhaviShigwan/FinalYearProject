@@ -46,37 +46,37 @@ export default function Dashboard() {
 
             {/* Menu */}
             <nav className="sidebar-menu">
-              <a className="menu-item active">
+              <a href="/dashboard" className="menu-item active">
                 <LayoutDashboard size={20} />
                 Dashboard
               </a>
 
-              <a className="menu-item">
+              <a href="/dashboard" className="menu-item">
                 <Search size={20} />
                 Browse Events
               </a>
 
-              <a className="menu-item">
+              <a href="/dashboard" className="menu-item">
                 <ClipboardList size={20} />
                 My Registrations
               </a>
 
-              <a className="menu-item">
+              <a href="/dashboard" className="menu-item">
                 <Calendar size={20} />
                 Calendar
               </a>
 
-              <a className="menu-item">
+              <a href="/dashboard" className="menu-item">
                 <BarChart3 size={20} />
                 Analytics
               </a>
 
-              <a className="menu-item">
+              <a href="/dashboard" className="menu-item">
                 <Megaphone size={20} />
                 Announcements
               </a>
 
-              <a className="menu-item">
+              <a href="/dashboard" className="menu-item">
                 <Settings size={20} />
                 Settings
               </a>
