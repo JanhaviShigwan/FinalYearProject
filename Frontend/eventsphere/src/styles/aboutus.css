@@ -81,7 +81,10 @@
 
 .about-subtitle {
   @apply mt-6 max-w-2xl mx-auto text-lg 
-         text-[#3F3D56]/80 dark:text-gray-300;
+         font-semibold;
+  color: #3F3D56;              /* Strong solid color */
+  line-height: 1.8;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.05); /* subtle clarity boost */
 }
 
 .about-tabs {
@@ -176,8 +179,10 @@
 }
 
 .mission-subtitle {
-  @apply mt-4 max-w-2xl mx-auto 
-         text-[#3F3D56]/80 dark:text-gray-300;
+  @apply mt-4 max-w-2xl mx-auto font-semibold;
+  color: #3F3D56;
+  line-height: 1.8;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.05);
 }
 
 .mission-cards {
@@ -233,8 +238,9 @@
 }
 
 .mission-card p {
-  @apply text-sm leading-relaxed 
-         text-[#3F3D56]/80 dark:text-gray-400;
+  @apply text-sm leading-relaxed font-medium;
+  color: #3F3D56;
+  line-height: 1.7;
 }
 
 /* ================= OFFER ================= */
@@ -248,8 +254,10 @@
 }
 
 .offer-subtitle {
-  @apply mt-4 max-w-2xl mx-auto 
-         text-[#3F3D56]/80 dark:text-gray-300;
+  @apply mt-4 max-w-2xl mx-auto font-semibold;
+  color: #3F3D56;
+  line-height: 1.8;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.05);
 }
 
 .offer-cards {
@@ -305,8 +313,9 @@
 }
 
 .offer-card p {
-  @apply text-sm leading-relaxed 
-         text-[#3F3D56]/80 dark:text-gray-400;
+  @apply text-sm leading-relaxed font-medium;
+  color: #3F3D56;
+  line-height: 1.7;
 }
 
 /* ================= DEV SECTION ================= */
@@ -348,8 +357,9 @@
 }
 
 .dev-text {
-  @apply leading-relaxed mb-6
-         text-[#3F3D56]/80 dark:text-gray-400;
+  @apply leading-relaxed font-medium;
+  color: #3F3D56;
+  line-height: 1.8;
 }
 
 .dev-links {
@@ -414,8 +424,8 @@
   }
 
   .about-subtitle {
-    font-size: 15px;
-    text-align: center;
+    font-size: 16px;
+    padding: 0 10px;
   }
 
   .about-tabs {
