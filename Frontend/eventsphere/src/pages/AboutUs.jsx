@@ -90,7 +90,7 @@ const AboutUs = () => {
 
                   <div className="feature-list">
                     <div className="feature-card purple-glow">
-                      <h3>Centralized Platform</h3>
+                      <h3 className="text-[#9B96E5]">Centralized Platform</h3>
                       <p>
                         All event operations — creation, registration, notifications —
                         handled in one structured system.
@@ -98,14 +98,14 @@ const AboutUs = () => {
                     </div>
 
                     <div className="feature-card teal-glow">
-                      <h3>Seamless Experience</h3>
+                      <h3 className="text-[#22B8CF]">Seamless Experience</h3>
                       <p>
                         Clean UI and responsive design ensure smooth interaction across devices.
                       </p>
                     </div>
 
                     <div className="feature-card peach-glow">
-                      <h3>Secure & Scalable</h3>
+                      <h3 className="text-[#F08A6C]">Secure & Scalable</h3>
                       <p>
                         Built using the MERN stack with structured architecture and secure authentication.
                       </p>

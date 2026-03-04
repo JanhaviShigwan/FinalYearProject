@@ -161,7 +161,7 @@
 }
 
 .teal-glow {
-  @apply hover:shadow-[0_0_25px_rgba(216,232,209,0.4)];
+  @apply hover:shadow-[0_0_25px_rgba(216,232,209,0.75)];
 }
 
 .peach-glow {
@@ -179,7 +179,7 @@
 }
 
 .mission-subtitle {
-  @apply mt-4 max-w-2xl mx-auto font-semibold;
+  @apply mt-4 max-w-2xl mx-auto;
   color: #3F3D56;
   line-height: 1.8;
   text-shadow: 0 1px 1px rgba(0,0,0,0.05);
@@ -238,7 +238,7 @@
 }
 
 .mission-card p {
-  @apply text-sm leading-relaxed font-medium;
+  @apply text-base leading-relaxed;
   color: #3F3D56;
   line-height: 1.7;
 }
@@ -254,7 +254,7 @@
 }
 
 .offer-subtitle {
-  @apply mt-4 max-w-2xl mx-auto font-semibold;
+  @apply mt-4 max-w-2xl mx-auto;
   color: #3F3D56;
   line-height: 1.8;
   text-shadow: 0 1px 1px rgba(0,0,0,0.05);
@@ -313,7 +313,7 @@
 }
 
 .offer-card p {
-  @apply text-sm leading-relaxed font-medium;
+  @apply text-base leading-relaxed;
   color: #3F3D56;
   line-height: 1.7;
 }
@@ -359,13 +359,13 @@
 }
 
 .dev-text {
-  @apply leading-relaxed font-medium;
+  @apply leading-relaxed;
   color: #3F3D56;
   line-height: 1.8;
 }
 
 .dev-links {
-  @apply flex gap-4;
+  @apply flex mt-4 gap-4;
 }
 
 .dev-btn {
