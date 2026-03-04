@@ -3,6 +3,9 @@ import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/eventdetails.css";
+import hackathon from "../assets/hackathon.png";
+import fest from "../assets/fest.png";
+import workshop from "../assets/workshop.png";
 
 export default function EventDetails() {
   const { id } = useParams();
@@ -16,8 +19,8 @@ export default function EventDetails() {
       location: "Auditorium Hall",
       description:
         "Join us for an intense 24-hour coding competition where innovators build real-world solutions. Exciting prizes and networking opportunities await!",
-      image:
-        "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80",
+      image: hackathon,
+        
     },
     {
       id: "2",
@@ -27,8 +30,7 @@ export default function EventDetails() {
       location: "Main Ground",
       description:
         "Experience music, dance, drama, and unforgettable performances from talented students. A celebration of creativity and culture.",
-      image:
-        "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80",
+      image: fest,
     },
     {
       id: "3",
@@ -38,8 +40,7 @@ export default function EventDetails() {
       location: "Sports Complex",
       description:
         "Compete in our inter-college football championship and showcase your skills. Team spirit and sportsmanship at its best!",
-      image:
-        "https://images.unsplash.com/photo-1508098682722-e99c643e7f68?auto=format&fit=crop&w=1200&q=80",
+      image: workshop,
     },
     {
       id: "4",
