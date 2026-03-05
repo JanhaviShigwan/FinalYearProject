@@ -2,19 +2,37 @@
 
 @layer components {
 
-  html, body {
-  background-color: #F6F1EB !important;
+html, body {
+  background: linear-gradient(
+    to bottom right,
+    #FFFFFF,
+    #F6F1EB,
+    #F9F5FF
+  ) !important;
+
   color: #3F3D56 !important;
 }
 
   /* ================= PAGE BACKGROUND ================= */
 
-  .auth-wrapper {
-    @apply relative min-h-screen flex items-center justify-center px-6 py-12
-           overflow-hidden;
-    background-color: #F6F1EB; /* Warm Cream */
-  }
+.auth-wrapper {
+  @apply relative min-h-screen flex items-center justify-center px-6 py-12;
+}
 
+.auth-wrapper > * {
+  position: relative;
+  z-index: 10;
+}
+
+.auth-wrapper {
+  z-index: 1;
+}
+
+.animated-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
   
   /* ================= MAIN CARD ================= */
 
@@ -204,26 +222,29 @@
   /* ================= BLOBS ================= */
 
   .blob {
-    @apply absolute rounded-full blur-3xl opacity-40;
-    animation: floatBlob 12s ease-in-out infinite;
-    z-index: 0;
-  }
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(120px);
+  opacity: 0.35;
+  animation: floatBlob 12s ease-in-out infinite;
+  z-index: 0;
+}
 
-  .blob-1 {
-    width: 400px;
-    height: 400px;
-    top: 10%;
-    left: 5%;
-    background: radial-gradient(circle, #9B96E5, transparent 70%);
-  }
+ .blob-1 {
+  width: 260px;
+  height: 260px;
+  top: 40%;
+  left: 20%;
+  background: radial-gradient(circle, rgba(155,150,229,0.5), transparent 70%);
+}
 
-  .blob-2 {
-    width: 350px;
-    height: 350px;
-    bottom: 10%;
-    right: 8%;
-    background: radial-gradient(circle, #F08A6C, transparent 70%);
-  }
+ .blob-2 {
+  width: 260px;
+  height: 260px;
+  bottom: 20%;
+  right: 20%;
+  background: radial-gradient(circle, rgba(240,138,108,0.5), transparent 70%);
+}
 
   @keyframes floatBlob {
     0% { transform: translateY(0px) scale(1); }
@@ -290,14 +311,14 @@
 /* ================= ANIMATED GRID BACKGROUND ================= */
 
 .animated-grid {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
 
   background-image:
-    linear-gradient(rgba(155,150,229,0.15) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(155,150,229,0.15) 1px, transparent 1px);
+    linear-gradient(rgba(155,150,229,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(155,150,229,0.08) 1px, transparent 1px);
 
   background-size: 60px 60px;
 

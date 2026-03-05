@@ -5,20 +5,21 @@
   /* ================= PAGE WRAPPER ================= */
 
   .faq-wrapper {
-    @apply relative min-h-screen py-16 px-6 overflow-hidden
-           bg-gradient-to-br
-           from-[#FFFFFF] via-[#F6F1EB] to-[#F9F5FF];
-  }
+  @apply relative min-h-screen py-16 px-6 overflow-hidden;
+}
 
   /* ================= ANIMATED GRID BACKGROUND ================= */
 
   .faq-wrapper::before {
     content: "";
     @apply fixed inset-0 z-0;
+
     background-image:
       linear-gradient(to right, rgba(155,150,229,0.08) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(155,150,229,0.08) 1px, transparent 1px);
+
     background-size: 50px 50px;
+
     animation: gridMove 20s linear infinite;
   }
 
@@ -34,6 +35,13 @@
   /* Make content appear above grid */
   .faq-wrapper > * {
     @apply relative z-10;
+  }
+
+  /* ================= NAVBAR ================= */
+
+  /* This allows the grid to appear behind navbar */
+  .navbar {
+    @apply sticky top-0 z-50 bg-white/70 backdrop-blur-md;
   }
 
   /* ================= HEADER ================= */
@@ -103,4 +111,13 @@
     @apply text-[#3F3D56];
   }
 
+}
+
+body {
+  background: linear-gradient(
+    to bottom right,
+    #FFFFFF,
+    #F6F1EB,
+    #F9F5FF
+  );
 }
