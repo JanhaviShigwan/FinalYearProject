@@ -23,8 +23,6 @@ import {
 } from "lucide-react";
 
 import hackathon from "../assets/hackathon.png";
-import fest from "../assets/fest.png";
-import workshop from "../assets/workshop.png";
 
 export default function Home() {
   return (
