@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Events from "./pages/Events";
 import EventDetails from "./pages/EventDetails";
@@ -20,12 +20,19 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/events" element={<Events />} />
         <Route path="/events/:id" element={<EventDetails />} />
-        <Route path="/dashboard" element={<Dashboard/>} />
+        <Route
+          path="/dashboard"
+          element={
+            localStorage.getItem("eventSphereStudent")
+              ? <Dashboard />
+              : <Navigate to="/login" />
+          }
+        />
         <Route path="/about" element={<About />} />
         <Route path="/faq" element={<Faq />} />
       </Routes>
     </Router>
-  
+
   );
 }
 

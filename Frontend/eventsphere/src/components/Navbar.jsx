@@ -5,33 +5,27 @@ import logo from "../assets/EventSphereLogo.png";
 import "../styles/navbar.css";
 
 export default function Navbar() {
+
   const location = useLocation();
   const navigate = useNavigate();
+
   const [isOpen, setIsOpen] = useState(false);
   const [student, setStudent] = useState(null);
 
-  // 🔥 Listen to login/logout changes
+  // ✅ Check login status whenever route changes
   useEffect(() => {
-    const checkLogin = () => {
-      const storedStudent = localStorage.getItem("eventSphereStudent");
-      setStudent(storedStudent ? JSON.parse(storedStudent) : null);
-    };
+    const storedStudent = localStorage.getItem("eventSphereStudent");
+    setStudent(storedStudent ? JSON.parse(storedStudent) : null);
+  }, [location.pathname]);
 
-    checkLogin();
-
-    // Listen to storage changes (multi-tab support)
-    window.addEventListener("storage", checkLogin);
-
-    return () => {
-      window.removeEventListener("storage", checkLogin);
-    };
-  }, []);
-
+  // ✅ Logout Function
   const handleLogout = () => {
     localStorage.removeItem("eventSphereStudent");
+
     setStudent(null);
     setIsOpen(false);
-    navigate("/");
+
+    navigate("/", { replace: true });
   };
 
   const navLinks = [
@@ -43,6 +37,7 @@ export default function Navbar() {
 
   return (
     <nav className="navbar-main">
+
       <div className="navbar-inner">
 
         {/* Logo */}
@@ -52,6 +47,7 @@ export default function Navbar() {
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         >
           <img src={logo} alt="EventSphere Logo" className="logo-image" />
+
           <span className="brand-text">
             Event<span className="brand-accent">Sphere</span>
           </span>
@@ -59,6 +55,7 @@ export default function Navbar() {
 
         {/* Desktop Links */}
         <div className="navbar-links">
+
           {navLinks.map((link) => (
             <Link
               key={link.name}
@@ -73,6 +70,7 @@ export default function Navbar() {
               {link.name}
             </Link>
           ))}
+
         </div>
 
         {/* Right Section */}
@@ -80,6 +78,7 @@ export default function Navbar() {
 
           {/* Desktop Auth */}
           <div className="auth-desktop">
+
             {!student ? (
               <>
                 <Link
@@ -91,6 +90,7 @@ export default function Navbar() {
                 >
                   Log in
                 </Link>
+
                 <Link
                   to="/register"
                   className="nav-register-btn"
@@ -109,6 +109,7 @@ export default function Navbar() {
                 >
                   Dashboard
                 </Link>
+
                 <button
                   onClick={handleLogout}
                   className="nav-register-btn"
@@ -117,6 +118,7 @@ export default function Navbar() {
                 </button>
               </>
             )}
+
           </div>
 
           {/* Mobile Hamburger */}
@@ -131,27 +133,30 @@ export default function Navbar() {
           </button>
 
         </div>
+
       </div>
 
       {/* Mobile Menu */}
       <div className={`mobile-menu ${isOpen ? "mobile-open" : ""}`}>
+
         {navLinks.map((link) => (
           <Link
             key={link.name}
             to={link.path}
+            className={`mobile-link ${
+              location.pathname === link.path ? "mobile-active" : ""
+            }`}
             onClick={() => {
               setIsOpen(false);
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
-            className={`mobile-link ${
-              location.pathname === link.path ? "mobile-active" : ""
-            }`}
           >
             {link.name}
           </Link>
         ))}
 
         <div className="mobile-auth">
+
           {!student ? (
             <>
               <Link
@@ -163,6 +168,7 @@ export default function Navbar() {
               >
                 Log in
               </Link>
+
               <Link
                 to="/register"
                 onClick={() => {
@@ -181,6 +187,7 @@ export default function Navbar() {
               >
                 Dashboard
               </Link>
+
               <button
                 onClick={handleLogout}
                 className="mobile-logout-btn"
@@ -189,8 +196,11 @@ export default function Navbar() {
               </button>
             </>
           )}
+
         </div>
+
       </div>
+
     </nav>
   );
 }

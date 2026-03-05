@@ -22,6 +22,10 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+import hackathon from "../assets/hackathon.png";
+import fest from "../assets/fest.png";
+import workshop from "../assets/workshop.png";
+
 export default function Home() {
   return (
     <>
@@ -128,6 +132,7 @@ export default function Home() {
           <p className="event-desc">
             24-hour innovation challenge for developers to build solutions for real-world problems.
           </p>
+          <img src={hackathon}/>
         </div>
 
         <div className="event-bottom">
