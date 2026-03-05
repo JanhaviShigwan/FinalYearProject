@@ -130,7 +130,7 @@ export default function Home() {
           <p className="event-desc">
             24-hour innovation challenge for developers to build solutions for real-world problems.
           </p>
-          <img src={hackathon}/>
+          <img src={hackathon} alt="fuck"/>
         </div>
 
         <div className="event-bottom">
