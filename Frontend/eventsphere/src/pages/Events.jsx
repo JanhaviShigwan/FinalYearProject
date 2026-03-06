@@ -1,196 +1,92 @@
-import { useState} from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import React from "react";
+import "../styles/events.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import "../styles/events.css";
+import hackathon from "../assets/hackathon.png"
+import fest from "../assets/fest.png"
+import FeaturedEventCard from "../components/FeatureEventsCard";
+import { Search } from "lucide-react";
 
-export default function Events() {
-  const categories = [
-    "All",
-    "Technical",
-    "Cultural",
-    "Sports",
-    "Workshop",
-    "Seminar",
-  ];
-
-  const [activeCategory, setActiveCategory] = useState("All");
-
-  // 🎯 Category-based image collections
-  const categoryImages = {
-    Technical: [
-      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d",
-      "https://images.unsplash.com/photo-1518770660439-4636190af475",
-      "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
-    ],
-    Cultural: [
-      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30",
-      "https://images.unsplash.com/photo-1506157786151-b8491531f063",
-      "https://images.unsplash.com/photo-1464375117522-1311dd6d0cd7",
-    ],
-    Sports: [
-      "https://images.unsplash.com/photo-1508098682722-e99c643e7f68",
-      "https://images.unsplash.com/photo-1517649763962-0c623066013b",
-      "https://images.unsplash.com/photo-1505842465776-3bfd1881e3c9",
-    ],
-    Workshop: [
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
-      "https://images.unsplash.com/photo-1515169067868-5387ec356754",
-      "https://images.unsplash.com/photo-1552664730-d307ca884978",
-    ],
-    Seminar: [
-      "https://images.unsplash.com/photo-1551836022-d5d88e9218df",
-      "https://images.unsplash.com/photo-1503428593586-e225b39bddfe",
-      "https://images.unsplash.com/photo-1542744173-8e7e53415bb0",
-    ],
-  };
-
-  // 🗂 Events Data
-  const events = [
-    {
-      id: 1,
-      title: "Hackathon 2026",
-      category: "Technical",
-      date: "12 March 2026",
-      location: "Auditorium Hall",
-      description:
-        "Join us for an intense 24-hour coding competition where innovators build real-world solutions.",
-    },
-    {
-      id: 2,
-      title: "Cultural Fest",
-      category: "Cultural",
-      date: "18 March 2026",
-      location: "Main Ground",
-      description:
-        "A grand celebration of music, dance, drama and creativity.",
-    },
-    {
-      id: 3,
-      title: "Football Tournament",
-      category: "Sports",
-      date: "25 March 2026",
-      location: "Sports Complex",
-      description:
-        "Inter-college football championship with exciting prizes.",
-    },
-    {
-      id: 4,
-      title: "AI Workshop",
-      category: "Workshop",
-      date: "30 March 2026",
-      location: "Lab 3",
-      description:
-        "Hands-on workshop on Artificial Intelligence and Machine Learning.",
-    },
-    {
-      id: 5,
-      title: "Startup Seminar",
-      category: "Seminar",
-      date: "5 April 2026",
-      location: "Conference Hall",
-      description:
-        "Learn startup strategies from successful entrepreneurs.",
-    },
-  ];
-
-  // 🖼 Generate stable random image per event (prevents image changing on filter)
- const eventsWithImages = events.map((event) => {
-  const images = categoryImages[event.category];
-  const randomImage =
-    images[Math.floor(Math.random() * images.length)];
-
-  return {
-    ...event,
-    image: `${randomImage}?auto=format&fit=crop&w=800&q=80`,
-  };
-});
-
-  const filteredEvents =
-    activeCategory === "All"
-      ? eventsWithImages
-      : eventsWithImages.filter(
-          (event) => event.category === activeCategory
-        );
-
+function Events() {
   return (
-    <>
+    <div className="events-page-wrapper">
+
+      {/* Grid background layer */}
+      <div className="events-grid-bg" />
+
       <Navbar />
 
-      <motion.div
-        className="events-page"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
-      >
-        <motion.h1
-          className="events-title"
-          initial={{ y: -40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-        >
-          Explore Events
-        </motion.h1>
+      <div className="events-page">
 
-        {/* Category Tabs */}
-        <div className="category-tabs">
-          {categories.map((cat) => (
-            <motion.button
-              key={cat}
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setActiveCategory(cat)}
-              className={`category-btn ${
-                activeCategory === cat ? "active" : ""
-              }`}
-            >
-              {cat}
-            </motion.button>
-          ))}
+        {/* HERO SECTION */}
+        <div className="events-hero">
+
+          <h1 className="events-title">Explore Events</h1>
+
+          <p className="events-subtitle">
+            Discover workshops, hackathons, fests and more
+          </p>
+
+          {/* SEARCH BAR */}
+          <div className="search-container">
+            <Search size={18} className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search events..."
+              className="search-input"
+            />
+          </div>
+
+          {/* FILTERS */}
+          <div className="event-filters">
+            <button className="filter active">All Events</button>
+            <button className="filter">Technical</button>
+            <button className="filter">Cultural</button>
+            <button className="filter">Sports</button>
+            <button className="filter">Workshops</button>
+            <button className="filter">Hackathons</button>
+          </div>
+
         </div>
+      </div>
 
-        {/* Animated Grid */}
-        <motion.div layout className="events-grid">
-          <AnimatePresence>
-            {filteredEvents.map((event) => (
-              <motion.div
-                key={event.id}
-                layout
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                whileHover={{ y: -10 }}
-                className="event-card"
-              >
-                <img src={event.image} alt={event.title} />
 
-                <div className="event-content">
-                  <span className="event-category">
-                    {event.category}
-                  </span>
+      {/* FEATURED EVENTS SECTION */}
 
-                  <h3>{event.title}</h3>
-                  <p>{event.date}</p>
-                  <p>{event.location}</p>
+      <section className="featured-section">
 
-                  {/* 🔥 View Details Linked */}
-                  <Link to={`/events/${event.id}`}>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="details-btn"
-                    >
-                      View Details
-                    </motion.button>
-                  </Link>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-      </motion.div>
+        <h2 className="featured-heading">Featured Events</h2>
+
+        {/* FEATURED CARD 1 */}
+
+        <FeaturedEventCard
+          category="Hackathons"
+          title="HackSphere 2026"
+          description="A 48-hour hackathon where students build innovative solutions to real-world problems. Prizes worth $10,000 up for grabs!"
+          date="Mar 15, 2026 • 9:00 AM - 9:00 PM"
+          location="Innovation Hub, Building A"
+          users="342/500 registered (68% full)"
+          image={hackathon}
+        />
+
+        {/* FEATURED CARD 2 */}
+
+        <FeaturedEventCard
+          category="Cultural"
+          title="Spring Cultural Fest"
+          description="The biggest cultural extravaganza of the year with performances, art exhibitions, and food stalls from around the world."
+          date="Mar 20, 2026 • 10:00 AM - 10:00 PM"
+          location="Main Amphitheater"
+          users="1200/2000 registered (60% full)"
+          image={fest}
+        />
+
+      </section>
 
       <Footer />
-    </>
+
+    </div>
   );
 }
+
+export default Events;

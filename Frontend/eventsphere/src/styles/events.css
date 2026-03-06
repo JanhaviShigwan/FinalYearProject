@@ -1,220 +1,155 @@
-/* =========================
-   EVENTS PAGE BACKGROUND
-========================= */
+.events-page{
+  position: relative;
+  background-color:#F6F1EB;
+  padding:70px 80px;
+}
+
+
+/* HERO SECTION */
+
+.events-hero{
+  padding-left: 80px;
+  padding-right: 80px;
+}
+
+
+/* TITLE */
+
+.events-title{
+  font-size: 64px;
+  font-weight: 700;
+  color: #3F3D56;
+  margin-bottom: 10px;
+}
+
+/* SUBTITLE */
+
+.events-subtitle{
+  font-size: 18px;
+  color: #6B6A7D;
+  margin-bottom: 35px;
+}
+
+/* SEARCH BAR */
+
+.search-container{
+  display: flex;
+  align-items: center;
+  width: 420px;
+  background: white;
+  border-radius: 40px;
+  padding: 12px 18px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.search-icon{
+  color: #9B96E5;
+}
+
+.search-input{
+  border: none;
+  outline: none;
+  margin-left: 10px;
+  width: 100%;
+  font-size: 15px;
+  background: transparent;
+}
+
+/* FILTER BUTTONS */
+
+.event-filters{
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter{
+  border: 1px solid #ddd;
+  background: white;
+  padding: 10px 18px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.filter:hover{
+  background: #F1F1F7;
+}
+
+.filter.active{
+  background: #9B96E5;
+  color: white;
+  border: none;
+}
+
+/* ========================================= */
+/* ANIMATED GRID BACKGROUND (SAME AS HOME) */
+/* ========================================= */
 
 .events-page {
-  padding: 100px 8%;
-  min-height: 100vh;
-  background:
-    radial-gradient(
-      at 20% 20%,
-      rgba(109, 40, 217, 0.08),
-      transparent 50%
-    ),
-    radial-gradient(
-      at 80% 80%,
-      rgba(13, 148, 136, 0.08),
-      transparent 50%
-    ),
-    #f8fafc;
-  transition: background 0.3s ease;
-}
-
-/* Dark Mode Background */
-
-.dark .events-page {
-  background:
-    radial-gradient(
-      at 20% 20%,
-      rgba(109, 40, 217, 0.18),
-      transparent 50%
-    ),
-    radial-gradient(
-      at 80% 80%,
-      rgba(13, 148, 136, 0.15),
-      transparent 50%
-    ),
-    #0f172a;
-}
-
-/* =========================
-   TITLE
-========================= */
-
-.events-title {
-  text-align: center;
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 40px;
-  color: var(--text-color);
-}
-
-/* =========================
-   CATEGORY TABS
-========================= */
-
-.category-tabs {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 50px;
-}
-
-.category-btn {
-  padding: 10px 22px;
-  border-radius: 30px;
-  border: 1px solid rgba(109, 40, 217, 0.3);
-  background: white;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.dark .category-btn {
-  background: #1f2937;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-}
-
-.category-btn:hover {
-  background: #6d28d9;
-  color: white;
-}
-
-.category-btn.active {
-  background: #6d28d9;
-  color: white;
-}
-
-/* =========================
-   EVENTS GRID
-========================= */
-
-.events-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
-}
-
-/* =========================
-   EVENT CARD
-========================= */
-
-.event-card {
   position: relative;
-  background: var(--card-bg);
-  border-radius: 20px;
-  overflow: hidden;
-  transition: 0.4s ease;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  /* background-color: #F6F1EB; */
+  overflow-x: hidden;
 }
 
-.dark .event-card {
-  border: 1px solid rgba(255, 255, 255, 0.06);
+.events-page-wrapper{
+  position: relative;
+  background-color: #F6F1EB;
+  min-height: 100vh;
 }
 
-/* Spotlight Effect */
+/* GRID */
 
-.event-card::before {
+.events-page::before {
   content: "";
-  position: absolute;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(
-    circle,
-    rgba(109, 40, 217, 0.15),
-    transparent 70%
-  );
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  transition: 0.4s ease;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
   pointer-events: none;
+
+  background-image:
+    linear-gradient(to right, rgba(155,150,229,0.14) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(155,150,229,0.14) 1px, transparent 1px);
+
+  background-size: 50px 50px;
+
+  transition: all 0.4s ease;
 }
 
-.dark .event-card::before {
+/* GLOW */
+
+.events-page::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+
   background: radial-gradient(
-    circle,
-    rgba(109, 40, 217, 0.25),
-    transparent 70%
+    circle at center,
+    rgba(155,150,229,0.20) 0%,
+    transparent 60%
   );
+
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
 
-.event-card:hover::before {
+/* HOVER ANIMATION */
+
+.events-page:hover::before {
+  animation: moveGrid 12s linear infinite;
+}
+
+.events-page:hover::after {
   opacity: 1;
 }
 
-/* Hover Lift */
+/* KEEP CONTENT ABOVE GRID */
 
-.event-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-}
-
-.dark .event-card:hover {
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-}
-
-/* =========================
-   IMAGE
-========================= */
-
-.event-card img {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-  transition: 0.4s ease;
-}
-
-.event-card:hover img {
-  transform: scale(1.05);
-}
-
-/* =========================
-   CARD CONTENT
-========================= */
-
-.event-content {
-  padding: 20px;
-}
-
-.event-category {
-  background: #0d9488;
-  color: white;
-  padding: 5px 12px;
-  font-size: 0.8rem;
-  border-radius: 20px;
-}
-
-.event-content h3 {
-  margin: 15px 0 10px;
-  font-size: 1.2rem;
-  color: var(--text-color);
-}
-
-.event-content p {
-  font-size: 0.9rem;
-  color: gray;
-  margin: 4px 0;
-}
-
-/* =========================
-   DETAILS BUTTON
-========================= */
-
-.details-btn {
-  margin-top: 15px;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 8px;
-  background: #fdbA74;
-  cursor: pointer;
-  font-weight: 500;
-  transition: 0.3s ease;
-}
-
-.details-btn:hover {
-  opacity: 0.9;
+.events-page > * {
+  position: relative;
+  z-index: 1;
 }

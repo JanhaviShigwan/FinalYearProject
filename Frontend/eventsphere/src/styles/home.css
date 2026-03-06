@@ -12,18 +12,20 @@
 /* ========================================= */
 
 .home-wrapper {
-  position: relative;
-  background-color: #F6F1EB; /* Warm Cream */
+  position: fixed;
+  background-color: #F6F1EB;
   overflow-x: hidden;
+  z-index: 0;
+  inset: 0 ;
 }
 
+/* GRID LAYER */
 
-/* Keep original grid style */
 .home-wrapper::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: -1;
   pointer-events: none;
 
   background-image:
@@ -31,26 +33,58 @@
     linear-gradient(to bottom, rgba(155,150,229,0.14) 1px, transparent 1px);
 
   background-size: 50px 50px;
-
   transition: all 0.4s ease;
 }
 
-/* Glow layer (subtle, no layout change) */
+/* GLOW LAYER */
+
 .home-wrapper::after {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: -1;
   pointer-events: none;
 
   background: radial-gradient(
     circle at center,
     rgba(155,150,229,0.20) 0%,
-    transparent 60%
+    rgba(155,150,229,0.12) 40%,
+    transparent 70%
   );
 
   opacity: 0;
   transition: opacity 0.4s ease;
+}
+
+/* Hover animation */
+
+.home-wrapper:hover::before {
+  animation: moveGrid 12s linear infinite;
+}
+
+.home-wrapper:hover::after {
+  opacity: 1;
+}
+
+/* Grid movement animation */
+
+@keyframes moveGrid {
+  from { transform: translate(0, 0); }
+  to { transform: translate(-50px, -50px); }
+}
+
+/* Keep page content above background */
+
+.home-wrapper > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ensure page content stays above */
+
+.home-wrapper > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Only activate on hover */
