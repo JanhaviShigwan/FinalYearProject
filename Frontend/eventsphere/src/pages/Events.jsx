@@ -1,24 +1,120 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/events.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import hackathon from "../assets/hackathon.png"
-import fest from "../assets/fest.png"
 import FeaturedEventCard from "../components/FeatureEventsCard";
+import EventCard from "../components/EventCard";
 import { Search } from "lucide-react";
 
 function Events() {
-  return (
-    <div className="events-page-wrapper">
 
-      {/* Grid background layer */}
-      <div className="events-grid-bg" />
+  const [events, setEvents] = useState([]);
+  const [featuredEvents, setFeaturedEvents] = useState([]);
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeStatus, setActiveStatus] = useState("All");
+  const [visibleEvents, setVisibleEvents] = useState(12);
+
+  /* =========================
+     FETCH EVENTS
+  ========================= */
+
+  useEffect(() => {
+
+    fetch("http://localhost:5000/api/events")
+      .then(res => res.json())
+      .then(data => {
+
+        setEvents(data);
+
+        const featured = data.filter(event => event.isFeatured === true);
+        setFeaturedEvents(featured);
+
+      })
+      .catch(err => console.log(err));
+
+  }, []);
+
+  /* =========================
+     CATEGORY LIST FROM DB
+  ========================= */
+
+  const categories = [
+    "All",
+    ...new Set(events.map(event => event.category))
+  ];
+
+  /* =========================
+     EVENT STATUS FUNCTION
+  ========================= */
+
+  const getEventStatus = (event) => {
+
+    const now = new Date();
+    const eventDate = new Date(`${event.date} ${event.time}`);
+
+    if (eventDate > now) return "Upcoming";
+
+    if (eventDate.toDateString() === now.toDateString())
+      return "Ongoing";
+
+    return "Past";
+
+  };
+
+  /* =========================
+     CATEGORY FILTER
+  ========================= */
+
+  const categoryFilteredEvents =
+    activeCategory === "All"
+      ? events
+      : events.filter(
+          event =>
+            event.category.toLowerCase() === activeCategory.toLowerCase()
+        );
+
+  /* =========================
+     STATUS COUNTS (BASED ON CATEGORY)
+  ========================= */
+
+  const allCount = categoryFilteredEvents.length;
+
+  const upcomingCount = categoryFilteredEvents.filter(
+    e => getEventStatus(e) === "Upcoming"
+  ).length;
+
+  const ongoingCount = categoryFilteredEvents.filter(
+    e => getEventStatus(e) === "Ongoing"
+  ).length;
+
+  const pastCount = categoryFilteredEvents.filter(
+    e => getEventStatus(e) === "Past"
+  ).length;
+
+  /* =========================
+     STATUS FILTER
+  ========================= */
+
+  let filteredEvents = categoryFilteredEvents;
+
+  if (activeStatus !== "All") {
+
+    filteredEvents = categoryFilteredEvents.filter(
+      event => getEventStatus(event) === activeStatus
+    );
+
+  }
+
+  return (
+
+    <div className="events-page-wrapper">
 
       <Navbar />
 
       <div className="events-page">
 
-        {/* HERO SECTION */}
+        {/* HERO */}
+
         <div className="events-hero">
 
           <h1 className="events-title">Explore Events</h1>
@@ -27,9 +123,11 @@ function Events() {
             Discover workshops, hackathons, fests and more
           </p>
 
-          {/* SEARCH BAR */}
+          {/* SEARCH */}
+
           <div className="search-container">
             <Search size={18} className="search-icon" />
+
             <input
               type="text"
               placeholder="Search events..."
@@ -37,56 +135,153 @@ function Events() {
             />
           </div>
 
-          {/* FILTERS */}
+          {/* CATEGORY FILTERS */}
+
           <div className="event-filters">
-            <button className="filter active">All Events</button>
-            <button className="filter">Technical</button>
-            <button className="filter">Cultural</button>
-            <button className="filter">Sports</button>
-            <button className="filter">Workshops</button>
-            <button className="filter">Hackathons</button>
+
+            {categories.map(category => (
+
+              <button
+                key={category}
+                className={`filter ${activeCategory === category ? "active" : ""}`}
+                onClick={() => {
+                  setActiveCategory(category);
+                  setActiveStatus("All");  // reset status
+                }}
+              >
+                {category === "All" ? "All Events" : category}
+              </button>
+
+            ))}
+
           </div>
 
         </div>
+
+        {/* FEATURED EVENTS */}
+
+        {activeCategory === "All" && (
+
+          <section className="featured-section">
+
+            <h2 className="featured-heading">Featured Events</h2>
+
+            {featuredEvents.slice(0,2).map(event => (
+
+              <FeaturedEventCard
+                key={event._id}
+                category={event.category}
+                title={event.eventName}
+                description={event.shortDescription}
+                date={`${event.date} • ${event.time}`}
+                location={event.venue}
+                users={`${event.registeredUsers}/${event.totalCapacity} registered`}
+              />
+
+            ))}
+
+          </section>
+
+        )}
+
       </div>
 
+      {/* =========================
+         BROWSE EVENTS
+      ========================= */}
 
-      {/* FEATURED EVENTS SECTION */}
+      <section className="browse-events-section">
 
-      <section className="featured-section">
+        <h2 className="browse-heading">
+          {activeCategory === "All"
+            ? "Browse Events"
+            : `${activeCategory} Events`}
+        </h2>
 
-        <h2 className="featured-heading">Featured Events</h2>
+        {/* STATUS FILTER TABS */}
 
-        {/* FEATURED CARD 1 */}
+        <div className="status-tabs">
 
-        <FeaturedEventCard
-          category="Hackathons"
-          title="HackSphere 2026"
-          description="A 48-hour hackathon where students build innovative solutions to real-world problems. Prizes worth $10,000 up for grabs!"
-          date="Mar 15, 2026 • 9:00 AM - 9:00 PM"
-          location="Innovation Hub, Building A"
-          users="342/500 registered (68% full)"
-          image={hackathon}
-        />
+          <button
+            className={activeStatus === "All" ? "tab active" : "tab"}
+            onClick={() => setActiveStatus("All")}
+          >
+            All ({allCount})
+          </button>
 
-        {/* FEATURED CARD 2 */}
+          <button
+            className={activeStatus === "Upcoming" ? "tab active" : "tab"}
+            onClick={() => setActiveStatus("Upcoming")}
+          >
+            Upcoming ({upcomingCount})
+          </button>
 
-        <FeaturedEventCard
-          category="Cultural"
-          title="Spring Cultural Fest"
-          description="The biggest cultural extravaganza of the year with performances, art exhibitions, and food stalls from around the world."
-          date="Mar 20, 2026 • 10:00 AM - 10:00 PM"
-          location="Main Amphitheater"
-          users="1200/2000 registered (60% full)"
-          image={fest}
-        />
+          <button
+            className={activeStatus === "Ongoing" ? "tab active" : "tab"}
+            onClick={() => setActiveStatus("Ongoing")}
+          >
+            Ongoing ({ongoingCount})
+          </button>
+
+          <button
+            className={activeStatus === "Past" ? "tab active" : "tab"}
+            onClick={() => setActiveStatus("Past")}
+          >
+            Past ({pastCount})
+          </button>
+
+        </div>
+
+        {/* EVENTS GRID */}
+
+        <div className="events-grid">
+
+  {filteredEvents.length === 0 ? (
+
+    <div className="no-events">
+      No events found
+    </div>
+
+  ) : (
+
+    filteredEvents.slice(0, visibleEvents).map(event => (
+
+      <EventCard
+        key={event._id}
+        event={event}
+      />
+
+    ))
+
+  )}
+
+</div>
+
+        {/* LOAD MORE */}
+
+        {visibleEvents < filteredEvents.length && (
+
+          <div className="load-more-container">
+
+            <button
+              className="load-more-btn"
+              onClick={() => setVisibleEvents(prev => prev + 12)}
+            >
+              Load More Events
+            </button>
+
+          </div>
+
+        )}
 
       </section>
 
       <Footer />
 
     </div>
+
   );
+
 }
 
 export default Events;

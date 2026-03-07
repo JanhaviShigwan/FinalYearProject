@@ -2,96 +2,106 @@
    EVENT CARD
 ========================= */
 
-.event-card {
-  background: white;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+.event-card{
+  position:relative;
+  background:white;
+  border-radius:20px;
+  padding:22px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+  transition:all 0.25s ease;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
 }
 
-.event-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 18px 35px rgba(0,0,0,0.12);
+.event-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 16px 30px rgba(0,0,0,0.12);
 }
 
-/* =========================
-   IMAGE
-========================= */
-
-.event-image {
-  position: relative;
-  height: 150px;
-  overflow: hidden;
-}
-
-.event-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
 
 /* =========================
    CATEGORY BADGE
 ========================= */
 
-.event-category {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  background: rgba(155,150,229,0.9);
-  color: white;
-  font-size: 13px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-weight: 600;
+.event-category{
+  align-self:flex-start;
+  background:#F08A6C;
+  color:white;
+  font-size:13px;
+  padding:5px 12px;
+  border-radius:20px;
+  font-weight:600;
+  margin-bottom:12px;
 }
+
 
 /* =========================
    CONTENT
 ========================= */
 
-.event-content {
-  padding: 14px 16px;
+.event-content{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
 }
 
-.event-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #3F3D56;
-  margin-bottom: 8px;
+.event-title{
+  font-size:20px;
+  font-weight:700;
+  color:#3F3D56;
+}
+
+.event-description{
+  font-size:14px;
+  color:#6B6A7D;
+  line-height:1.5;
+}
+
+/* Highlight event title on hover */
+
+.event-card:hover .event-title{
+  color:#9B96E5;   /* Lavender from your color scheme */
+  transition:color 0.25s ease;
 }
 
 /* =========================
-   INFO
+   META INFO
 ========================= */
 
-.event-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #6b7280;
-  font-size: 14px;
-  margin-bottom: 6px;
+.event-meta{
+  margin-top:8px;
 }
+
+.event-info{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:14px;
+  color:#6B6A7D;
+  margin-bottom:6px;
+}
+
 
 /* =========================
    BUTTON
 ========================= */
 
-.event-btn {
-  width: 100%;
-  margin-top: 10px;
-  padding: 8px;
-  border-radius: 999px;
-  border: none;
-  background: linear-gradient(135deg,#9B96E5,#8A85DC);
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.25s;
+.event-btn{
+  margin-top:14px;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:999px;
+  background:#F08A6C;
+  color:white;
+  font-weight:600;
+  font-size:15px;
+  cursor:pointer;
+  transition:0.25s;
 }
 
-.event-btn:hover {
-  opacity: 0.9;
+.event-btn:hover{
+  background:#e6785a;
 }

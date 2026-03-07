@@ -1,43 +1,53 @@
+import React from "react";
 import { Calendar, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 import "../styles/eventcard.css";
 
-export default function EventCard({
-  image,
-  category,
-  title,
-  date,
-  location,
-}) {
+const EventCard = React.memo(({ event }) => {
+
+  if (!event) return null;
+
   return (
     <div className="event-card">
 
-      <div className="event-image">
-        <img src={image} alt={title} />
-
-        <span className="event-category">
-          {category}
-        </span>
-      </div>
+      <span className="event-category">
+        {event?.category}
+      </span>
 
       <div className="event-content">
 
-        <h3 className="event-title">{title}</h3>
+        <h3 className="event-title">
+          {event?.eventName}
+        </h3>
 
-        <div className="event-info">
-          <Calendar size={16} />
-          <span>{date}</span>
+        <p className="event-description">
+          {event?.shortDescription}
+        </p>
+
+        <div className="event-meta">
+
+          <div className="event-info">
+            <Calendar size={16} />
+            <span>{event?.date} • {event?.time}</span>
+          </div>
+
+          <div className="event-info">
+            <MapPin size={16} />
+            <span>{event?.venue}</span>
+          </div>
+
         </div>
 
-        <div className="event-info">
-          <MapPin size={16} />
-          <span>{location}</span>
-        </div>
-
-        <button className="event-btn">
-          View Details
-        </button>
+        <Link to={`/events/${event?._id}`}>
+          <button className="event-btn">
+            View Details
+          </button>
+        </Link>
 
       </div>
+
     </div>
   );
-}
+});
+
+export default EventCard;

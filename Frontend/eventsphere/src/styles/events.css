@@ -1,155 +1,272 @@
-.events-page{
-  position: relative;
+/* ========================================= */
+/* PAGE WRAPPER */
+/* ========================================= */
+
+.events-page-wrapper{
+  position:relative;
   background-color:#F6F1EB;
-  padding:70px 80px;
+  min-height:100vh;
+  overflow-x:hidden;
 }
 
 
+/* ========================================= */
+/* MAIN PAGE */
+/* ========================================= */
+
+.events-page{
+  position:relative;
+  padding:70px 80px;
+  overflow-x:hidden;
+  z-index:1;
+}
+
+
+/* ========================================= */
 /* HERO SECTION */
+/* ========================================= */
 
 .events-hero{
-  padding-left: 80px;
-  padding-right: 80px;
+  position:relative;
+  z-index:2;
+  padding-left:80px;
+  padding-right:80px;
+  margin-bottom:80px;
 }
 
 
 /* TITLE */
 
 .events-title{
-  font-size: 64px;
-  font-weight: 700;
-  color: #3F3D56;
-  margin-bottom: 10px;
+  font-size:64px;
+  font-weight:700;
+  color:#3F3D56;
+  margin-bottom:10px;
 }
+
 
 /* SUBTITLE */
 
 .events-subtitle{
-  font-size: 18px;
-  color: #6B6A7D;
-  margin-bottom: 35px;
+  font-size:18px;
+  color:#6B6A7D;
+  margin-bottom:35px;
 }
 
+
+/* ========================================= */
 /* SEARCH BAR */
+/* ========================================= */
 
 .search-container{
-  display: flex;
-  align-items: center;
-  width: 420px;
-  background: white;
-  border-radius: 40px;
-  padding: 12px 18px;
-  margin-bottom: 25px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  display:flex;
+  align-items:center;
+  width:420px;
+  background:white;
+  border-radius:40px;
+  padding:12px 18px;
+  margin-bottom:25px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.05);
 }
 
 .search-icon{
-  color: #9B96E5;
+  color:#9B96E5;
 }
 
 .search-input{
-  border: none;
-  outline: none;
-  margin-left: 10px;
-  width: 100%;
-  font-size: 15px;
-  background: transparent;
+  border:none;
+  outline:none;
+  margin-left:10px;
+  width:100%;
+  font-size:15px;
+  background:transparent;
 }
 
+
+/* ========================================= */
 /* FILTER BUTTONS */
+/* ========================================= */
 
 .event-filters{
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
 }
 
 .filter{
-  border: 1px solid #ddd;
-  background: white;
-  padding: 10px 18px;
-  border-radius: 30px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: 0.2s;
+  border:1px solid #ddd;
+  background:white;
+  padding:10px 18px;
+  border-radius:30px;
+  cursor:pointer;
+  font-size:14px;
+  transition:0.2s;
 }
 
 .filter:hover{
-  background: #F1F1F7;
+  background:#F1F1F7;
 }
 
 .filter.active{
-  background: #9B96E5;
-  color: white;
-  border: none;
+  background:#9B96E5;
+  color:white;
+  border:none;
 }
+
 
 /* ========================================= */
-/* ANIMATED GRID BACKGROUND (SAME AS HOME) */
+/* FEATURED EVENTS */
 /* ========================================= */
 
-.events-page {
-  position: relative;
-  /* background-color: #F6F1EB; */
-  overflow-x: hidden;
+.featured-section{
+  padding:40px 80px;
 }
 
-.events-page-wrapper{
-  position: relative;
-  background-color: #F6F1EB;
-  min-height: 100vh;
+.featured-heading{
+  font-size:26px;
+  font-weight:600;
+  margin-bottom:30px;
+  color:#3F3D56;
 }
 
-/* GRID */
 
-.events-page::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
+/* ========================================= */
+/* BROWSE EVENTS */
+/* ========================================= */
+
+.browse-events-section{
+  padding:60px 80px;
+}
+
+.browse-heading{
+  font-size:28px;
+  font-weight:700;
+  margin-bottom:30px;
+  color:#3F3D56;
+}
+
+
+/* EVENTS GRID */
+
+.events-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:30px;
+}
+
+
+/* ========================================= */
+/* LOAD MORE BUTTON */
+/* ========================================= */
+
+.load-more-container{
+  text-align:center;
+  margin-top:40px;
+}
+
+.load-more-btn{
+  padding:12px 28px;
+  border:none;
+  border-radius:999px;
+  background:#9B96E5;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.load-more-btn:hover{
+  background:#8A85DC;
+}
+
+
+/* ========================================= */
+/* ANIMATED GRID BACKGROUND */
+/* ========================================= */
+
+.events-page-wrapper::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
 
   background-image:
     linear-gradient(to right, rgba(155,150,229,0.14) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(155,150,229,0.14) 1px, transparent 1px);
 
-  background-size: 50px 50px;
-
-  transition: all 0.4s ease;
+  background-size:50px 50px;
 }
 
-/* GLOW */
 
-.events-page::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
+/* GRID MOVEMENT */
 
-  background: radial-gradient(
-    circle at center,
-    rgba(155,150,229,0.20) 0%,
-    transparent 60%
+@keyframes moveGrid{
+  from{
+    transform:translate(0,0);
+  }
+  to{
+    transform:translate(-50px,-50px);
+  }
+}
+
+.events-page-wrapper:hover::before{
+  animation:moveGrid 12s linear infinite;
+}
+
+.event-skeleton{
+  height:220px;
+  background:linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e6e6e6 37%,
+    #f0f0f0 63%
   );
-
-  opacity: 0;
-  transition: opacity 0.4s ease;
+  background-size:400% 100%;
+  border-radius:20px;
+  animation:skeletonLoading 1.4s ease infinite;
 }
 
-/* HOVER ANIMATION */
-
-.events-page:hover::before {
-  animation: moveGrid 12s linear infinite;
+@keyframes skeletonLoading{
+  0%{
+    background-position:100% 0;
+  }
+  100%{
+    background-position:-100% 0;
+  }
 }
 
-.events-page:hover::after {
-  opacity: 1;
+.status-tabs{
+  display:flex;
+  gap:12px;
+  margin-bottom:30px;
+  background:white;
+  padding:6px;
+  border-radius:40px;
+  width:fit-content;
+  box-shadow:0 4px 10px rgba(0,0,0,0.05);
 }
 
-/* KEEP CONTENT ABOVE GRID */
+.tab{
+  padding:8px 18px;
+  border:none;
+  border-radius:30px;
+  background:transparent;
+  cursor:pointer;
+  font-weight:500;
+  color:#3F3D56;
+}
 
-.events-page > * {
-  position: relative;
-  z-index: 1;
+.tab.active{
+  background:#9B96E5;
+  color:white;
+}
+
+.no-events{
+  grid-column:1 / -1;
+  text-align:center;
+  padding:60px 0;
+  font-size:18px;
+  color:#6B6A7D;
+  font-weight:500;
 }

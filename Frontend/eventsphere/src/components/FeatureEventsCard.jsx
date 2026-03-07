@@ -1,6 +1,7 @@
 import React from "react";
 import "../styles/featureeventcard.css";
 import { Calendar, MapPin, Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function FeaturedEventCard({
   category,
@@ -11,6 +12,13 @@ function FeaturedEventCard({
   users,
   image
 }) {
+
+  const navigate = useNavigate();
+
+  const handleViewDetails = () => {
+    navigate("/view-details");
+  };
+
   return (
     <div className="featured-card">
 
@@ -67,7 +75,10 @@ function FeaturedEventCard({
         </div>
 
 
-        <button className="featured-button">
+        <button
+          className="featured-button"
+          onClick={handleViewDetails}
+        >
           View Details →
         </button>
 
