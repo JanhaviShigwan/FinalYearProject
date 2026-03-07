@@ -105,3 +105,47 @@
 .event-btn:hover{
   background:#e6785a;
 }
+
+/* LIVE BADGE */
+
+.live-badge{
+  position:absolute;
+  top:12px;
+  right:12px;
+  background:#ff4d4f;
+  color:white;
+  font-size:12px;
+  font-weight:700;
+  padding:4px 10px;
+  border-radius:20px;
+  animation:pulse 1.5s infinite;
+}
+
+/* LIVE PULSE ANIMATION */
+
+@keyframes pulse{
+  0%{
+    transform:scale(1);
+  }
+  50%{
+    transform:scale(1.08);
+  }
+  100%{
+    transform:scale(1);
+  }
+}
+
+
+/* PAST EVENTS STYLE */
+
+.past-event{
+  opacity:0.6;
+  filter:grayscale(30%);
+}
+
+/* DISABLE BUTTON */
+
+.event-btn:disabled{
+  background:#b5b5b5;
+  cursor:not-allowed;
+}

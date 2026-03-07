@@ -7,8 +7,25 @@ const EventCard = React.memo(({ event }) => {
 
   if (!event) return null;
 
+  const now = new Date();
+  const eventDate = new Date(`${event.date} ${event.time}`);
+
+  let status = "Upcoming";
+
+  if (eventDate.toDateString() === now.toDateString()) {
+    status = "Ongoing";
+  } else if (eventDate < now) {
+    status = "Past";
+  }
+
   return (
-    <div className="event-card">
+    <div className={`event-card ${status === "Past" ? "past-event" : ""}`}>
+
+      {/* LIVE BADGE */}
+
+      {status === "Ongoing" && (
+        <span className="live-badge">LIVE</span>
+      )}
 
       <span className="event-category">
         {event?.category}
@@ -39,8 +56,11 @@ const EventCard = React.memo(({ event }) => {
         </div>
 
         <Link to={`/events/${event?._id}`}>
-          <button className="event-btn">
-            View Details
+          <button
+            className="event-btn"
+            disabled={status === "Past"}
+          >
+            {status === "Past" ? "Event Ended" : "View Details"}
           </button>
         </Link>
 

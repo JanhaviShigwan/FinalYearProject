@@ -4,6 +4,7 @@ import { Calendar, MapPin, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function FeaturedEventCard({
+  _id,
   category,
   title,
   description,
@@ -16,8 +17,8 @@ function FeaturedEventCard({
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
-    navigate("/view-details");
-  };
+  navigate(`/events/${_id}`);
+};
 
   return (
     <div className="featured-card">
