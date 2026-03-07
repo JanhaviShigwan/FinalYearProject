@@ -95,15 +95,32 @@ function Events() {
      STATUS FILTER
   ========================= */
 
-  let filteredEvents = categoryFilteredEvents;
+ let filteredEvents = categoryFilteredEvents;
 
-  if (activeStatus !== "All") {
+if (activeStatus !== "All") {
 
-    filteredEvents = categoryFilteredEvents.filter(
-      event => getEventStatus(event) === activeStatus
-    );
+  filteredEvents = categoryFilteredEvents.filter(
+    event => getEventStatus(event) === activeStatus
+  );
 
-  }
+}
+
+/* SORT EVENTS */
+
+filteredEvents = filteredEvents.sort((a, b) => {
+
+  const statusOrder = {
+    Ongoing: 1,
+    Upcoming: 2,
+    Past: 3
+  };
+
+  const statusA = getEventStatus(a);
+  const statusB = getEventStatus(b);
+
+  return statusOrder[statusA] - statusOrder[statusB];
+
+});
 
   return (
 
