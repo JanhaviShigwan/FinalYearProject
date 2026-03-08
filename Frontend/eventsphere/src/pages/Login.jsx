@@ -16,7 +16,7 @@ import Footer from "../components/Footer";
 
 export default function Login() {
   const navigate = useNavigate();
-  const API_URL = "https://eventsphere-8sgd.onrender.com";
+  const API_URL = "http://localhost:5000";
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
