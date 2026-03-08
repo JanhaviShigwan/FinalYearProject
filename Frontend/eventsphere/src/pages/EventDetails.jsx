@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { MapPin, Calendar, Clock, Users, ArrowLeft } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
-const API="https://eventsphere-8sgd.onrender.com"
+const API="https://eventsphere-8sgd.onrender.com";
 
 function EventDetails() {
 

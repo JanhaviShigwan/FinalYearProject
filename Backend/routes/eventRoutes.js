@@ -7,25 +7,11 @@ const {
   createEvent
 } = require("../controllers/eventController");
 
-/* =========================
-   GET ALL EVENTS
-   GET /api/events
-========================= */
+
 router.get("/", getEvents);
 
+router.post("/create", createEvent);
 
-/* =========================
-   GET SINGLE EVENT
-   GET /api/events/:id
-========================= */
 router.get("/:id", getEventById);
-
-
-/* =========================
-   CREATE NEW EVENT
-   POST /api/events
-========================= */
-router.post("/", createEvent);
-
 
 module.exports = router;
