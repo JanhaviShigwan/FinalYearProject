@@ -64,7 +64,7 @@ export default function Dashboard() {
 
   const menuItems = [
     { href: "/dashboard",       icon: <LayoutDashboard size={20} />, label: "Dashboard",       active: true  },
-    { href: "#upcoming-events", icon: <Search size={20} />,          label: "Browse Events",   active: false },
+    { href: "/events", icon: <Search size={20} />,          label: "Browse Events",   active: false },
     { href: "/dashboard",       icon: <ClipboardList size={20} />,   label: "My Registrations",active: false },
     { href: "/dashboard",       icon: <Calendar size={20} />,        label: "Calendar",        active: false },
     { href: "/dashboard",       icon: <BarChart3 size={20} />,       label: "Analytics",       active: false },

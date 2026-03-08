@@ -14,6 +14,7 @@ function Events() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [activeStatus, setActiveStatus] = useState("All");
   const [visibleEvents, setVisibleEvents] = useState(12);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [searchParams] = useSearchParams();
   const categoryFromURL = searchParams.get("category");
@@ -43,35 +44,76 @@ function Events() {
   const getEventStatus = (event) => {
     const now = new Date();
     const eventDate = new Date(`${event.date} ${event.time}`);
+
     if (eventDate > now) return "Upcoming";
     if (eventDate.toDateString() === now.toDateString()) return "Ongoing";
     return "Past";
   };
 
+  /* Status priority for sorting */
+  const statusPriority = {
+    Ongoing: 1,
+    Upcoming: 2,
+    Past: 3
+  };
+
+  /* ── Category Filter ── */
   const categoryFiltered =
     activeCategory === "All"
       ? events
-      : events.filter(e => e.category.toLowerCase() === activeCategory.toLowerCase());
+      : events.filter(e =>
+          e.category.toLowerCase() === activeCategory.toLowerCase()
+        );
 
-  const allCount      = categoryFiltered.length;
-  const upcomingCount = categoryFiltered.filter(e => getEventStatus(e) === "Upcoming").length;
-  const ongoingCount  = categoryFiltered.filter(e => getEventStatus(e) === "Ongoing").length;
-  const pastCount     = categoryFiltered.filter(e => getEventStatus(e) === "Past").length;
+  /* ── Search Filter ── */
+  const searchFiltered = categoryFiltered.filter(event => {
+    const query = searchQuery.toLowerCase();
 
-  const statusOrder = { Ongoing: 1, Upcoming: 2, Past: 3 };
+    return (
+      event.eventName?.toLowerCase().includes(query) ||
+      event.category?.toLowerCase().includes(query) ||
+      event.organizer?.toLowerCase().includes(query) ||
+      event.venue?.toLowerCase().includes(query)
+    );
+  });
 
-  const filteredEvents = (
-    activeStatus === "All"
-      ? categoryFiltered
-      : categoryFiltered.filter(e => getEventStatus(e) === activeStatus)
-  ).sort((a, b) => statusOrder[getEventStatus(a)] - statusOrder[getEventStatus(b)]);
+  /* ── Status Counts ── */
+  const allCount = searchFiltered.length;
+
+  const upcomingCount = searchFiltered.filter(
+    e => getEventStatus(e) === "Upcoming"
+  ).length;
+
+  const ongoingCount = searchFiltered.filter(
+    e => getEventStatus(e) === "Ongoing"
+  ).length;
+
+  const pastCount = searchFiltered.filter(
+    e => getEventStatus(e) === "Past"
+  ).length;
 
   const statusTabs = [
-    { label: "All",      count: allCount      },
-    { label: "Upcoming", count: upcomingCount  },
-    { label: "Ongoing",  count: ongoingCount   },
-    { label: "Past",     count: pastCount      },
+    { label: "All", count: allCount },
+    { label: "Upcoming", count: upcomingCount },
+    { label: "Ongoing", count: ongoingCount },
+    { label: "Past", count: pastCount }
   ];
+
+  /* ── Status Filter ── */
+  let filteredEvents =
+    activeStatus === "All"
+      ? searchFiltered
+      : searchFiltered.filter(
+          e => getEventStatus(e) === activeStatus
+        );
+
+  /* ── Sort events by status ── */
+  filteredEvents = filteredEvents.sort((a, b) => {
+    const statusA = getEventStatus(a);
+    const statusB = getEventStatus(b);
+
+    return statusPriority[statusA] - statusPriority[statusB];
+  });
 
   /* ── Shared button classes ── */
   const filterBtn = (active) =>
@@ -83,21 +125,26 @@ function Events() {
 
   const tabBtn = (active) =>
     `px-[18px] py-2 border-none rounded-full cursor-pointer font-medium transition-all duration-200 ${
-      active ? "bg-[#9B96E5] text-white" : "bg-transparent text-[#3F3D56]"
+      active
+        ? "bg-[#9B96E5] text-white"
+        : "bg-transparent text-[#3F3D56]"
     }`;
 
   return (
-    /* Wrapper — ::before animated grid kept in index.css as .events-page-wrapper */
     <div className="events-page-wrapper relative bg-[#F6F1EB] min-h-screen overflow-x-hidden">
 
       <Navbar />
 
       <div className="relative px-20 pt-[70px] pb-0 overflow-x-hidden z-[1]">
 
-        {/* ── HERO ── */}
+        {/* HERO */}
         <div className="relative z-[2] px-20 mb-20">
-          <h1 className="text-[64px] font-bold text-[#3F3D56] mb-2.5">Explore Events</h1>
-          <p className="text-lg text-[#6B6A7D] mb-9">Discover workshops, hackathons, fests and more</p>
+          <h1 className="text-[64px] font-bold text-[#3F3D56] mb-2.5">
+            Explore Events
+          </h1>
+          <p className="text-lg text-[#6B6A7D] mb-9">
+            Discover workshops, hackathons, fests and more
+          </p>
 
           {/* Search */}
           <div className="flex items-center w-[420px] bg-white rounded-[40px] px-[18px] py-3 mb-6 shadow-[0_4px_10px_rgba(0,0,0,0.05)]">
@@ -105,7 +152,9 @@ function Events() {
             <input
               type="text"
               placeholder="Search events..."
-              className="border-none outline-none ml-2.5 w-full text-[15px] bg-transparent"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input outline-none flex-1 ml-2"
             />
           </div>
 
@@ -118,9 +167,13 @@ function Events() {
                 onClick={() => {
                   setActiveCategory(category);
                   setActiveStatus("All");
+
                   window.history.replaceState(
-                    null, "",
-                    category === "All" ? "/events" : `/events?category=${category}`
+                    null,
+                    "",
+                    category === "All"
+                      ? "/events"
+                      : `/events?category=${category}`
                   );
                 }}
               >
@@ -130,10 +183,13 @@ function Events() {
           </div>
         </div>
 
-        {/* ── FEATURED EVENTS ── */}
-        {activeCategory === "All" && (
+        {/* FEATURED EVENTS */}
+        {activeCategory === "All" && searchQuery.trim() === "" && (
           <section className="px-20 py-10">
-            <h2 className="text-[26px] font-semibold mb-8 text-[#3F3D56]">Featured Events</h2>
+            <h2 className="text-[26px] font-semibold mb-8 text-[#3F3D56]">
+              Featured Events
+            </h2>
+
             {featuredEvents.slice(0, 2).map(event => (
               <FeaturedEventCard
                 key={event._id}
@@ -148,13 +204,14 @@ function Events() {
             ))}
           </section>
         )}
-
       </div>
 
-      {/* ── BROWSE EVENTS ── */}
+      {/* BROWSE EVENTS */}
       <section className="px-20 py-[60px]">
         <h2 className="text-[28px] font-bold mb-8 text-[#3F3D56]">
-          {activeCategory === "All" ? "Browse Events" : `${activeCategory} Events`}
+          {activeCategory === "All"
+            ? "Browse Events"
+            : `${activeCategory} Events`}
         </h2>
 
         {/* Status tabs */}
@@ -170,16 +227,18 @@ function Events() {
           ))}
         </div>
 
-        {/* Events grid — auto-fill minmax(320px,1fr) kept in index.css as .events-grid */}
+        {/* Events grid */}
         <div className="events-grid gap-[30px]">
           {filteredEvents.length === 0 ? (
             <div className="col-span-full text-center py-[60px] text-lg text-[#6B6A7D] font-medium">
               No events found
             </div>
           ) : (
-            filteredEvents.slice(0, visibleEvents).map(event => (
-              <EventCard key={event._id} event={event} />
-            ))
+            filteredEvents
+              .slice(0, visibleEvents)
+              .map(event => (
+                <EventCard key={event._id} event={event} />
+              ))
           )}
         </div>
 
