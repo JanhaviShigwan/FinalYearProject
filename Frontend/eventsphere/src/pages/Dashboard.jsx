@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import {
   LayoutDashboard,
@@ -25,7 +25,9 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // logged in student
-  const student = JSON.parse(localStorage.getItem("eventSphereStudent")) || {};
+ const student = useMemo(() => {
+  return JSON.parse(localStorage.getItem("eventSphereStudent")) || {};
+}, []);
 
   const [dashboardData, setDashboardData] = useState({
     myRegistrations: [],
@@ -40,27 +42,27 @@ export default function Dashboard() {
 
   useEffect(() => {
 
-    const fetchDashboard = async () => {
+  const fetchDashboard = async () => {
 
-      try {
+    try {
 
-        const res = await axios.get(
-          `http://localhost:5000/api/dashboard/${student._id}`
-        );
+      const res = await axios.get(
+        `http://localhost:5000/api/dashboard/${student._id}`
+      );
 
-        setDashboardData(res.data);
+      setDashboardData(res.data);
 
-      } catch (error) {
-        console.error("Dashboard fetch error:", error);
-      }
-
-    };
-
-    if (student?._id) {
-      fetchDashboard();
+    } catch (error) {
+      console.error("Dashboard fetch error:", error);
     }
 
-  }, [student]);
+  };
+
+  if (student?._id) {
+    fetchDashboard();
+  }
+
+}, [student]);
 
   const menuItems = [
     { href: "/dashboard", icon: <LayoutDashboard size={20} />, label: "Dashboard", active: true },
