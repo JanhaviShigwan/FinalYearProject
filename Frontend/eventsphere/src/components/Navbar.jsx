@@ -2,13 +2,10 @@ import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/EventSphereLogo.png";
-import "../styles/navbar.css";
 
 export default function Navbar() {
-
   const location = useLocation();
   const navigate = useNavigate();
-
   const [isOpen, setIsOpen] = useState(false);
   const [student, setStudent] = useState(null);
 
@@ -21,10 +18,8 @@ export default function Navbar() {
   // ✅ Logout Function
   const handleLogout = () => {
     localStorage.removeItem("eventSphereStudent");
-
     setStudent(null);
     setIsOpen(false);
-
     navigate("/", { replace: true });
   };
 
@@ -36,67 +31,55 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="navbar-main">
-
-      <div className="navbar-inner">
+    <nav className="navbar-main sticky top-0 z-50 max-w-[1200px] w-full mx-auto mt-5 px-6 bg-white/90 backdrop-blur-md rounded-[18px] shadow-[0_8px_24px_rgba(0,0,0,0.06)] border border-[rgba(155,150,229,0.15)] transition-all duration-300 max-[767px]:w-[calc(100%-28px)] max-[767px]:px-4 max-[767px]:rounded-2xl">
+      <div className="py-[18px] flex justify-between items-center">
 
         {/* Logo */}
         <Link
           to="/"
-          className="navbar-logo"
+          className="flex items-center gap-[14px]"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         >
-          <img src={logo} alt="EventSphere Logo" className="logo-image" />
-
-          <span className="brand-text">
-            Event<span className="brand-accent">Sphere</span>
+          <img src={logo} alt="EventSphere Logo" className="w-[60px] h-[60px] object-contain" />
+          <span className="brand-text font-extrabold text-2xl text-[#3F3D56] tracking-[0.5px]">
+            Event<span className="text-[#9B96E5]">Sphere</span>
           </span>
         </Link>
 
         {/* Desktop Links */}
-        <div className="navbar-links">
-
+        <div className="hidden md:flex gap-10 font-medium">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               to={link.path}
-              className={`nav-link ${
-                location.pathname === link.path ? "nav-active" : ""
+              className={`text-base transition-all duration-300 hover:text-[#F08A6C] ${
+                location.pathname === link.path ? "text-[#9B96E5]" : "text-[#3F3D56]"
               }`}
-              onClick={() =>
-                window.scrollTo({ top: 0, behavior: "smooth" })
-              }
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             >
               {link.name}
             </Link>
           ))}
-
         </div>
 
         {/* Right Section */}
-        <div className="navbar-actions">
+        <div className="flex items-center gap-5">
 
           {/* Desktop Auth */}
-          <div className="auth-desktop">
-
+          <div className="hidden md:flex gap-4 items-center">
             {!student ? (
               <>
                 <Link
                   to="/login"
-                  className="nav-login-btn"
-                  onClick={() =>
-                    window.scrollTo({ top: 0, behavior: "smooth" })
-                  }
+                  className="text-[15px] text-[#3F3D56] transition-all duration-300 hover:text-[#F08A6C]"
+                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 >
                   Log in
                 </Link>
-
                 <Link
                   to="/register"
-                  className="nav-register-btn"
-                  onClick={() =>
-                    window.scrollTo({ top: 0, behavior: "smooth" })
-                  }
+                  className="px-[22px] py-[10px] rounded-[10px] font-semibold text-[15px] border-[1.5px] border-[#9B96E5] text-[#9B96E5] transition-all duration-300 hover:bg-[#9B96E5] hover:text-white"
+                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 >
                   Register
                 </Link>
@@ -105,25 +88,23 @@ export default function Navbar() {
               <>
                 <Link
                   to="/dashboard"
-                  className="nav-login-btn"
+                  className="text-[15px] text-[#3F3D56] transition-all duration-300 hover:text-[#F08A6C]"
                 >
                   Dashboard
                 </Link>
-
                 <button
                   onClick={handleLogout}
-                  className="nav-register-btn"
+                  className="px-[22px] py-[10px] rounded-[10px] font-semibold text-[15px] border-[1.5px] border-[#9B96E5] text-[#9B96E5] transition-all duration-300 hover:bg-[#9B96E5] hover:text-white"
                 >
                   Logout
                 </button>
               </>
             )}
-
           </div>
 
           {/* Mobile Hamburger */}
           <button
-            className="hamburger-btn"
+            className="block md:hidden p-[10px] rounded-[10px] bg-[#F6F1EB] text-[#3F3D56]"
             onClick={() => {
               setIsOpen(!isOpen);
               window.scrollTo({ top: 0, behavior: "smooth" });
@@ -131,20 +112,17 @@ export default function Navbar() {
           >
             {isOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
-
         </div>
-
       </div>
 
       {/* Mobile Menu */}
-      <div className={`mobile-menu ${isOpen ? "mobile-open" : ""}`}>
-
+      <div className={`${isOpen ? "flex" : "hidden"} flex-col gap-[18px] p-5 bg-white mt-3 rounded-2xl shadow-[0_6px_18px_rgba(0,0,0,0.05)]`}>
         {navLinks.map((link) => (
           <Link
             key={link.name}
             to={link.path}
-            className={`mobile-link ${
-              location.pathname === link.path ? "mobile-active" : ""
+            className={`text-base font-medium transition-all duration-300 hover:text-[#F08A6C] ${
+              location.pathname === link.path ? "text-[#9B96E5]" : "text-[#3F3D56]"
             }`}
             onClick={() => {
               setIsOpen(false);
@@ -155,8 +133,7 @@ export default function Navbar() {
           </Link>
         ))}
 
-        <div className="mobile-auth">
-
+        <div className="mt-3 pt-3 border-t border-[#F6F1EB] flex flex-col gap-3">
           {!student ? (
             <>
               <Link
@@ -168,7 +145,6 @@ export default function Navbar() {
               >
                 Log in
               </Link>
-
               <Link
                 to="/register"
                 onClick={() => {
@@ -187,7 +163,6 @@ export default function Navbar() {
               >
                 Dashboard
               </Link>
-
               <button
                 onClick={handleLogout}
                 className="mobile-logout-btn"
@@ -196,11 +171,8 @@ export default function Navbar() {
               </button>
             </>
           )}
-
         </div>
-
       </div>
-
     </nav>
   );
 }

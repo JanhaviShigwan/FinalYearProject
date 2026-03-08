@@ -14,9 +14,6 @@ body {
   @apply bg-background text-gray-800 transition-colors duration-300;
 }
 
-.dark body {
-  @apply bg-gray-900 text-gray-200;
-}
 /* ===== GLOBAL GRID BACKGROUND ===== */
 
 .app-background {
@@ -26,4 +23,448 @@ body {
     linear-gradient(rgba(155,150,229,0.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(155,150,229,0.08) 1px, transparent 1px);
   background-size: 40px 40px;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   HOME WRAPPER
+   Pseudo-elements (::before grid overlay, ::after glow) and @keyframes
+   cannot be expressed in Tailwind utility classes — kept here.
+───────────────────────────────────────────────────────────────────────────── */
+
+.home-wrapper {
+  position: fixed;
+  background-color: #F6F1EB;
+  overflow-x: hidden;
+  z-index: 0;
+  inset: 0;
+}
+
+.home-wrapper::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right,  rgba(155, 150, 229, 0.14) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(155, 150, 229, 0.14) 1px, transparent 1px);
+  background-size: 50px 50px;
+  transition: all 0.4s ease;
+}
+
+.home-wrapper::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at center,
+    rgba(155, 150, 229, 0.20) 0%,
+    rgba(155, 150, 229, 0.12) 40%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.home-wrapper:hover::before { animation: moveGrid 12s linear infinite; }
+.home-wrapper:hover::after  { opacity: 1; }
+
+@keyframes moveGrid {
+  from { transform: translate(0, 0); }
+  to   { transform: translate(-50px, -50px); }
+}
+
+.home-wrapper > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION H2 DECORATIVE UNDERLINE
+   ::after pseudo-element — cannot be done with Tailwind alone.
+   Apply class "section-underline" to any <h2> that needs the accent bar.
+───────────────────────────────────────────────────────────────────────────── */
+
+.section-underline::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 5px;
+  background: #F08A6C;
+  margin: 15px auto 0;
+  border-radius: 99px;
+  opacity: 0.8;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TRENDING GRID  (1.5fr / 1fr)
+   Tailwind only ships standard repeat() columns; arbitrary fr ratios need CSS.
+───────────────────────────────────────────────────────────────────────────── */
+
+.trending-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+}
+
+@media (max-width: 1024px) {
+  .trending-grid { grid-template-columns: 1fr; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TIMELINE VERTICAL LINE
+   ::before pseudo on the timeline container.
+───────────────────────────────────────────────────────────────────────────── */
+
+.timeline-track::before {
+  content: "";
+  position: absolute;
+  left: 40px;
+  top: 40px;
+  width: 2px;
+  height: 95%;
+  background-color: #E1DEEF;
+}
+
+@media (max-width: 640px) {
+  .timeline-track::before { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ABOUT PAGE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Animated grid background */
+
+.about-bg-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(155, 150, 229, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(155, 150, 229, 0.15) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: gridMove 25s linear infinite;
+  transition: all 0.5s ease;
+}
+
+@keyframes gridMove {
+  from { background-position: 0 0; }
+  to   { background-position: 40px 40px; }
+}
+
+/* Multi-color radial glow layer */
+
+.about-bg-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(155, 150, 229, 0.25), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(240, 138, 108, 0.25), transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(216, 232, 209, 0.25), transparent 50%);
+  filter: blur(80px);
+  animation: glowMove 18s ease-in-out infinite alternate;
+}
+
+@keyframes glowMove {
+  from { transform: translateY(-10px) translateX(-10px); }
+  to   { transform: translateY(10px)  translateX(10px);  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   AUTH PAGES (Login & Register)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Animated grid overlay */
+.animated-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(155, 150, 229, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(155, 150, 229, 0.08) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: authGridMove 18s linear infinite;
+}
+
+@keyframes authGridMove {
+  0%   { background-position: 0 0; }
+  100% { background-position: 60px 60px; }
+}
+
+/* Floating blob animation (applied via Tailwind animate-[floatBlob_...] */
+@keyframes floatBlob {
+  0%   { transform: translateY(0px)   scale(1);    }
+  50%  { transform: translateY(-40px) scale(1.05); }
+  100% { transform: translateY(0px)   scale(1);    }
+}
+
+/* Auth card responsive: stack on tablet */
+@media (max-width: 1024px) {
+  .auth-image-left-panel,
+  .auth-image-right-panel { display: none !important; }
+
+  .auth-form-panel {
+    width: 100% !important;
+    padding: 40px 24px !important;
+    border-radius: 30px !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DASHBOARD PAGE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Stats grid: 4 cols → 2 → 1 (can't do responsive repeat(4) in Tailwind alone) */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 2rem;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .stats-grid { grid-template-columns: 1fr; }
+}
+
+/* Registrations + Calendar side-by-side grid */
+.dashboard-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 30px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-bottom-grid { grid-template-columns: 1fr; }
+}
+
+/* Announcements 2-col grid */
+.announcement-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 1024px) {
+  .announcement-grid { grid-template-columns: 1fr; }
+}
+
+/* Calendar event-dot indicator — ::after pseudo on .cal-dot */
+.cal-dot::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  background: #F08A6C;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Sidebar slide-in on mobile */
+@media (max-width: 768px) {
+  .sidebar-mobile-hidden { transform: translateX(-100%); transition: 0.3s; }
+  .sidebar-mobile-open   { transform: translateX(0); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EVENT CARD
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* LIVE badge pulse — @keyframes cannot be expressed in Tailwind alone.
+   Referenced via Tailwind arbitrary animation: animate-[livePulse_1.5s_infinite] */
+@keyframes livePulse {
+  0%   { transform: scale(1);    }
+  50%  { transform: scale(1.08); }
+  100% { transform: scale(1);    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EVENT DETAILS PAGE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Hero: 3fr / 2fr — not expressible in standard Tailwind */
+.event-hero-grid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+}
+
+@media (max-width: 1024px) {
+  .event-hero-grid { grid-template-columns: 1fr; }
+}
+
+/* Details: repeat(4, 1fr) — needs responsive fallback */
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1024px) {
+  .details-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .details-grid { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EVENTS PAGE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Animated grid overlay — ::before pseudo-element */
+.events-page-wrapper::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right,  rgba(155, 150, 229, 0.14) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(155, 150, 229, 0.14) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.events-page-wrapper:hover::before {
+  animation: moveGrid 12s linear infinite;
+}
+
+/* Events grid — auto-fill minmax(320px, 1fr) not expressible in Tailwind */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+/* Skeleton loader */
+.event-skeleton {
+  height: 220px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e6e6e6 37%, #f0f0f0 63%);
+  background-size: 400% 100%;
+  border-radius: 20px;
+  animation: skeletonLoading 1.4s ease infinite;
+}
+
+@keyframes skeletonLoading {
+  0%   { background-position:  100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FAQ PAGE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Animated grid overlay — ::before pseudo-element */
+.faq-wrapper::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right,  rgba(155, 150, 229, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(155, 150, 229, 0.08) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: faqGridMove 20s linear infinite;
+}
+
+@keyframes faqGridMove {
+  0%   { transform: translateY(0px);  }
+  100% { transform: translateY(40px); }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NAVBAR PAGE
+   ═══════════════════════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap');
+
+/* Applied to brand text — Manrope is not a default Tailwind font */
+.brand-text {
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Retained for mobile logout button until it receives full styling */
+.mobile-logout-btn {
+  font-size: 16px;
+  font-weight: 500;
+  color: #3F3D56;
+  transition: color 0.3s ease;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.mobile-logout-btn:hover {
+  color: #F08A6C;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FORGOT PAGE
+   ═══════════════════════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap');
+
+@layer base {
+  html, body {
+    background-color: #F6F1EB;
+    color: #3F3D56;
+  }
+}
+
+@layer components {
+  /* Manrope font — not a Tailwind default */
+  .brand-text {
+    font-family: 'Manrope', sans-serif;
+  }
+
+  /* Animated grid overlay on ForgotPassword — pseudo-element, not expressible in Tailwind */
+  .forgot-wrapper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(155, 150, 229, 0.10) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(155, 150, 229, 0.10) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 25s linear infinite;
+  }
+
+  @keyframes gridMove {
+    0%   { background-position: 0 0; }
+    100% { background-position: 50px 50px; }
+  }
+
+  /* Mobile logout button in Navbar */
+  .mobile-logout-btn {
+    font-size: 16px;
+    font-weight: 500;
+    color: #3F3D56;
+    transition: color 0.3s ease;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .mobile-logout-btn:hover {
+    color: #F08A6C;
+  }
 }

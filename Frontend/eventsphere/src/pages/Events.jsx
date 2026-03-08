@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "../styles/events.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import FeaturedEventCard from "../components/FeatureEventsCard";
@@ -10,7 +9,6 @@ import { useSearchParams } from "react-router-dom";
 const API = "https://eventsphere-8sgd.onrender.com";
 
 function Events() {
-
   const [events, setEvents] = useState([]);
   const [featuredEvents, setFeaturedEvents] = useState([]);
   const [activeCategory, setActiveCategory] = useState("All");
@@ -20,200 +18,123 @@ function Events() {
   const [searchParams] = useSearchParams();
   const categoryFromURL = searchParams.get("category");
 
-  /* =========================
-     FETCH EVENTS
-  ========================= */
-
+  /* ── Fetch events ── */
   useEffect(() => {
-
     fetch(`${API}/api/events`)
       .then(res => res.json())
       .then(data => {
-
         setEvents(data);
-
-        const featured = data.filter(event => event.isFeatured === true);
-        setFeaturedEvents(featured);
-
+        setFeaturedEvents(data.filter(e => e.isFeatured === true));
       })
       .catch(err => console.log(err));
-
   }, []);
 
-  /* =========================
-     CATEGORY FROM HOME PAGE
-  ========================= */
-
+  /* ── Category from URL ── */
   useEffect(() => {
-
     if (categoryFromURL) {
       setActiveCategory(categoryFromURL);
       setActiveStatus("All");
     }
-
   }, [categoryFromURL]);
 
-  /* =========================
-     CATEGORY LIST FROM DB
-  ========================= */
-
-  const categories = [
-    "All",
-    ...new Set(events.map(event => event.category))
-  ];
-
-  /* =========================
-     EVENT STATUS FUNCTION
-  ========================= */
+  /* ── Derived data ── */
+  const categories = ["All", ...new Set(events.map(e => e.category))];
 
   const getEventStatus = (event) => {
-
     const now = new Date();
     const eventDate = new Date(`${event.date} ${event.time}`);
-
     if (eventDate > now) return "Upcoming";
-
-    if (eventDate.toDateString() === now.toDateString())
-      return "Ongoing";
-
+    if (eventDate.toDateString() === now.toDateString()) return "Ongoing";
     return "Past";
   };
 
-  /* =========================
-     CATEGORY FILTER
-  ========================= */
-
-  const categoryFilteredEvents =
+  const categoryFiltered =
     activeCategory === "All"
       ? events
-      : events.filter(
-          event =>
-            event.category.toLowerCase() === activeCategory.toLowerCase()
-        );
+      : events.filter(e => e.category.toLowerCase() === activeCategory.toLowerCase());
 
-  /* =========================
-     STATUS COUNTS
-  ========================= */
+  const allCount      = categoryFiltered.length;
+  const upcomingCount = categoryFiltered.filter(e => getEventStatus(e) === "Upcoming").length;
+  const ongoingCount  = categoryFiltered.filter(e => getEventStatus(e) === "Ongoing").length;
+  const pastCount     = categoryFiltered.filter(e => getEventStatus(e) === "Past").length;
 
-  const allCount = categoryFilteredEvents.length;
+  const statusOrder = { Ongoing: 1, Upcoming: 2, Past: 3 };
 
-  const upcomingCount = categoryFilteredEvents.filter(
-    e => getEventStatus(e) === "Upcoming"
-  ).length;
+  const filteredEvents = (
+    activeStatus === "All"
+      ? categoryFiltered
+      : categoryFiltered.filter(e => getEventStatus(e) === activeStatus)
+  ).sort((a, b) => statusOrder[getEventStatus(a)] - statusOrder[getEventStatus(b)]);
 
-  const ongoingCount = categoryFilteredEvents.filter(
-    e => getEventStatus(e) === "Ongoing"
-  ).length;
+  const statusTabs = [
+    { label: "All",      count: allCount      },
+    { label: "Upcoming", count: upcomingCount  },
+    { label: "Ongoing",  count: ongoingCount   },
+    { label: "Past",     count: pastCount      },
+  ];
 
-  const pastCount = categoryFilteredEvents.filter(
-    e => getEventStatus(e) === "Past"
-  ).length;
+  /* ── Shared button classes ── */
+  const filterBtn = (active) =>
+    `border px-[18px] py-2.5 rounded-full cursor-pointer text-sm transition-all duration-200 ${
+      active
+        ? "bg-[#9B96E5] text-white border-transparent"
+        : "bg-white border-[#ddd] hover:bg-[#F1F1F7]"
+    }`;
 
-  /* =========================
-     STATUS FILTER
-  ========================= */
-
-  let filteredEvents = categoryFilteredEvents;
-
-  if (activeStatus !== "All") {
-
-    filteredEvents = categoryFilteredEvents.filter(
-      event => getEventStatus(event) === activeStatus
-    );
-
-  }
-
-  /* =========================
-     SORT EVENTS
-     Ongoing → Upcoming → Past
-  ========================= */
-
-  filteredEvents = filteredEvents.sort((a, b) => {
-
-    const statusOrder = {
-      Ongoing: 1,
-      Upcoming: 2,
-      Past: 3
-    };
-
-    const statusA = getEventStatus(a);
-    const statusB = getEventStatus(b);
-
-    return statusOrder[statusA] - statusOrder[statusB];
-
-  });
+  const tabBtn = (active) =>
+    `px-[18px] py-2 border-none rounded-full cursor-pointer font-medium transition-all duration-200 ${
+      active ? "bg-[#9B96E5] text-white" : "bg-transparent text-[#3F3D56]"
+    }`;
 
   return (
-
-    <div className="events-page-wrapper">
+    /* Wrapper — ::before animated grid kept in index.css as .events-page-wrapper */
+    <div className="events-page-wrapper relative bg-[#F6F1EB] min-h-screen overflow-x-hidden">
 
       <Navbar />
 
-      <div className="events-page">
+      <div className="relative px-20 pt-[70px] pb-0 overflow-x-hidden z-[1]">
 
-        {/* HERO */}
+        {/* ── HERO ── */}
+        <div className="relative z-[2] px-20 mb-20">
+          <h1 className="text-[64px] font-bold text-[#3F3D56] mb-2.5">Explore Events</h1>
+          <p className="text-lg text-[#6B6A7D] mb-9">Discover workshops, hackathons, fests and more</p>
 
-        <div className="events-hero">
-
-          <h1 className="events-title">Explore Events</h1>
-
-          <p className="events-subtitle">
-            Discover workshops, hackathons, fests and more
-          </p>
-
-          {/* SEARCH */}
-
-          <div className="search-container">
-            <Search size={18} className="search-icon" />
-
+          {/* Search */}
+          <div className="flex items-center w-[420px] bg-white rounded-[40px] px-[18px] py-3 mb-6 shadow-[0_4px_10px_rgba(0,0,0,0.05)]">
+            <Search size={18} className="text-[#9B96E5] shrink-0" />
             <input
               type="text"
               placeholder="Search events..."
-              className="search-input"
+              className="border-none outline-none ml-2.5 w-full text-[15px] bg-transparent"
             />
           </div>
 
-          {/* CATEGORY FILTERS */}
-
-          <div className="event-filters">
-
+          {/* Category filters */}
+          <div className="flex gap-3 flex-wrap">
             {categories.map(category => (
-
               <button
                 key={category}
-                className={`filter ${activeCategory === category ? "active" : ""}`}
+                className={filterBtn(activeCategory === category)}
                 onClick={() => {
-
                   setActiveCategory(category);
                   setActiveStatus("All");
-
-                  if (category === "All") {
-                    window.history.replaceState(null, "", "/events");
-                  } else {
-                    window.history.replaceState(null, "", `/events?category=${category}`);
-                  }
-
+                  window.history.replaceState(
+                    null, "",
+                    category === "All" ? "/events" : `/events?category=${category}`
+                  );
                 }}
               >
                 {category === "All" ? "All Events" : category}
               </button>
-
             ))}
-
           </div>
-
         </div>
 
-        {/* FEATURED EVENTS */}
-
+        {/* ── FEATURED EVENTS ── */}
         {activeCategory === "All" && (
-
-          <section className="featured-section">
-
-            <h2 className="featured-heading">Featured Events</h2>
-
-            {featuredEvents.slice(0,2).map(event => (
-
+          <section className="px-20 py-10">
+            <h2 className="text-[26px] font-semibold mb-8 text-[#3F3D56]">Featured Events</h2>
+            {featuredEvents.slice(0, 2).map(event => (
               <FeaturedEventCard
                 key={event._id}
                 _id={event._id}
@@ -224,109 +145,59 @@ function Events() {
                 location={event.venue}
                 users={`${event.registeredUsers}/${event.totalCapacity} registered`}
               />
-
             ))}
-
           </section>
-
         )}
 
       </div>
 
-      {/* =========================
-         BROWSE EVENTS
-      ========================= */}
-
-      <section className="browse-events-section">
-
-        <h2 className="browse-heading">
-          {activeCategory === "All"
-            ? "Browse Events"
-            : `${activeCategory} Events`}
+      {/* ── BROWSE EVENTS ── */}
+      <section className="px-20 py-[60px]">
+        <h2 className="text-[28px] font-bold mb-8 text-[#3F3D56]">
+          {activeCategory === "All" ? "Browse Events" : `${activeCategory} Events`}
         </h2>
 
-        {/* STATUS FILTER TABS */}
-
-        <div className="status-tabs">
-
-          <button
-            className={activeStatus === "All" ? "tab active" : "tab"}
-            onClick={() => setActiveStatus("All")}
-          >
-            All ({allCount})
-          </button>
-
-          <button
-            className={activeStatus === "Upcoming" ? "tab active" : "tab"}
-            onClick={() => setActiveStatus("Upcoming")}
-          >
-            Upcoming ({upcomingCount})
-          </button>
-
-          <button
-            className={activeStatus === "Ongoing" ? "tab active" : "tab"}
-            onClick={() => setActiveStatus("Ongoing")}
-          >
-            Ongoing ({ongoingCount})
-          </button>
-
-          <button
-            className={activeStatus === "Past" ? "tab active" : "tab"}
-            onClick={() => setActiveStatus("Past")}
-          >
-            Past ({pastCount})
-          </button>
-
+        {/* Status tabs */}
+        <div className="flex gap-3 mb-8 bg-white p-1.5 rounded-[40px] w-fit shadow-[0_4px_10px_rgba(0,0,0,0.05)]">
+          {statusTabs.map(({ label, count }) => (
+            <button
+              key={label}
+              className={tabBtn(activeStatus === label)}
+              onClick={() => setActiveStatus(label)}
+            >
+              {label} ({count})
+            </button>
+          ))}
         </div>
 
-        {/* EVENTS GRID */}
-
-        <div className="events-grid">
-
+        {/* Events grid — auto-fill minmax(320px,1fr) kept in index.css as .events-grid */}
+        <div className="events-grid gap-[30px]">
           {filteredEvents.length === 0 ? (
-
-            <div className="no-events">
+            <div className="col-span-full text-center py-[60px] text-lg text-[#6B6A7D] font-medium">
               No events found
             </div>
-
           ) : (
-
             filteredEvents.slice(0, visibleEvents).map(event => (
-
-              <EventCard
-                key={event._id}
-                event={event}
-              />
-
+              <EventCard key={event._id} event={event} />
             ))
-
           )}
-
         </div>
 
-        {/* LOAD MORE */}
-
+        {/* Load more */}
         {visibleEvents < filteredEvents.length && (
-
-          <div className="load-more-container">
-
+          <div className="text-center mt-10">
             <button
-              className="load-more-btn"
+              className="px-7 py-3 border-none rounded-full bg-[#9B96E5] text-white font-semibold cursor-pointer transition-all duration-200 hover:bg-[#8A85DC]"
               onClick={() => setVisibleEvents(prev => prev + 12)}
             >
               Load More Events
             </button>
-
           </div>
-
         )}
-
       </section>
 
       <Footer />
-
     </div>
-
   );
 }
 
