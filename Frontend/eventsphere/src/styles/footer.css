@@ -10,9 +10,15 @@
   padding-bottom: 35px;
   padding-left: 1rem;
   padding-right: 1rem;
-  background-color: #f9c7c3f6; /* Soft Blush */ 
+
+  /* Transparent glass background so grid shows */
+  background-color: rgba(249, 199, 195, 0.75);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
   color: #3F3D56; /* Deep Slate */
-  border-top: 1px solid #9B96E5; /* Lavender accent */ 
+  border-top: 1px solid rgba(155,150,229,0.4); /* softer lavender line */
 }
 
 /* ==============================================
