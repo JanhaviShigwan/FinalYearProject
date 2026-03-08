@@ -5,6 +5,7 @@ import Footer from "../components/Footer";
 import FeaturedEventCard from "../components/FeatureEventsCard";
 import EventCard from "../components/EventCard";
 import { Search } from "lucide-react";
+const API="https://eventsphere-8sgd.onrender.com"
 
 function Events() {
 
@@ -20,7 +21,7 @@ function Events() {
 
   useEffect(() => {
 
-    fetch("http://localhost:5000/api/events")
+    fetch(`${API}/api/events`)
       .then(res => res.json())
       .then(data => {
 

@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { MapPin, Calendar, Clock, Users, ArrowLeft } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
+const API="https://eventsphere-8sgd.onrender.com"
 
 function EventDetails() {
 
@@ -22,7 +23,7 @@ function EventDetails() {
 
       try {
 
-        const res = await fetch(`http://localhost:5000/api/events/${id}`);
+        const res = await fetch(`${API}/api/events/${id}`);
 
         if (!res.ok) {
           throw new Error("Event not found");
