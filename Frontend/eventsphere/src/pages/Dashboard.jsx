@@ -150,7 +150,7 @@ export default function Dashboard() {
               className="cursor-pointer md:hidden"
               onClick={() => setSidebarOpen(!sidebarOpen)}
             />
-            <h2 className="text-2xl font-semibold text-[#3F3D56]">Student Dashboard</h2>
+            <h2 className="text-2xl font-semibold text-[#3F3D56]"> Dashboard</h2>
           </div>
 
           <div className="flex items-center gap-5">

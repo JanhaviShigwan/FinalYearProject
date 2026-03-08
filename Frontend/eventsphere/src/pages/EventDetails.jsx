@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { MapPin, Calendar, Clock, Users, ArrowLeft } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate  } from "react-router-dom";
 
 const API = "https://eventsphere-8sgd.onrender.com";
 
 function EventDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -115,7 +116,7 @@ function EventDetails() {
               <p className="text-xs mt-1.5 text-[#6A6A6A]">{registered} of {capacity} spots filled</p>
             </div>
 
-            <button className="mt-3.5 w-full py-3 border-none rounded-[14px] bg-[#F08A6C] text-white text-[15px] font-semibold cursor-pointer transition-colors duration-200 hover:bg-[#e47658]">
+            <button  onClick={() => navigate(`/events/${event.id}/register`)} className="mt-3.5 w-full py-3 border-none rounded-[14px] bg-[#F08A6C] text-white text-[15px] font-semibold cursor-pointer transition-colors duration-200 hover:bg-[#e47658]">
               Register Now
             </button>
 
