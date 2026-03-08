@@ -1,6 +1,6 @@
 import React from "react";
 import "../styles/home.css";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import {
@@ -9,8 +9,8 @@ import {
   Code,
   Music,
   Trophy,
+  Zap,
   Lightbulb,
-  Cpu,
   CalendarDays,
   MapPin,
   UserPlus,
@@ -18,13 +18,19 @@ import {
   MousePointerClick,
   BarChart3,
   LayoutDashboard,
-  Zap,
   Bell,
   ShieldCheck,
+  GraduationCap,
 } from "lucide-react";
 import hackathon from "../assets/hackathon.png";
 
 export default function Home() {
+  
+  const navigate = useNavigate();
+
+const handleCategoryClick = (category) => {
+  navigate(`/events?category=${category}`);
+};
   return (
     <>
       <Navbar />
@@ -53,23 +59,6 @@ export default function Home() {
               </Link>
             </div>
 
-            <div className="hero-right">
-              <div className="stat-card green-bg">
-                <CalendarCheck size={20} />
-                <div>
-                  <h3>120+</h3>
-                  <p>Events Hosted</p>
-                </div>
-              </div>
-
-              <div className="stat-card blush-bg">
-                <Users size={20} />
-                <div>
-                  <h3>3,000+</h3>
-                  <p>Students Registered</p>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -81,37 +70,54 @@ export default function Home() {
               Find events that match your interests and passions.
             </p>
 
-            <div className="categories-grid">
-              <div className="category-card tech">
-                <Code size={24} />
-                <h3>Technical</h3>
-                <p>Coding contests & innovation</p>
-              </div>
+           <div className="categories-grid">
 
-              <div className="category-card cultural">
-                <Music size={24} />
-                <h3>Cultural</h3>
-                <p>Dance, music & creativity</p>
-              </div>
+  <div
+    className="category-card home-tech"
+    onClick={() => handleCategoryClick("Technical")}
+  >
+    <Code size={24} />
+    <h3>Technical</h3>
+    <p>Coding contests & innovation</p>
+  </div>
 
-              <div className="category-card sports">
-                <Trophy size={24} />
-                <h3>Sports</h3>
-                <p>Competition & fitness</p>
-              </div>
+  <div
+    className="category-card home-cultural"
+    onClick={() => handleCategoryClick("Cultural")}
+  >
+    <Music size={24} />
+    <h3>Cultural</h3>
+    <p>Dance, music & creativity</p>
+  </div>
 
-              <div className="category-card neutral">
-                <Lightbulb size={24} />
-                <h3>Workshops</h3>
-                <p>Skill development sessions</p>
-              </div>
+  <div
+    className="category-card home-sports"
+    onClick={() => handleCategoryClick("Sports")}
+  >
+    <Trophy size={24} />
+    <h3>Sports</h3>
+    <p>Competition & fitness</p>
+  </div>
 
-              <div className="category-card hack">
-                <Cpu size={24} />
-                <h3>Hackathons</h3>
-                <p>Build & compete</p>
-              </div>
-            </div>
+  <div
+    className="category-card home-neutral"
+    onClick={() => handleCategoryClick("Workshop")}
+  >
+    <Lightbulb size={24} />
+    <h3>Workshops</h3>
+    <p>Skill development sessions</p>
+  </div>
+
+  <div
+    className="category-card home-hack"
+    onClick={() => handleCategoryClick("Hackathon")}
+  >
+    <GraduationCap size={24} />
+    <h3>Scholarships</h3>
+    <p>Opportunities for academic excellence</p>
+  </div>
+
+</div>
           </div>
         </section>
 

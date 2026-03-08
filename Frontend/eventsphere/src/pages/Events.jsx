@@ -5,7 +5,9 @@ import Footer from "../components/Footer";
 import FeaturedEventCard from "../components/FeatureEventsCard";
 import EventCard from "../components/EventCard";
 import { Search } from "lucide-react";
-const API="https://eventsphere-8sgd.onrender.com";
+import { useSearchParams } from "react-router-dom";
+
+const API = "https://eventsphere-8sgd.onrender.com";
 
 function Events() {
 
@@ -14,6 +16,9 @@ function Events() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [activeStatus, setActiveStatus] = useState("All");
   const [visibleEvents, setVisibleEvents] = useState(12);
+
+  const [searchParams] = useSearchParams();
+  const categoryFromURL = searchParams.get("category");
 
   /* =========================
      FETCH EVENTS
@@ -34,6 +39,19 @@ function Events() {
       .catch(err => console.log(err));
 
   }, []);
+
+  /* =========================
+     CATEGORY FROM HOME PAGE
+  ========================= */
+
+  useEffect(() => {
+
+    if (categoryFromURL) {
+      setActiveCategory(categoryFromURL);
+      setActiveStatus("All");
+    }
+
+  }, [categoryFromURL]);
 
   /* =========================
      CATEGORY LIST FROM DB
@@ -59,7 +77,6 @@ function Events() {
       return "Ongoing";
 
     return "Past";
-
   };
 
   /* =========================
@@ -75,7 +92,7 @@ function Events() {
         );
 
   /* =========================
-     STATUS COUNTS (BASED ON CATEGORY)
+     STATUS COUNTS
   ========================= */
 
   const allCount = categoryFilteredEvents.length;
@@ -96,32 +113,35 @@ function Events() {
      STATUS FILTER
   ========================= */
 
- let filteredEvents = categoryFilteredEvents;
+  let filteredEvents = categoryFilteredEvents;
 
-if (activeStatus !== "All") {
+  if (activeStatus !== "All") {
 
-  filteredEvents = categoryFilteredEvents.filter(
-    event => getEventStatus(event) === activeStatus
-  );
+    filteredEvents = categoryFilteredEvents.filter(
+      event => getEventStatus(event) === activeStatus
+    );
 
-}
+  }
 
-/* SORT EVENTS */
+  /* =========================
+     SORT EVENTS
+     Ongoing → Upcoming → Past
+  ========================= */
 
-filteredEvents = filteredEvents.sort((a, b) => {
+  filteredEvents = filteredEvents.sort((a, b) => {
 
-  const statusOrder = {
-    Ongoing: 1,
-    Upcoming: 2,
-    Past: 3
-  };
+    const statusOrder = {
+      Ongoing: 1,
+      Upcoming: 2,
+      Past: 3
+    };
 
-  const statusA = getEventStatus(a);
-  const statusB = getEventStatus(b);
+    const statusA = getEventStatus(a);
+    const statusB = getEventStatus(b);
 
-  return statusOrder[statusA] - statusOrder[statusB];
+    return statusOrder[statusA] - statusOrder[statusB];
 
-});
+  });
 
   return (
 
@@ -163,8 +183,16 @@ filteredEvents = filteredEvents.sort((a, b) => {
                 key={category}
                 className={`filter ${activeCategory === category ? "active" : ""}`}
                 onClick={() => {
+
                   setActiveCategory(category);
-                  setActiveStatus("All");  // reset status
+                  setActiveStatus("All");
+
+                  if (category === "All") {
+                    window.history.replaceState(null, "", "/events");
+                  } else {
+                    window.history.replaceState(null, "", `/events?category=${category}`);
+                  }
+
                 }}
               >
                 {category === "All" ? "All Events" : category}
@@ -187,6 +215,7 @@ filteredEvents = filteredEvents.sort((a, b) => {
             {featuredEvents.slice(0,2).map(event => (
 
               <FeaturedEventCard
+                key={event._id}
                 _id={event._id}
                 category={event.category}
                 title={event.eventName}
@@ -254,26 +283,26 @@ filteredEvents = filteredEvents.sort((a, b) => {
 
         <div className="events-grid">
 
-  {filteredEvents.length === 0 ? (
+          {filteredEvents.length === 0 ? (
 
-    <div className="no-events">
-      No events found
-    </div>
+            <div className="no-events">
+              No events found
+            </div>
 
-  ) : (
+          ) : (
 
-    filteredEvents.slice(0, visibleEvents).map(event => (
+            filteredEvents.slice(0, visibleEvents).map(event => (
 
-      <EventCard
-        key={event._id}
-        event={event}
-      />
+              <EventCard
+                key={event._id}
+                event={event}
+              />
 
-    ))
+            ))
 
-  )}
+          )}
 
-</div>
+        </div>
 
         {/* LOAD MORE */}
 
@@ -299,7 +328,6 @@ filteredEvents = filteredEvents.sort((a, b) => {
     </div>
 
   );
-
 }
 
 export default Events;

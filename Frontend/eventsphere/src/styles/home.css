@@ -3,14 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ========================================= */
-/* GLOBAL SETTINGS */
-/* ========================================= */
-
-/* ========================================= */
-/* ANIMATED GRID BACKGROUND */
-/* ========================================= */
-
 .home-wrapper {
   position: fixed;
   background-color: #F6F1EB;
@@ -80,39 +72,13 @@
   z-index: 1;
 }
 
-/* Ensure page content stays above */
-
-.home-wrapper > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Only activate on hover */
-.home-wrapper:hover::before {
-  animation: moveGrid 12s linear infinite;
-}
-
-.home-wrapper:hover::after {
-  opacity: 1;
-}
-
-/* Movement animation */
-@keyframes moveGrid {
-  from { transform: translate(0, 0); }
-  to { transform: translate(-50px, -50px); }
-}
-
-/* Keep content above */
-.home-wrapper > * {
-  position: relative;
-  z-index: 1;
-}
 .container {
-  @apply max-w-7xl mx-auto px-16;
+  @apply max-w-7xl mx-auto px-40 py-8;
+  width: 100%;
 }
 
 .section {
-  @apply py-28;
+  @apply py-12;
 }
 
 .center-text h2 {
@@ -179,45 +145,6 @@
   box-shadow: 0 16px 28px rgba(240, 138, 108, 0.35);
 }
 
-/* STAT CARDS */
-
-.hero-right {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-
-.stat-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 26px 32px;
-  border-radius: 26px;
-  min-width: 320px;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
-}
-
-.stat-card svg {
-  background: white;
-  padding: 10px;
-  border-radius: 14px;
-  color: #3F3D56;
-}
-
-.stat-card h3 {
-  font-size: 26px;
-  font-weight: 700;
-  color: #3F3D56;
-}
-
-.stat-card p {
-  font-size: 14px;
-  color: #6B6A80;
-}
-
-.green-bg { background-color: #D8E8D1; }
-.blush-bg { background-color: #EED8D6; }
-
 /* ========================================= */
 /* BROWSE CATEGORIES */
 /* ========================================= */
@@ -228,10 +155,7 @@
   gap: 40px;
   margin-top: 40px;
 }
-
-
 /* Card Base */
-
 .category-card {
   height: 240px;
   padding: 40px 30px;
@@ -287,14 +211,19 @@
 
 /* Backgrounds */
 
-.tech { background-color: #E9E7F8; }
-.cultural { background-color: #F3D7D2; }
-.sports { background-color: #D8E8D1; }
-.neutral { background-color: #EEEAE4; }
+.home-tech { background-color: #e9e7fc; }
+.home-cultural { background-color: #F3D7D2; }
+.home-sports { background-color: #D8E8D1; }
+.home-neutral { background-color: #EEEAE4; }
 
-.hack {
+.home-hack {
   background-color: #ECEBFF;
   border: 1px solid #C8C6F5;
+}
+
+.category-card:hover{
+  transform: translateY(-4px);
+  transition: 0.2s;
 }
 
 @media (max-width: 1024px) {
