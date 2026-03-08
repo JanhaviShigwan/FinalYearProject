@@ -20,16 +20,20 @@ exports.registerStudent = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      profileComplete: false, // IMPORTANT
     });
 
     res.status(201).json({
       message: "Registration successful",
       student: {
-        studentId: newStudent.studentId,
+        _id: newStudent._id,
         name: newStudent.name,
         email: newStudent.email,
+        studentId: newStudent.studentId,
+        profileComplete: newStudent.profileComplete,
       },
     });
+
   } catch (error) {
     console.log("Register Error:", error);
     res.status(500).json({ message: "Server error" });
@@ -57,9 +61,11 @@ exports.loginStudent = async (req, res) => {
     res.status(200).json({
       message: "Login successful",
       student: {
+        _id: student._id,
         studentId: student.studentId,
         name: student.name,
         email: student.email,
+        profileComplete: student.profileComplete, // IMPORTANT
       },
     });
 

@@ -9,7 +9,9 @@ import Register from "./pages/Register";
 import About from "./pages/AboutUs";
 import Faq from "./pages/FAQ";
 import ForgotPassword from "./pages/forgotpass";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./components/Dashboard";
+import Settings from "./components/Settings";
+import MainLayout from "./pages/Layout";
 
 function App() {
   return (
@@ -32,14 +34,10 @@ function App() {
         <Route path="/events/:id" element={<EventDetails />} />
 
         {/* DASHBOARD PROTECTED ROUTE */}
-        <Route
-          path="/dashboard"
-          element={
-            localStorage.getItem("eventSphereStudent")
-              ? <Dashboard />
-              : <Navigate to="/login" replace />
-          }
-        />
+        <Route element={<MainLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
 
         {/* OTHER PAGES */}
         <Route path="/about" element={<About />} />
