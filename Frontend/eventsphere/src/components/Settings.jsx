@@ -5,7 +5,6 @@ import {
   Save,
   Phone,
   School,
-  User,
   CalendarDays,
   GraduationCap,
   Building2
