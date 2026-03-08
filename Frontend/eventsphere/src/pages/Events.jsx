@@ -187,7 +187,7 @@ filteredEvents = filteredEvents.sort((a, b) => {
             {featuredEvents.slice(0,2).map(event => (
 
               <FeaturedEventCard
-                key={event._id}
+                _id={event._id}
                 category={event.category}
                 title={event.eventName}
                 description={event.shortDescription}
