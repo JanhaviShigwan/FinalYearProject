@@ -7,6 +7,7 @@ import EventCard from "../components/EventCard";
 export default function Dashboard() {
 
   const navigate = useNavigate();
+  const [myEvents, setMyEvents] = useState([]);
 
   const student = useMemo(() => {
     return JSON.parse(localStorage.getItem("eventSphereStudent")) || {};
@@ -18,6 +19,22 @@ export default function Dashboard() {
     ongoingEvents: [],
   });
 
+  const cancelRegistration = async (eventId) => {
+
+    try {
+
+      await axios.delete(
+        `http://localhost:5000/api/events/cancel-registration/${student._id}/${eventId}`
+      );
+
+      setMyEvents((prev) => prev.filter(e => e._id !== eventId));
+
+    } catch (error) {
+      console.error(error);
+    }
+
+  };
+
   useEffect(() => {
 
     const fetchDashboard = async () => {
@@ -27,7 +44,6 @@ export default function Dashboard() {
         const res = await axios.get(
           `http://localhost:5000/api/dashboard/${student._id}`
         );
-
         setDashboardData(res.data);
 
       } catch (error) {
@@ -36,14 +52,31 @@ export default function Dashboard() {
 
     };
 
+    const fetchMyEvents = async () => {
+
+      try {
+
+        const res = await axios.get(
+          `http://localhost:5000/api/events/student-registrations/${student._id}`
+        );
+
+        setMyEvents(res.data);
+
+      } catch (error) {
+        console.error(error);
+      }
+
+    };
+
     if (student?._id) {
       fetchDashboard();
+      fetchMyEvents();
     }
 
   }, [student]);
 
   const stats = [
-    { icon: <Calendar size={28} color="#9B96E5" />, value: dashboardData.myRegistrations.length, label: "My Registered Events" },
+    { icon: <Calendar size={28} color="#9B96E5" />, value: myEvents.length, label: "My Registered Events" },
     { icon: <AlarmClock size={28} color="#5ac4eb" />, value: dashboardData.upcomingEventList.length, label: "Upcoming Events" },
     { icon: <Flame size={28} color="#F08A6C" />, value: dashboardData.ongoingEvents.length, label: "Ongoing Events" },
   ];
@@ -106,10 +139,6 @@ export default function Dashboard() {
       </div>
 
       <div className="mt-12">
-
-        <h2 className="text-xl font-semibold text-[#3F3D56] mb-6">
-          Upcoming Events
-        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 

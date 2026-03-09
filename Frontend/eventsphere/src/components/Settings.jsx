@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import PopupCard from "../components/PopUpCard";
 import axios from "axios";
 import {
   Save,
@@ -13,6 +14,7 @@ import {
 export default function Settings() {
 
   const navigate = useNavigate();
+  const [popup, setPopup] = useState(null);
 
   const student = useMemo(() => {
     return JSON.parse(localStorage.getItem("eventSphereStudent")) || {};
@@ -57,11 +59,21 @@ export default function Settings() {
         JSON.stringify(updatedStudent)
       );
 
-      navigate("/dashboard");
+      const redirect = localStorage.getItem("redirectAfterProfile");
+
+      if (redirect) {
+        localStorage.removeItem("redirectAfterProfile");
+        navigate(redirect);   // return to event page
+      } else {
+        navigate("/dashboard"); // normal flow
+      }
 
     } catch (error) {
       console.error(error);
-      alert("Error updating profile");
+      setPopup({
+        title: "Profile Update Failed",
+        message: "Something went wrong while updating your profile. Please try again."
+      });
     }
   };
 
@@ -358,7 +370,13 @@ export default function Settings() {
         </form>
 
       </div>
-
+      {popup && (
+        <PopupCard
+          title={popup.title}
+          message={popup.message}
+          onClose={() => setPopup(null)}
+        />
+      )}
     </div>
   );
 }

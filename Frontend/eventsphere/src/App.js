@@ -11,6 +11,7 @@ import Faq from "./pages/FAQ";
 import ForgotPassword from "./pages/forgotpass";
 import Dashboard from "./components/Dashboard";
 import Settings from "./components/Settings";
+import MyRegistrations from "./components/MyRegistrations";
 import MainLayout from "./pages/Layout";
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
         {/* DASHBOARD PROTECTED ROUTE */}
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/my-registrations" element={<MyRegistrations />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
 
