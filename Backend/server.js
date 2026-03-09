@@ -20,6 +20,10 @@ mongoose
     console.log("DB Error:", err);
   });
 
+  app.get("/", (req, res) => {
+    res.json({ message: "Welcome to EventSphere🌐" });
+  });
+
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/events", require("./routes/eventRoutes"));
 app.use("/api", require("./routes/dashboardRoutes"));   // ✅ FIXED
