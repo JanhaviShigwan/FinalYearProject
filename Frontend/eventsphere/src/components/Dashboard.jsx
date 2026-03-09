@@ -19,21 +19,21 @@ export default function Dashboard() {
     ongoingEvents: [],
   });
 
-  const cancelRegistration = async (eventId) => {
+  // const cancelRegistration = async (eventId) => {
 
-    try {
+  //   try {
 
-      await axios.delete(
-        `http://localhost:5000/api/events/cancel-registration/${student._id}/${eventId}`
-      );
+  //     await axios.delete(
+  //       `http://localhost:5000/api/events/cancel-registration/${student._id}/${eventId}`
+  //     );
 
-      setMyEvents((prev) => prev.filter(e => e._id !== eventId));
+  //     setMyEvents((prev) => prev.filter(e => e._id !== eventId));
 
-    } catch (error) {
-      console.error(error);
-    }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
 
-  };
+  // };
 
   useEffect(() => {
 

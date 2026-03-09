@@ -31,7 +31,7 @@ export default function MyRegistrations() {
       fetchMyEvents();
     }
 
-  }, []);
+  }, [student?._id]);
 
   const cancelRegistration = async (eventId) => {
 
