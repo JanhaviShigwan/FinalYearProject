@@ -5,10 +5,25 @@ const Student = require("../Models/Student");
 // GET all events
 const getEvents = async (req, res) => {
   try {
+
     const events = await Event.find();
 
+    const eventsWithRegistrationDate = events.map(event => {
 
-    res.json(events);
+      const eventDate = new Date(event.date);
+
+      const openDate = new Date(eventDate);
+      openDate.setDate(eventDate.getDate() - 14);
+
+      return {
+        ...event._doc,
+        registrationOpenDate: openDate
+      };
+
+    });
+
+    res.json(eventsWithRegistrationDate);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

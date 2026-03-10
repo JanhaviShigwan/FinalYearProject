@@ -245,58 +245,71 @@ function EventDetails() {
             </div>
 
             <div>
-              <div className="flex justify-between mb-2 text-[13px] text-[#3F3D56]">
-                <span>Registration Progress</span>
-                <span>{progress}% Full</span>
-              </div>
 
-              <div className="w-full h-[10px] bg-[#E6E6E6] rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-[#D8E8D1]"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-
-              <p className="text-xs mt-1.5 text-[#6A6A6A]">
-                {registered} of {capacity} spots filled
-              </p>
-
-              <p className="text-xs text-[#3F3D56] font-medium mt-1">
-                {remainingSeats > 0
-                  ? `${remainingSeats} seats remaining`
-                  : "No seats left"}
-              </p>
-
-              {registrationMessage && (
+              {/* SHOW MESSAGE BEFORE REGISTRATION OPENS */}
+              {registrationStatus === "not-open" && (
                 <p className="text-sm mt-2 font-medium text-[#9B96E5]">
                   {registrationMessage}
                 </p>
               )}
+
+              {/* SHOW PROGRESS ONLY WHEN REGISTRATION IS OPEN */}
+              {registrationStatus === "open" && (
+                <>
+                  <div className="flex justify-between mb-2 text-[13px] text-[#3F3D56]">
+                    <span>Registration Progress</span>
+                    <span>{progress}% Full</span>
+                  </div>
+
+                  <div className="w-full h-[10px] bg-[#E6E6E6] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[#D8E8D1]"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+
+                  <p className="text-xs mt-1.5 text-[#6A6A6A]">
+                    {registered} of {capacity} spots filled
+                  </p>
+
+                  <p className="text-xs text-[#3F3D56] font-medium mt-1">
+                    {remainingSeats > 0
+                      ? `${remainingSeats} seats remaining`
+                      : "No seats left"}
+                  </p>
+
+                  {registrationMessage && (
+                    <p className="text-sm mt-2 font-medium text-[#9B96E5]">
+                      {registrationMessage}
+                    </p>
+                  )}
+                </>
+              )}
+
             </div>
 
             <button
               onClick={handleRegister}
               disabled={isRegistered || isRegistrationClosed}
               className={`mt-4 w-full py-3 rounded-[14px] text-white font-semibold
-              ${
-                isRegistered
+              ${isRegistered
                   ? "bg-green-500 cursor-not-allowed"
                   : isFull
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : registrationStatus !== "open"
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-[#F08A6C] hover:bg-[#e47658]"
-              }`}
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : registrationStatus !== "open"
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-[#F08A6C] hover:bg-[#e47658]"
+                }`}
             >
               {isRegistered
                 ? "Registered ✓"
                 : isFull
-                ? "Event Full"
-                : registrationStatus === "not-open"
-                ? "Registration Not Open"
-                : registrationStatus === "closed"
-                ? "Event Ended"
-                : "Register Now"}
+                  ? "Event Full"
+                  : registrationStatus === "not-open"
+                    ? "Registration Not Open"
+                    : registrationStatus === "closed"
+                      ? "Event Ended"
+                      : "Register Now"}
             </button>
 
           </div>
