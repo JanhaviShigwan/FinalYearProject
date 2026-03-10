@@ -2,12 +2,14 @@ const mongoose = require("mongoose");
 
 const studentSchema = new mongoose.Schema(
   {
-    // 10 digit college student ID (entered in profile form)
+    // 10 digit college student ID (entered later in profile form)
     studentId: {
       type: String,
-      unique: true,
-      sparse: true,
       match: [/^\d{10}$/, "Student ID must be exactly 10 digits"],
+      index: {
+        unique: true,
+        partialFilterExpression: { studentId: { $exists: true, $ne: null } }
+      }
     },
 
     name: {
@@ -19,6 +21,8 @@ const studentSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      lowercase: true,
+      trim: true
     },
 
     password: {
@@ -31,35 +35,23 @@ const studentSchema = new mongoose.Schema(
       match: [/^\d{10}$/, "Phone number must be 10 digits"],
     },
 
-    department: {
-      type: String,
-    },
-
-    college: {
-      type: String,
-    },
+    department: String,
+    college: String,
 
     year: {
       type: String,
       enum: ["FY", "SY", "TY", "Final Year"],
     },
 
-    course: {
-      type: String,
-    },
-
-    division: {
-      type: String,
-    },
+    course: String,
+    division: String,
 
     gender: {
       type: String,
       enum: ["Male", "Female", "Other"],
     },
 
-    dob: {
-      type: Date,
-    },
+    dob: Date,
 
     profileComplete: {
       type: Boolean,

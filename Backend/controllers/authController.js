@@ -1,5 +1,7 @@
 const Student = require("../Models/Student");
 const bcrypt = require("bcryptjs");
+const sendEmail = require("../utils/sendEmail");
+const emailTemplate = require("../utils/emailTemplate"); // ✅ import template
 
 exports.registerStudent = async (req, res) => {
   try {
@@ -20,8 +22,18 @@ exports.registerStudent = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      profileComplete: false, // IMPORTANT
+      profileComplete: false,
     });
+
+    // Generate HTML email
+    const htmlContent = emailTemplate(name);
+
+    // Send Email
+    await sendEmail(
+      email,
+      "Welcome to EventSphere 🎉",
+      htmlContent
+    );
 
     res.status(201).json({
       message: "Registration successful",
@@ -65,7 +77,7 @@ exports.loginStudent = async (req, res) => {
         studentId: student.studentId,
         name: student.name,
         email: student.email,
-        profileComplete: student.profileComplete, // IMPORTANT
+        profileComplete: student.profileComplete,
       },
     });
 
