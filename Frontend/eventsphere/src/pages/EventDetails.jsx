@@ -4,8 +4,7 @@ import Footer from "../components/Footer";
 import PopupCard from "../components/PopUpCard";
 import { MapPin, Calendar, Clock, Users, ArrowLeft } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-
-const API = "http://localhost:5000";
+import API_URL from "../api";
 
 function EventDetails() {
   const { id } = useParams();
@@ -20,7 +19,7 @@ function EventDetails() {
     const fetchEvent = async () => {
       try {
 
-        const res = await fetch(`${API}/api/events/${id}`);
+        const res = await fetch(`${API_URL}/api/events/${id}`);
         const data = await res.json();
         setEvent(data);
 
@@ -28,7 +27,7 @@ function EventDetails() {
 
         if (student) {
           const check = await fetch(
-            `${API}/api/events/check-registration/${id}/${student._id}`
+            `${API_URL}/api/events/check-registration/${id}/${student._id}`
           );
 
           const checkData = await check.json();
@@ -62,7 +61,7 @@ function EventDetails() {
 
     try {
 
-      const res = await fetch(`${API}/api/events/register/${event._id}`, {
+      const res = await fetch(`${API_URL}/api/events/register/${event._id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

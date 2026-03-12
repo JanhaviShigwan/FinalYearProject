@@ -3,6 +3,7 @@ import axios from "axios";
 import { Calendar, AlarmClock, Flame, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import EventCard from "../components/EventCard";
+import API_URL from "../api";
 
 export default function Dashboard() {
 
@@ -42,7 +43,7 @@ export default function Dashboard() {
       try {
 
         const res = await axios.get(
-          `http://localhost:5000/api/dashboard/${student._id}`
+          `${API_URL}/api/dashboard/${student._id}`
         );
         setDashboardData(res.data);
 
@@ -57,7 +58,7 @@ export default function Dashboard() {
       try {
 
         const res = await axios.get(
-          `http://localhost:5000/api/events/student-registrations/${student._id}`
+          `${API_URL}/api/events/student-registrations/${student._id}`
         );
 
         setMyEvents(res.data);

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-
-const API = "http://localhost:5000";
+import API_URL from "../api";
 
 export default function MyRegistrations() {
 
@@ -16,7 +15,7 @@ export default function MyRegistrations() {
       try {
 
         const res = await axios.get(
-          `${API}/api/events/student-registrations/${student._id}`
+          `${API_URL}/api/events/student-registrations/${student._id}`
         );
 
         setMyEvents(res.data);
@@ -38,7 +37,7 @@ export default function MyRegistrations() {
     try {
 
       await axios.delete(
-        `${API}/api/events/cancel-registration/${student._id}/${eventId}`
+        `${API_URL}/api/events/cancel-registration/${student._id}/${eventId}`
       );
 
       setMyEvents((prev) => prev.filter((e) => e._id !== eventId));

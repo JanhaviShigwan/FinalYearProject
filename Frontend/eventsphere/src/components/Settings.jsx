@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import PopupCard from "../components/PopUpCard";
 import axios from "axios";
+import API_URL from "../api";
 import {
   Save,
   Phone,
@@ -45,7 +46,7 @@ export default function Settings() {
     try {
 
       await axios.put(
-        `http://localhost:5000/api/student/complete-profile/${student._id}`,
+        `${API_URL}/api/student/complete-profile/${student._id}`,
         formData
       );
 

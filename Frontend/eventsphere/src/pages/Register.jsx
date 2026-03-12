@@ -19,7 +19,6 @@ import Footer from "../components/Footer";
 
 export default function Register() {
   const navigate = useNavigate();
-  const API_URL = "http://localhost:5000";
 
   const [formData, setFormData] = useState({
     name: "",

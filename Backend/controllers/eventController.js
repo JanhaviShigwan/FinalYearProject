@@ -1,5 +1,8 @@
 const Event = require("../Models/Event");
+const QRCode = require("qrcode");
 const Registration = require("../Models/Registration");
+const eventTicketTemplate = require("../utils/eventTicketTemplate");
+const sendEmail = require("../utils/sendEmail");
 const Student = require("../Models/Student");
 
 // GET all events
@@ -48,9 +51,7 @@ const getEventById = async (req, res) => {
 const createEvent = async (req, res) => {
   try {
     const event = new Event(req.body);
-
     const savedEvent = await event.save();
-
     res.status(201).json(savedEvent);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -74,7 +75,6 @@ const registerForEvent = async (req, res) => {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    // PROFILE CHECK
     if (!student.profileComplete) {
       return res.status(400).json({
         type: "PROFILE_INCOMPLETE",
@@ -82,7 +82,6 @@ const registerForEvent = async (req, res) => {
       });
     }
 
-    // DUPLICATE CHECK
     const existing = await Registration.findOne({
       studentId,
       eventId
@@ -95,17 +94,14 @@ const registerForEvent = async (req, res) => {
       });
     }
 
-    // DATE CHECK
     const eventDate = new Date(event.date);
     const today = new Date();
 
-    // Registration opens 14 days before event
     const openDate = new Date(eventDate);
     openDate.setDate(eventDate.getDate() - 14);
 
-    // Event end time
     const eventEnd = new Date(`${event.date} ${event.time}`);
-    eventEnd.setHours(eventEnd.getHours() + 3); // assume event lasts 3 hours
+    eventEnd.setHours(eventEnd.getHours() + 3);
 
     if (today < openDate) {
       return res.status(400).json({
@@ -121,7 +117,6 @@ const registerForEvent = async (req, res) => {
       });
     }
 
-    // CAPACITY CHECK
     if (event.registeredUsers >= event.totalCapacity) {
       return res.status(400).json({
         type: "EVENT_FULL",
@@ -140,18 +135,41 @@ const registerForEvent = async (req, res) => {
     event.registeredUsers += 1;
     await event.save();
 
+    // QR DATA
+    const qrData = JSON.stringify({
+      ticketId: registration._id,
+      event: event.eventName,
+      student: student.name
+    });
+
+    // GENERATE QR CODE
+    const qrCodeImage = await QRCode.toDataURL(qrData, {
+      width: 250,
+      margin: 2
+    });
+
+    // EMAIL HTML
+    const emailHTML = eventTicketTemplate(student, event, qrCodeImage);
+
+    // SEND EMAIL
+    await sendEmail(
+      student.email,
+      `Event Registration Confirmed - ${event.eventName}`,
+      emailHTML
+    );
+
     res.json({
       type: "SUCCESS",
-      message: "Successfully registered"
+      message: "Successfully registered. Ticket sent to email."
     });
 
   } catch (error) {
+    console.error("Register event error:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
 const checkRegistration = async (req, res) => {
-
   try {
 
     const { eventId, studentId } = req.params;
@@ -170,21 +188,17 @@ const checkRegistration = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-
 };
-const getStudentRegistrations = async (req, res) => {
 
+const getStudentRegistrations = async (req, res) => {
   try {
 
     const { studentId } = req.params;
 
-    // Find all registrations for this student
     const registrations = await Registration.find({ studentId });
 
-    // Extract eventIds
     const eventIds = registrations.map(r => r.eventId);
 
-    // Find matching events
     const events = await Event.find({
       _id: { $in: eventIds }
     });
@@ -197,11 +211,9 @@ const getStudentRegistrations = async (req, res) => {
     res.status(500).json({ message: error.message });
 
   }
-
 };
 
 const cancelRegistration = async (req, res) => {
-
   try {
 
     const { studentId, eventId } = req.params;
@@ -227,7 +239,6 @@ const cancelRegistration = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-
 };
 
 module.exports = {

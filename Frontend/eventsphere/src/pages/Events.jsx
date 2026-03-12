@@ -5,8 +5,7 @@ import FeaturedEventCard from "../components/FeatureEventsCard";
 import EventCard from "../components/EventCard";
 import { Search } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
-
-const API = "https://eventsphere-8sgd.onrender.com";
+import API_URL from "../api";
 
 function Events() {
   const [events, setEvents] = useState([]);
@@ -21,7 +20,7 @@ function Events() {
 
   /* ── Fetch events ── */
   useEffect(() => {
-    fetch(`${API}/api/events`)
+    fetch(`${API_URL}/api/events`)
       .then(res => res.json())
       .then(data => {
         setEvents(data);

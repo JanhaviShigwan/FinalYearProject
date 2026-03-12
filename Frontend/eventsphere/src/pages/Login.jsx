@@ -11,12 +11,12 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_URL from "../api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 export default function Login() {
   const navigate = useNavigate();
-  const API_URL = "http://localhost:5000";
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
