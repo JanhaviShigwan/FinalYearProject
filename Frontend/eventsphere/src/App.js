@@ -9,13 +9,19 @@ import Register from "./pages/Register";
 import About from "./pages/AboutUs";
 import Faq from "./pages/FAQ";
 import ForgotPassword from "./pages/forgotpass";
+
 import Dashboard from "./components/Dashboard";
 import Settings from "./components/Settings";
 import MyRegistrations from "./components/MyRegistrations";
+
+import CalendarPage from "./components/CalendarPage";
+
 import MainLayout from "./pages/Layout";
 
 function App() {
+
   return (
+
     <Router>
 
       <Routes>
@@ -31,15 +37,35 @@ function App() {
         {/* EVENTS */}
         <Route path="/events" element={<Events />} />
 
-        {/* DYNAMIC EVENT PAGE */}
+        {/* EVENT DETAILS */}
         <Route path="/events/:id" element={<EventDetails />} />
 
-        {/* DASHBOARD PROTECTED ROUTE */}
+
+
+        {/* DASHBOARD LAYOUT ROUTES */}
         <Route element={<MainLayout />}>
+
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/my-registrations" element={<MyRegistrations />} />
-          <Route path="/settings" element={<Settings />} />
+
+          <Route
+            path="/my-registrations"
+            element={<MyRegistrations />}
+          />
+
+          <Route
+            path="/settings"
+            element={<Settings />}
+          />
+
+          {/* ✅ NEW CALENDAR ROUTE */}
+          <Route
+            path="/calendar"
+            element={<CalendarPage />}
+          />
+
         </Route>
+
+
 
         {/* OTHER PAGES */}
         <Route path="/about" element={<About />} />
@@ -48,7 +74,9 @@ function App() {
       </Routes>
 
     </Router>
+
   );
+
 }
 
 export default App;

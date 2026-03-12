@@ -8,6 +8,7 @@ import API_URL from "../api";
 export default function Dashboard() {
 
   const navigate = useNavigate();
+
   const [myEvents, setMyEvents] = useState([]);
 
   const student = useMemo(() => {
@@ -20,21 +21,7 @@ export default function Dashboard() {
     ongoingEvents: [],
   });
 
-  // const cancelRegistration = async (eventId) => {
-
-  //   try {
-
-  //     await axios.delete(
-  //       `http://localhost:5000/api/events/cancel-registration/${student._id}/${eventId}`
-  //     );
-
-  //     setMyEvents((prev) => prev.filter(e => e._id !== eventId));
-
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-
-  // };
+  // ================= FETCH =================
 
   useEffect(() => {
 
@@ -45,6 +32,7 @@ export default function Dashboard() {
         const res = await axios.get(
           `${API_URL}/api/dashboard/${student._id}`
         );
+
         setDashboardData(res.data);
 
       } catch (error) {
@@ -76,14 +64,33 @@ export default function Dashboard() {
 
   }, [student]);
 
+  // ================= STATS =================
+
   const stats = [
-    { icon: <Calendar size={28} color="#9B96E5" />, value: myEvents.length, label: "My Registered Events" },
-    { icon: <AlarmClock size={28} color="#5ac4eb" />, value: dashboardData.upcomingEventList.length, label: "Upcoming Events" },
-    { icon: <Flame size={28} color="#F08A6C" />, value: dashboardData.ongoingEvents.length, label: "Ongoing Events" },
+    {
+      icon: <Calendar size={28} color="#9B96E5" />,
+      value: myEvents.length,
+      label: "My Registered Events",
+    },
+    {
+      icon: <AlarmClock size={28} color="#5ac4eb" />,
+      value: dashboardData.upcomingEventList.length,
+      label: "Upcoming Events",
+    },
+    {
+      icon: <Flame size={28} color="#F08A6C" />,
+      value: dashboardData.ongoingEvents.length,
+      label: "Ongoing Events",
+    },
   ];
 
+  // ================= UI =================
+
   return (
-    <>
+    <div className="flex flex-col gap-8">
+
+      {/* PROFILE ALERT */}
+
       {!student?.profileComplete && (
 
         <div className="bg-[#FFF4E5] border border-[#F08A6C]/40 rounded-2xl p-5 flex items-center justify-between">
@@ -109,7 +116,9 @@ export default function Dashboard() {
 
       )}
 
-      <div className="bg-white rounded-2xl border p-8 mt-6">
+      {/* WELCOME */}
+
+      <div className="bg-white rounded-2xl border p-8">
 
         <h1 className="text-3xl font-semibold text-[#3F3D56]">
           Welcome back, {student?.name} ✨
@@ -121,15 +130,23 @@ export default function Dashboard() {
 
       </div>
 
-      <div className="grid grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 gap-6 mt-8">
+      {/* STATS */}
+
+      <div className="grid grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 gap-6">
 
         {stats.map(({ icon, value, label }) => (
 
-          <div key={label} className="rounded-3xl border p-6 flex flex-col gap-4" style={{ backgroundColor: "#fcf9f6" }}>
+          <div
+            key={label}
+            className="rounded-3xl border p-6 flex flex-col gap-4"
+            style={{ backgroundColor: "#fcf9f6" }}
+          >
 
             <div className="text-2xl">{icon}</div>
 
-            <h2 className="text-3xl font-semibold text-[#3F3D56]">{value}</h2>
+            <h2 className="text-3xl font-semibold text-[#3F3D56]">
+              {value}
+            </h2>
 
             <p className="text-gray-600">{label}</p>
 
@@ -139,7 +156,14 @@ export default function Dashboard() {
 
       </div>
 
-      <div className="mt-12">
+
+      {/* UPCOMING EVENTS */}
+
+      <div className="mt-4">
+
+        <h2 className="text-2xl font-bold text-[#3F3D56] mb-4">
+          Upcoming Events
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
@@ -147,11 +171,7 @@ export default function Dashboard() {
 
             <EventCard
               key={event._id}
-              category={event.category}
-              title={event.eventName}
-              date={`${event.date} - ${event.time}`}
-              location={event.venue}
-              image={event.image}
+              event={event}
             />
 
           ))}
@@ -159,6 +179,7 @@ export default function Dashboard() {
         </div>
 
       </div>
-    </>
+
+    </div>
   );
 }
