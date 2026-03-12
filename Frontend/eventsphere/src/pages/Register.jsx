@@ -16,6 +16,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import API_URL from "../api";
 
 export default function Register() {
   const navigate = useNavigate();
