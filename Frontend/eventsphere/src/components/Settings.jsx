@@ -7,12 +7,17 @@ import API_URL from "../api";
 export default function Settings() {
 
   const [currentStudent, setCurrentStudent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
 
   const studentLocal = JSON.parse(
     localStorage.getItem("eventSphereStudent")
   );
 
-  // ✅ FETCH FROM DB
+
+
+  /* ================= FETCH ================= */
+
   useEffect(() => {
 
     const fetchStudent = async () => {
@@ -29,6 +34,8 @@ export default function Settings() {
         console.log(err);
       }
 
+      setLoading(false);
+
     };
 
     fetchStudent();
@@ -36,9 +43,52 @@ export default function Settings() {
   }, []);
 
 
-  if (!currentStudent) return null;
+
+  /* ================= UPLOAD IMAGE ================= */
+
+  const uploadImage = async (e) => {
+
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    const formData = new FormData();
+
+    formData.append("image", file);
+
+    try {
+
+      setUploading(true);
+
+      const res = await axios.post(
+        `${API_URL}/api/student/upload-image/${studentLocal._id}`,
+        formData
+      );
+
+      setCurrentStudent(res.data);
+
+    } catch (err) {
+
+      console.log(err);
+
+    }
+
+    setUploading(false);
+
+  };
+
+
+
+  if (loading)
+    return (
+      <div className="text-center mt-20 text-gray-500">
+        Loading profile...
+      </div>
+    );
+
 
   const isVerified = currentStudent?.profileComplete;
+
 
 
   return (
@@ -52,9 +102,8 @@ export default function Settings() {
         </h1>
 
 
-        {/* ========================= */}
+
         {/* NOT VERIFIED */}
-        {/* ========================= */}
 
         {!isVerified && (
 
@@ -66,9 +115,8 @@ export default function Settings() {
         )}
 
 
-        {/* ========================= */}
+
         {/* VERIFIED */}
-        {/* ========================= */}
 
         {isVerified && (
 
@@ -80,10 +128,32 @@ export default function Settings() {
             <div className="w-64 bg-white m-6 rounded-2xl shadow-sm border border-gray-200 p-6 flex flex-col items-center">
 
               <img
-                src="https://i.pravatar.cc/150"
+                src={
+                  currentStudent.profileImage
+                    ? API_URL + currentStudent.profileImage
+                    : "https://i.pravatar.cc/150"
+                }
                 alt="profile"
                 className="w-24 h-24 rounded-full object-cover border"
               />
+
+
+              {/* Upload */}
+
+              <label className="mt-3 text-sm text-[#9B96E5] cursor-pointer">
+
+                {uploading ? "Uploading..." : "Upload Photo"}
+
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg, image/jpg, image/webp"
+                  hidden
+                  onChange={uploadImage}
+                />
+
+              </label>
+
+
 
               <div className="flex items-center gap-2 mt-4">
 
@@ -91,7 +161,10 @@ export default function Settings() {
                   {currentStudent.name}
                 </h2>
 
-                <CheckCircle size={18} className="text-green-500" />
+                <CheckCircle
+                  size={18}
+                  className="text-green-500"
+                />
 
               </div>
 
@@ -107,48 +180,24 @@ export default function Settings() {
 
             <div className="flex-1 p-8">
 
-              <h2 className="text-2xl font-semibold text-[#3F3D56] mb-6">
+              <h2 className="text-2xl font-semibold mb-6">
                 Student Information
               </h2>
 
-              <div className="grid grid-cols-2 gap-6 text-sm text-gray-700">
+              <div className="grid grid-cols-2 gap-6">
 
-                <div>
-                  <b>Department:</b> {currentStudent.department}
-                </div>
-
-                <div>
-                  <b>College:</b> {currentStudent.college}
-                </div>
-
-                <div>
-                  <b>Course:</b> {currentStudent.course}
-                </div>
-
-                <div>
-                  <b>Year:</b> {currentStudent.year}
-                </div>
-
-                <div>
-                  <b>Phone:</b> {currentStudent.phone}
-                </div>
-
-                <div>
-                  <b>Gender:</b> {currentStudent.gender}
-                </div>
-
-                <div>
-                  <b>DOB:</b> {currentStudent.dob}
-                </div>
-
-                <div>
-                  <b>Division:</b> {currentStudent.division}
-                </div>
+                <div>Department: {currentStudent.department}</div>
+                <div>College: {currentStudent.college}</div>
+                <div>Course: {currentStudent.course}</div>
+                <div>Year: {currentStudent.year}</div>
+                <div>Phone: {currentStudent.phone}</div>
+                <div>Gender: {currentStudent.gender}</div>
+                <div>DOB: {currentStudent.dob}</div>
+                <div>Division: {currentStudent.division}</div>
 
               </div>
 
             </div>
-
 
           </div>
 

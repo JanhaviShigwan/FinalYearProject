@@ -1,28 +1,51 @@
 const Student = require("../Models/Student");
 
-// Get current student profile
+
+
+/* ============================= */
+/* GET STUDENT PROFILE */
+/* ============================= */
+
 exports.getStudentProfile = async (req, res) => {
+
   try {
+
     const { studentId } = req.params;
 
-    const student = await Student.findById(studentId).select("-password");
+    const student = await Student
+      .findById(studentId)
+      .select("-password");
 
     if (!student) {
-      return res.status(404).json({ message: "Student not found" });
+      return res.status(404).json({
+        message: "Student not found",
+      });
     }
 
     res.status(200).json(student);
 
   } catch (error) {
+
     console.log("Fetch Profile Error:", error);
-    res.status(500).json({ message: "Server error" });
+
+    res.status(500).json({
+      message: "Server error",
+    });
+
   }
+
 };
 
 
-// Complete / Update profile
+
+/* ============================= */
+/* COMPLETE PROFILE */
+/* ============================= */
+
 exports.completeProfile = async (req, res) => {
+
   try {
+
     const { studentId } = req.params;
 
     const {
@@ -34,16 +57,17 @@ exports.completeProfile = async (req, res) => {
       course,
       division,
       gender,
-      dob
+      dob,
     } = req.body;
 
     const student = await Student.findById(studentId);
 
     if (!student) {
-      return res.status(404).json({ message: "Student not found" });
+      return res.status(404).json({
+        message: "Student not found",
+      });
     }
 
-    // Update fields
     student.studentId = studentIdNumber;
     student.phone = phone;
     student.department = department;
@@ -60,11 +84,68 @@ exports.completeProfile = async (req, res) => {
 
     res.status(200).json({
       message: "Profile completed successfully",
-      student
+      student,
     });
 
   } catch (error) {
+
     console.log("Complete Profile Error:", error);
-    res.status(500).json({ message: "Server error" });
+
+    res.status(500).json({
+      message: "Server error",
+    });
+
   }
+
+};
+
+
+
+/* ============================= */
+/* UPLOAD PROFILE IMAGE */
+/* ============================= */
+
+exports.uploadImage = async (req, res) => {
+
+  try {
+
+    const { studentId } = req.params;
+
+    const student = await Student.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({
+        message: "Student not found",
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        message: "No file uploaded",
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Only image files allowed",
+      });
+    }
+
+    student.profileImage =
+      "/uploads/" + req.file.filename;
+
+    await student.save();
+
+    res.status(200).json(student);
+
+  } catch (error) {
+
+    console.log("Upload Image Error:", error);
+
+    res.status(500).json({
+      message: "Server error",
+    });
+
+  }
+
 };
