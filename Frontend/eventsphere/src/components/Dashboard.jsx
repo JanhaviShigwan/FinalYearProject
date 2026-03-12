@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Calendar, AlarmClock, Flame, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import EventCard from "../components/EventCard";
 import API_URL from "../api";
 
 export default function Dashboard() {
@@ -10,6 +9,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const [myEvents, setMyEvents] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
 
   const student = useMemo(() => {
     return JSON.parse(localStorage.getItem("eventSphereStudent")) || {};
@@ -26,40 +26,42 @@ export default function Dashboard() {
   useEffect(() => {
 
     const fetchDashboard = async () => {
-
       try {
-
         const res = await axios.get(
           `${API_URL}/api/dashboard/${student._id}`
         );
-
         setDashboardData(res.data);
-
-      } catch (error) {
-        console.error("Dashboard fetch error:", error);
-      }
-
-    };
-
-    const fetchMyEvents = async () => {
-
-      try {
-
-        const res = await axios.get(
-          `${API_URL}/api/events/student-registrations/${student._id}`
-        );
-
-        setMyEvents(res.data);
-
       } catch (error) {
         console.error(error);
       }
+    };
 
+    const fetchMyEvents = async () => {
+      try {
+        const res = await axios.get(
+          `${API_URL}/api/events/student-registrations/${student._id}`
+        );
+        setMyEvents(res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const fetchAnnouncements = async () => {
+      try {
+        const res = await axios.get(
+          `${API_URL}/api/announcements`
+        );
+        setAnnouncements(res.data);
+      } catch (err) {
+        console.log(err);
+      }
     };
 
     if (student?._id) {
       fetchDashboard();
       fetchMyEvents();
+      fetchAnnouncements();
     }
 
   }, [student]);
@@ -84,8 +86,6 @@ export default function Dashboard() {
     },
   ];
 
-  // ================= UI =================
-
   return (
     <div className="flex flex-col gap-8">
 
@@ -107,7 +107,7 @@ export default function Dashboard() {
 
           <button
             onClick={() => navigate("/settings")}
-            className="bg-[#F08A6C] text-white px-5 py-2 rounded-xl font-medium hover:bg-[#e67858]"
+            className="bg-[#F08A6C] text-white px-5 py-2 rounded-xl"
           >
             Complete Profile
           </button>
@@ -132,17 +132,16 @@ export default function Dashboard() {
 
       {/* STATS */}
 
-      <div className="grid grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 gap-6">
+      <div className="grid grid-cols-3 gap-6">
 
         {stats.map(({ icon, value, label }) => (
 
           <div
             key={label}
-            className="rounded-3xl border p-6 flex flex-col gap-4"
-            style={{ backgroundColor: "#fcf9f6" }}
+            className="rounded-3xl border p-6 flex flex-col gap-4 hover:shadow-lg transition bg-[#fcf9f6]"
           >
 
-            <div className="text-2xl">{icon}</div>
+            <div>{icon}</div>
 
             <h2 className="text-3xl font-semibold text-[#3F3D56]">
               {value}
@@ -157,24 +156,50 @@ export default function Dashboard() {
       </div>
 
 
-      {/* UPCOMING EVENTS */}
+      {/* ANNOUNCEMENTS */}
 
-      <div className="mt-4">
+      <div>
 
-        <h2 className="text-2xl font-bold text-[#3F3D56] mb-4">
-          Upcoming Events
+        <h2 className="text-2xl font-bold mb-4 text-[#3F3D56]">
+          Announcements
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 gap-4">
 
-          {dashboardData?.upcomingEventList?.map((event) => (
+          {announcements
+            .slice(0, 4)
+            .map((a) => (
 
-            <EventCard
-              key={event._id}
-              event={event}
-            />
+              <div
+                key={a._id}
+                className="
+                  p-5
+                  rounded-xl
+                  border
+                  bg-[#FCF9F6]
+                  hover:shadow-xl
+                  hover:scale-[1.02]
+                  transition-all
+                  duration-300
+                  cursor-pointer
+                "
+              >
 
-          ))}
+                <h3 className="text-[20px] font-bold text-[#9B96E5]">
+                  {a.title}
+                </h3>
+
+                <p className="text-sm text-[#3F3D56] mt-1">
+                  {a.message}
+                </p>
+
+                <span className="text-xs text-gray-500">
+                  {new Date(a.createdAt).toLocaleDateString()}
+                </span>
+
+              </div>
+
+            ))}
 
         </div>
 

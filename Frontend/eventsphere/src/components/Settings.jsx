@@ -1,383 +1,162 @@
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import PopupCard from "../components/PopUpCard";
+import { useEffect, useState } from "react";
+import StudentVerificationForm from "./StudentVerification";
+import { CheckCircle } from "lucide-react";
 import axios from "axios";
 import API_URL from "../api";
-import {
-  Save,
-  Phone,
-  School,
-  CalendarDays,
-  GraduationCap,
-  Building2
-} from "lucide-react";
 
 export default function Settings() {
 
-  const navigate = useNavigate();
-  const [popup, setPopup] = useState(null);
+  const [currentStudent, setCurrentStudent] = useState(null);
 
-  const student = useMemo(() => {
-    return JSON.parse(localStorage.getItem("eventSphereStudent")) || {};
-  }, []);
+  const studentLocal = JSON.parse(
+    localStorage.getItem("eventSphereStudent")
+  );
 
-  const [formData, setFormData] = useState({
-    studentIdNumber: "",
-    phone: "",
-    department: "",
-    college: "",
-    year: "",
-    course: "",
-    division: "",
-    gender: "",
-    dob: "",
-  });
+  // ✅ FETCH FROM DB
+  useEffect(() => {
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+    const fetchStudent = async () => {
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+      try {
 
-    try {
+        const res = await axios.get(
+          `${API_URL}/api/student/${studentLocal._id}`
+        );
 
-      await axios.put(
-        `${API_URL}/api/student/complete-profile/${student._id}`,
-        formData
-      );
+        setCurrentStudent(res.data);
 
-      const updatedStudent = {
-        ...student,
-        profileComplete: true,
-      };
-
-      localStorage.setItem(
-        "eventSphereStudent",
-        JSON.stringify(updatedStudent)
-      );
-
-      const redirect = localStorage.getItem("redirectAfterProfile");
-
-      if (redirect) {
-        localStorage.removeItem("redirectAfterProfile");
-        navigate(redirect);   // return to event page
-      } else {
-        navigate("/dashboard"); // normal flow
+      } catch (err) {
+        console.log(err);
       }
 
-    } catch (error) {
-      console.error(error);
-      setPopup({
-        title: "Profile Update Failed",
-        message: "Something went wrong while updating your profile. Please try again."
-      });
-    }
-  };
+    };
 
-  const inputStyle =
-    "w-full bg-[#F6F1EB] border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#9B96E5] transition";
+    fetchStudent();
+
+  }, []);
+
+
+  if (!currentStudent) return null;
+
+  const isVerified = currentStudent?.profileComplete;
+
 
   return (
+
     <div className="min-h-screen bg-[#F6F1EB] flex justify-center px-6 py-12">
 
       <div className="w-full max-w-5xl bg-white rounded-3xl border border-gray-100 shadow-sm p-10">
 
-        {/* Header */}
+        <h1 className="text-3xl font-semibold text-[#3F3D56] mb-6">
+          Settings
+        </h1>
 
-        <div className="mb-10">
 
-          <h1 className="text-3xl font-semibold text-[#3F3D56]">
-            Complete Your Profile
-          </h1>
+        {/* ========================= */}
+        {/* NOT VERIFIED */}
+        {/* ========================= */}
 
-          <p className="text-gray-500 mt-2">
-            Fill your details so you can start registering for events.
-          </p>
+        {!isVerified && (
 
-        </div>
+          <StudentVerificationForm
+            student={currentStudent}
+            onSuccess={(updated) => setCurrentStudent(updated)}
+          />
 
-        <form onSubmit={handleSubmit} className="space-y-10">
+        )}
 
-          {/* Academic Info */}
 
-          <div>
+        {/* ========================= */}
+        {/* VERIFIED */}
+        {/* ========================= */}
 
-            <h2 className="text-lg font-semibold text-[#3F3D56] mb-6">
-              Academic Information
-            </h2>
+        {isVerified && (
 
-            <div className="grid grid-cols-2 gap-6">
+          <div className="bg-[#F6F1EB] rounded-3xl border border-gray-200 overflow-hidden flex">
 
-              {/* Student ID */}
 
-              <div>
+            {/* LEFT CARD */}
 
-                <label className="text-sm text-gray-600 mb-1 block">
-                  Student ID (10 digits)
-                </label>
+            <div className="w-64 bg-white m-6 rounded-2xl shadow-sm border border-gray-200 p-6 flex flex-col items-center">
 
-                <div className="relative">
+              <img
+                src="https://i.pravatar.cc/150"
+                alt="profile"
+                className="w-24 h-24 rounded-full object-cover border"
+              />
 
-                  <GraduationCap
-                    size={18}
-                    className="absolute left-3 top-3 text-gray-400"
-                  />
+              <div className="flex items-center gap-2 mt-4">
 
-                  <input
-                    type="text"
-                    name="studentIdNumber"
-                    maxLength="10"
-                    required
-                    value={formData.studentIdNumber}
-                    onChange={handleChange}
-                    className={`${inputStyle} pl-10`}
-                  />
+                <h2 className="text-lg font-semibold text-[#3F3D56]">
+                  {currentStudent.name}
+                </h2>
 
-                </div>
+                <CheckCircle size={18} className="text-green-500" />
 
               </div>
 
-              {/* Department */}
-
-              <div>
-
-                <label className="text-sm text-gray-600 mb-1 block">
-                  Department
-                </label>
-
-                <div className="relative">
-
-                  <School
-                    size={18}
-                    className="absolute left-3 top-3 text-gray-400"
-                  />
-
-                  <input
-                    type="text"
-                    name="department"
-                    required
-                    value={formData.department}
-                    onChange={handleChange}
-                    className={`${inputStyle} pl-10`}
-                  />
-
-                </div>
-
-              </div>
-
-              {/* College */}
-
-              <div>
-
-                <label className="text-sm text-gray-600 mb-1 block">
-                  College
-                </label>
-
-                <div className="relative">
-
-                  <Building2
-                    size={18}
-                    className="absolute left-3 top-3 text-gray-400"
-                  />
-
-                  <input
-                    type="text"
-                    name="college"
-                    required
-                    value={formData.college}
-                    onChange={handleChange}
-                    className={`${inputStyle} pl-10`}
-                  />
-
-                </div>
-
-              </div>
-
-              {/* Course */}
-
-              <div>
-
-                <label className="text-sm text-gray-600 mb-1 block">
-                  Course
-                </label>
-
-                <input
-                  type="text"
-                  name="course"
-                  required
-                  value={formData.course}
-                  onChange={handleChange}
-                  className={inputStyle}
-                />
-
-              </div>
-
-              {/* Year */}
-
-              <div>
-
-                <label className="text-sm text-gray-600 mb-1 block">
-                  Year
-                </label>
-
-                <select
-                  name="year"
-                  required
-                  value={formData.year}
-                  onChange={handleChange}
-                  className={inputStyle}
-                >
-                  <option value="">Select Year</option>
-                  <option value="FY">FY</option>
-                  <option value="SY">SY</option>
-                  <option value="TY">TY</option>
-                  <option value="Final Year">Final Year</option>
-                </select>
-
-              </div>
-
-              {/* Division */}
-
-              <div>
-
-                <label className="text-sm text-gray-600 mb-1 block">
-                  Division
-                </label>
-
-                <input
-                  type="text"
-                  name="division"
-                  value={formData.division}
-                  onChange={handleChange}
-                  className={inputStyle}
-                />
-
-              </div>
+              <p className="text-gray-500 text-sm text-center">
+                {currentStudent.email}
+              </p>
 
             </div>
 
-          </div>
 
-          {/* Personal Info */}
 
-          <div>
+            {/* RIGHT INFO */}
 
-            <h2 className="text-lg font-semibold text-[#3F3D56] mb-6">
-              Personal Information
-            </h2>
+            <div className="flex-1 p-8">
 
-            <div className="grid grid-cols-2 gap-6">
+              <h2 className="text-2xl font-semibold text-[#3F3D56] mb-6">
+                Student Information
+              </h2>
 
-              {/* Phone */}
+              <div className="grid grid-cols-2 gap-6 text-sm text-gray-700">
 
-              <div>
-
-                <label className="text-sm text-gray-600 mb-1 block">
-                  Phone Number
-                </label>
-
-                <div className="relative">
-
-                  <Phone
-                    size={18}
-                    className="absolute left-3 top-3 text-gray-400"
-                  />
-
-                  <input
-                    type="text"
-                    name="phone"
-                    maxLength="10"
-                    required
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className={`${inputStyle} pl-10`}
-                  />
-
+                <div>
+                  <b>Department:</b> {currentStudent.department}
                 </div>
 
-              </div>
+                <div>
+                  <b>College:</b> {currentStudent.college}
+                </div>
 
-              {/* Gender */}
+                <div>
+                  <b>Course:</b> {currentStudent.course}
+                </div>
 
-              <div>
+                <div>
+                  <b>Year:</b> {currentStudent.year}
+                </div>
 
-                <label className="text-sm text-gray-600 mb-1 block">
-                  Gender
-                </label>
+                <div>
+                  <b>Phone:</b> {currentStudent.phone}
+                </div>
 
-                <select
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleChange}
-                  className={inputStyle}
-                >
-                  <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
+                <div>
+                  <b>Gender:</b> {currentStudent.gender}
+                </div>
 
-              </div>
+                <div>
+                  <b>DOB:</b> {currentStudent.dob}
+                </div>
 
-              {/* DOB */}
-
-              <div className="col-span-2">
-
-                <label className="text-sm text-gray-600 mb-1 block">
-                  Date of Birth
-                </label>
-
-                <div className="relative">
-
-                  <CalendarDays
-                    size={18}
-                    className="absolute left-3 top-3 text-gray-400"
-                  />
-
-                  <input
-                    type="date"
-                    name="dob"
-                    value={formData.dob}
-                    onChange={handleChange}
-                    className={`${inputStyle} pl-10`}
-                  />
-
+                <div>
+                  <b>Division:</b> {currentStudent.division}
                 </div>
 
               </div>
 
             </div>
 
-          </div>
-
-          {/* Save Button */}
-
-          <div className="flex justify-end pt-6 border-t">
-
-            <button
-              type="submit"
-              className="flex items-center gap-2 bg-[#9B96E5] text-white px-7 py-3 rounded-xl font-medium hover:opacity-90 transition"
-            >
-              <Save size={18} />
-              Save Profile
-            </button>
 
           </div>
 
-        </form>
+        )}
 
       </div>
-      {popup && (
-        <PopupCard
-          title={popup.title}
-          message={popup.message}
-          onClose={() => setPopup(null)}
-        />
-      )}
+
     </div>
+
   );
 }

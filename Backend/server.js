@@ -28,6 +28,7 @@ app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/events", require("./routes/eventRoutes"));
 app.use("/api", require("./routes/dashboardRoutes"));   // ✅ FIXED
 app.use("/api/student", require("./routes/studentRoutes"));
+app.use("/api/announcements", require("./routes/announcementRoutes"));   // ✅ FIXED
 
 app.listen(process.env.PORT || 5000, () =>
   console.log("Server running on port 5000")

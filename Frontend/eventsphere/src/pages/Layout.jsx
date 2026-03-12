@@ -5,7 +5,6 @@ import {
     Search,
     ClipboardList,
     Calendar,
-    Megaphone,
     Settings,
     Bell,
     MessageSquare,
@@ -53,12 +52,6 @@ export default function MainLayout() {
             href: "/calendar",
             icon: <Calendar size={20} />,
             label: "Calendar",
-        },
-
-        {
-            href: "/announcements",
-            icon: <Megaphone size={20} />,
-            label: "Announcements",
         },
 
         {

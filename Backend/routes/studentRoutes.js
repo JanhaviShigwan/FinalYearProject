@@ -1,14 +1,16 @@
 const express = require("express");
 const router = express.Router();
+
 const {
   getStudentProfile,
-  completeProfile
+  completeProfile,
 } = require("../controllers/studentController");
 
-// Get student profile
+
+// GET student profile
 router.get("/:studentId", getStudentProfile);
 
-// Complete profile
+// COMPLETE profile
 router.put("/complete-profile/:studentId", completeProfile);
 
 module.exports = router;
