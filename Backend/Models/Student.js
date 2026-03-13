@@ -2,14 +2,15 @@ const mongoose = require("mongoose");
 
 const studentSchema = new mongoose.Schema(
   {
-    // 10 digit college student ID (entered later in profile form)
     studentId: {
       type: String,
       match: [/^\d{10}$/, "Student ID must be exactly 10 digits"],
       index: {
         unique: true,
-        partialFilterExpression: { studentId: { $exists: true, $ne: null } }
-      }
+        partialFilterExpression: {
+          studentId: { $exists: true, $ne: null },
+        },
+      },
     },
 
     name: {
@@ -22,7 +23,7 @@ const studentSchema = new mongoose.Schema(
       required: true,
       unique: true,
       lowercase: true,
-      trim: true
+      trim: true,
     },
 
     password: {
@@ -62,6 +63,24 @@ const studentSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+
+    notificationsEnabled: {
+      type: Boolean,
+      default: true,
+    },
+
+    /* ✅ NEW FIELD */
+
+    loginActivity: [
+      {
+        date: {
+          type: Date,
+          default: Date.now,
+        },
+        ip: String,
+        device: String,
+      },
+    ],
   },
   { timestamps: true }
 );

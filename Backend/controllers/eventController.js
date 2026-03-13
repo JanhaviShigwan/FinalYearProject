@@ -5,6 +5,7 @@ const eventTicketTemplate = require("../utils/eventTicketTemplate");
 const sendEmail = require("../utils/sendEmail");
 const Student = require("../Models/Student");
 
+
 // GET all events
 const getEvents = async (req, res) => {
   try {
@@ -32,33 +33,47 @@ const getEvents = async (req, res) => {
   }
 };
 
+
 // GET event by ID
 const getEventById = async (req, res) => {
   try {
-    const event = await Event.findOne({ _id: req.params.id });
+
+    const event = await Event.findById(req.params.id);
 
     if (!event) {
-      return res.status(404).json({ message: "Event not found" });
+      return res.status(404).json({
+        message: "Event not found"
+      });
     }
 
     res.json(event);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // CREATE event
 const createEvent = async (req, res) => {
   try {
+
     const event = new Event(req.body);
     const savedEvent = await event.save();
+
     res.status(201).json(savedEvent);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+
+
+// ================= REGISTER EVENT =================
+
 const registerForEvent = async (req, res) => {
+
   try {
 
     const { studentId } = req.body;
@@ -68,11 +83,15 @@ const registerForEvent = async (req, res) => {
     const student = await Student.findById(studentId);
 
     if (!event) {
-      return res.status(404).json({ message: "Event not found" });
+      return res.status(404).json({
+        message: "Event not found"
+      });
     }
 
     if (!student) {
-      return res.status(404).json({ message: "Student not found" });
+      return res.status(404).json({
+        message: "Student not found"
+      });
     }
 
     if (!student.profileComplete) {
@@ -90,9 +109,10 @@ const registerForEvent = async (req, res) => {
     if (existing) {
       return res.status(400).json({
         type: "ALREADY_REGISTERED",
-        message: "You already registered for this event"
+        message: "You already registered"
       });
     }
+
 
     const eventDate = new Date(event.date);
     const today = new Date();
@@ -106,25 +126,27 @@ const registerForEvent = async (req, res) => {
     if (today < openDate) {
       return res.status(400).json({
         type: "REGISTRATION_NOT_OPEN",
-        message: "Registration opens 14 days before the event"
+        message: "Registration not open yet"
       });
     }
 
     if (today > eventEnd) {
       return res.status(400).json({
         type: "EVENT_ENDED",
-        message: "Event has already ended"
+        message: "Event ended"
       });
     }
 
     if (event.registeredUsers >= event.totalCapacity) {
       return res.status(400).json({
         type: "EVENT_FULL",
-        message: "Event is full"
+        message: "Event full"
       });
     }
 
+
     // SAVE REGISTRATION
+
     const registration = new Registration({
       studentId,
       eventId
@@ -135,41 +157,65 @@ const registerForEvent = async (req, res) => {
     event.registeredUsers += 1;
     await event.save();
 
-    // QR DATA
+
+    // QR
+
     const qrData = JSON.stringify({
       ticketId: registration._id,
       event: event.eventName,
       student: student.name
     });
 
-    // GENERATE QR CODE
+
     const qrCodeImage = await QRCode.toDataURL(qrData, {
       width: 250,
       margin: 2
     });
 
-    // EMAIL HTML
-    const emailHTML = eventTicketTemplate(student, event, qrCodeImage);
 
-    // SEND EMAIL
-    await sendEmail(
-      student.email,
-      `Event Registration Confirmed - ${event.eventName}`,
-      emailHTML
+    const emailHTML = eventTicketTemplate(
+      student,
+      event,
+      qrCodeImage
     );
+
+
+    // ✅ SEND EMAIL ONLY IF NOTIFICATIONS ENABLED
+
+    if (student.notificationsEnabled) {
+
+      await sendEmail(
+        student.email,
+        `Event Registration Confirmed - ${event.eventName}`,
+        emailHTML
+      );
+
+    }
+
 
     res.json({
       type: "SUCCESS",
-      message: "Successfully registered. Ticket sent to email."
+      message: "Registered successfully"
     });
 
   } catch (error) {
-    console.error("Register event error:", error);
-    res.status(500).json({ message: error.message });
+
+    console.error(error);
+
+    res.status(500).json({
+      message: error.message
+    });
+
   }
+
 };
 
+
+
+// CHECK REGISTRATION
+
 const checkRegistration = async (req, res) => {
+
   try {
 
     const { eventId, studentId } = req.params;
@@ -186,16 +232,28 @@ const checkRegistration = async (req, res) => {
     res.json({ registered: false });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+
+    res.status(500).json({
+      message: error.message
+    });
+
   }
+
 };
 
+
+
+// GET STUDENT EVENTS
+
 const getStudentRegistrations = async (req, res) => {
+
   try {
 
     const { studentId } = req.params;
 
-    const registrations = await Registration.find({ studentId });
+    const registrations = await Registration.find({
+      studentId
+    });
 
     const eventIds = registrations.map(r => r.eventId);
 
@@ -207,13 +265,20 @@ const getStudentRegistrations = async (req, res) => {
 
   } catch (error) {
 
-    console.error("Get registrations error:", error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message
+    });
 
   }
+
 };
 
+
+
+// CANCEL
+
 const cancelRegistration = async (req, res) => {
+
   try {
 
     const { studentId, eventId } = req.params;
@@ -224,7 +289,9 @@ const cancelRegistration = async (req, res) => {
     });
 
     if (!registration) {
-      return res.status(404).json({ message: "Registration not found" });
+      return res.status(404).json({
+        message: "Not found"
+      });
     }
 
     const event = await Event.findById(eventId);
@@ -234,19 +301,28 @@ const cancelRegistration = async (req, res) => {
       await event.save();
     }
 
-    res.json({ message: "Registration cancelled" });
+    res.json({
+      message: "Cancelled"
+    });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+
+    res.status(500).json({
+      message: error.message
+    });
+
   }
+
 };
+
+
 
 module.exports = {
   getEvents,
   getEventById,
   createEvent,
-  checkRegistration,
   registerForEvent,
+  checkRegistration,
   getStudentRegistrations,
-  cancelRegistration
+  cancelRegistration,
 };
