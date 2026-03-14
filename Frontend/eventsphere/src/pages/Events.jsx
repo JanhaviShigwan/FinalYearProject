@@ -20,7 +20,7 @@ function Events() {
 
   /* ── Fetch events ── */
   useEffect(() => {
-    fetch(`${API_URL}/api/events`)
+    fetch(`${API_URL}/events`)
       .then(res => res.json())
       .then(data => {
         setEvents(data);
