@@ -103,10 +103,9 @@ export default function MainLayout() {
                                     to={href}
                                     className={({ isActive }) =>
                                         `flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300
-                                        ${
-                                            isActive
-                                                ? "bg-[#9B96E5]/20 text-[#9B96E5]"
-                                                : "text-gray-600 hover:bg-[#F6F1EB]"
+                                        ${isActive
+                                            ? "bg-[#9B96E5]/20 text-[#9B96E5]"
+                                            : "text-gray-600 hover:bg-[#F6F1EB]"
                                         }`
                                     }
                                 >
@@ -145,6 +144,19 @@ export default function MainLayout() {
                         </div>
 
                     </div>
+
+
+                    {/* BACK TO HOME BUTTON */}
+
+                    <button
+                        onClick={() => navigate("/")}
+                        className="border border-[#F08A6C] text-[#F08A6C] py-2 rounded-xl font-medium hover:bg-[#e67858] hover:text-white transition"
+                    >
+                        Back to Home
+                    </button>
+
+
+                    {/* LOGOUT */}
 
                     <button
                         onClick={handleLogout}
