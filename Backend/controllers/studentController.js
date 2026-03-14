@@ -40,6 +40,10 @@ exports.getStudentProfile = async (req, res) => {
 /* COMPLETE PROFILE */
 /* ============================= */
 
+/* ============================= */
+/* COMPLETE PROFILE */
+/* ============================= */
+
 exports.completeProfile = async (req, res) => {
   try {
 
@@ -57,6 +61,21 @@ exports.completeProfile = async (req, res) => {
       dob,
     } = req.body;
 
+
+    // ✅ check duplicate studentId
+
+    const existing = await Student.findOne({
+      studentId: studentIdNumber,
+      _id: { $ne: studentId },
+    });
+
+    if (existing) {
+      return res.status(400).json({
+        message: "Student ID already exists",
+      });
+    }
+
+
     const student = await Student.findById(studentId);
 
     if (!student) {
@@ -64,6 +83,7 @@ exports.completeProfile = async (req, res) => {
         message: "Student not found",
       });
     }
+
 
     student.studentId = studentIdNumber;
     student.phone = phone;
@@ -96,46 +116,28 @@ exports.completeProfile = async (req, res) => {
 };
 
 
-
 /* ============================= */
 /* UPLOAD PROFILE IMAGE */
 /* ============================= */
 
 exports.uploadImage = async (req, res) => {
+
   try {
 
-    const { studentId } = req.params;
+    const { image } = req.body;
 
-    const student = await Student.findById(studentId);
+    const student = await Student.findByIdAndUpdate(
+      req.params.studentId,
+      { profileImage: image },
+      { new: true }
+    );
 
-    if (!student) {
-      return res.status(404).json({
-        message: "Student not found",
-      });
-    }
+    res.json(student);
 
-    if (!req.file) {
-      return res.status(400).json({
-        message: "Only image files allowed",
-      });
-    }
-
-    student.profileImage =
-      "/uploads/" + req.file.filename;
-
-    await student.save();
-
-    res.status(200).json(student);
-
-  } catch (error) {
-
-    console.log("Upload Image Error:", error);
-
-    res.status(500).json({
-      message: "Server error",
-    });
-
+  } catch (err) {
+    res.status(500).json({ message: "Upload failed" });
   }
+
 };
 
 
@@ -186,28 +188,18 @@ exports.updateNotifications = async (req, res) => {
 /* ============================= */
 /* CHANGE PASSWORD */
 /* ============================= */
-
 exports.changePassword = async (req, res) => {
-
   try {
-
     const { studentId } = req.params;
-
-    const {
-      currentPassword,
-      newPassword,
-    } = req.body;
+    const { currentPassword, newPassword } = req.body;
 
     const student = await Student.findById(studentId);
 
     if (!student) {
-      return res.status(404).json({
-        message: "Student not found",
-      });
+      return res.status(404).json({ message: "Student not found" });
     }
 
     // check current password
-
     const isMatch = await bcrypt.compare(
       currentPassword,
       student.password
@@ -215,45 +207,50 @@ exports.changePassword = async (req, res) => {
 
     if (!isMatch) {
       return res.status(400).json({
-        message: "Current password incorrect",
+        message: "Current password is incorrect",
       });
     }
 
-    // minimum length validation
+    // ❗ check new password same as old
+    const samePassword = await bcrypt.compare(
+      newPassword,
+      student.password
+    );
 
+    if (samePassword) {
+      return res.status(400).json({
+        message:
+          "New password should not be same as current password",
+      });
+    }
+
+    // ❗ minimum length check
     if (newPassword.length < 8) {
       return res.status(400).json({
-        message: "Password must be at least 8 characters",
+        message:
+          "Password must be at least 8 characters",
       });
     }
 
     // hash new password
-
     const salt = await bcrypt.genSalt(10);
-
-    const hashedPassword =
-      await bcrypt.hash(newPassword, salt);
-
-    student.password = hashedPassword;
+    student.password = await bcrypt.hash(
+      newPassword,
+      salt
+    );
 
     await student.save();
 
-    res.status(200).json({
+    res.json({
       message: "Password changed successfully",
     });
 
-  } catch (error) {
-
-    console.log("Change password error:", error);
-
+  } catch (err) {
     res.status(500).json({
       message: "Server error",
     });
-
   }
-
 };
-
 /* ============================= */
 /* DELETE ACCOUNT */
 /* ============================= */
