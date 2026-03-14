@@ -73,7 +73,7 @@ export default function Register() {
 
     try {
       setLoading(true);
-      const res = await axios.post(`${API_URL}/api/auth/register`, {
+      const res = await axios.post(`${API_URL}/auth/register`, {
         name: formData.name.trim(),
         email: formData.email.trim().toLowerCase(),
         password: formData.password,

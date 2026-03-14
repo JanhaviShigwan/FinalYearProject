@@ -28,8 +28,6 @@ export default function StudentVerificationForm({ student, onSuccess }) {
     dob: "",
   });
 
-  // ✅ Department → Course map
-
   const courseMap = {
     "IT & CS": ["BSc IT", "BSc CS", "BCA"],
     "Commerce": ["BCom", "BBA", "BAF"],
@@ -38,8 +36,6 @@ export default function StudentVerificationForm({ student, onSuccess }) {
     "Science": ["BSc Physics", "BSc Chemistry", "BSc Maths"]
   };
 
-
-  // ✅ handle change
 
   const handleChange = (e) => {
 
@@ -64,8 +60,6 @@ export default function StudentVerificationForm({ student, onSuccess }) {
 
   };
 
-
-  // ✅ submit
 
   const handleSubmit = async (e) => {
 
@@ -94,7 +88,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
     try {
 
       await axios.put(
-        `${API_URL}/api/student/complete-profile/${student._id}`,
+        `${API_URL}/student/complete-profile/${student._id}`,
         formData
       );
 
@@ -112,14 +106,14 @@ export default function StudentVerificationForm({ student, onSuccess }) {
 
     } catch (error) {
 
-  setPopup({
-    title: "Profile Update Failed",
-    message:
-      error.response?.data?.message ||
-      "Something went wrong",
-  });
+      setPopup({
+        title: "Profile Update Failed",
+        message:
+          error.response?.data?.message ||
+          "Something went wrong",
+      });
 
-}
+    }
 
   };
 
@@ -224,7 +218,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
           </div>
 
 
-          {/* Course dynamic */}
+          {/* Course */}
 
           <div>
 
@@ -376,6 +370,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
               <input
                 type="date"
                 name="dob"
+                value={formData.dob}
                 onChange={handleChange}
                 className={inputStyle}
               />

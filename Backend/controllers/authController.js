@@ -1,88 +1,245 @@
 const Student = require("../Models/Student");
 const bcrypt = require("bcryptjs");
 const sendEmail = require("../utils/sendEmail");
-const emailTemplate = require("../utils/emailTemplate"); // ✅ import template
+const emailTemplate = require("../utils/emailTemplate");
+
+
+// ================= REGISTER =================
 
 exports.registerStudent = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Check existing student
-    const existing = await Student.findOne({ email });
+    const lowerEmail = email.toLowerCase();
+
+    const existing = await Student.findOne({
+      email: lowerEmail,
+    });
+
     if (existing) {
-      return res.status(400).json({ message: "Email already registered" });
+      return res.status(400).json({
+        message: "Email already registered",
+      });
     }
 
-    // Hash password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(
+      password,
+      salt
+    );
 
-    // Create student
     const newStudent = await Student.create({
       name,
-      email,
+      email: lowerEmail,
       password: hashedPassword,
       profileComplete: false,
     });
 
-    // Generate HTML email
     const htmlContent = emailTemplate(name);
 
-    // Send Email
     await sendEmail(
-      email,
+      lowerEmail,
       "Welcome to EventSphere 🎉",
       htmlContent
     );
 
     res.status(201).json({
       message: "Registration successful",
-      student: {
-        _id: newStudent._id,
-        name: newStudent.name,
-        email: newStudent.email,
-        studentId: newStudent.studentId,
-        profileComplete: newStudent.profileComplete,
-      },
+      student: newStudent,
     });
 
   } catch (error) {
-    console.log("Register Error:", error);
-    res.status(500).json({ message: "Server error" });
+    console.log(error);
+    res.status(500).json({
+      message: "Server error",
+    });
   }
 };
+
+
+
+// ================= LOGIN =================
 
 exports.loginStudent = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if student exists
-    const student = await Student.findOne({ email });
+    const lowerEmail = email.toLowerCase();
+
+    const student = await Student.findOne({
+      email: lowerEmail,
+    });
 
     if (!student) {
-      return res.status(400).json({ message: "Invalid email or password" });
+      return res.status(400).json({
+        message: "Invalid email or password",
+      });
     }
 
-    // Compare password
-    const isMatch = await bcrypt.compare(password, student.password);
+    const isMatch = await bcrypt.compare(
+      password,
+      student.password
+    );
 
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid email or password" });
+      return res.status(400).json({
+        message: "Invalid email or password",
+      });
     }
 
     res.status(200).json({
       message: "Login successful",
-      student: {
-        _id: student._id,
-        studentId: student.studentId,
-        name: student.name,
-        email: student.email,
-        profileComplete: student.profileComplete,
-      },
+      student,
     });
 
   } catch (error) {
-    console.log("Login Error:", error);
-    res.status(500).json({ message: "Server error" });
+    console.log(error);
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+
+
+// ================= FORGOT PASSWORD =================
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const lowerEmail = email.toLowerCase();
+
+    const user = await Student.findOne({
+      email: lowerEmail,
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Email not found",
+      });
+    }
+
+    const otp =
+      Math.floor(
+        100000 + Math.random() * 900000
+      ).toString();
+
+    user.resetOTP = otp;
+    user.resetOTPExpire =
+      Date.now() + 5 * 60 * 1000;
+
+    await user.save();
+
+    await sendEmail(
+      lowerEmail,
+      "EventSphere OTP",
+      `Your OTP is ${otp}. Valid for 5 minutes`
+    );
+
+    res.json({
+      message: "OTP sent",
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+
+
+// ================= VERIFY OTP =================
+
+exports.verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const lowerEmail = email.toLowerCase();
+
+    const user = await Student.findOne({
+      email: lowerEmail,
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    if (
+      user.resetOTP !== otp ||
+      user.resetOTPExpire < Date.now()
+    ) {
+      return res.status(400).json({
+        message: "OTP invalid or expired",
+      });
+    }
+
+    res.json({
+      message: "OTP verified",
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+
+
+// ================= RESET PASSWORD =================
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    const lowerEmail = email.toLowerCase();
+
+    const user = await Student.findOne({
+      email: lowerEmail,
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    if (
+      user.resetOTP !== otp ||
+      user.resetOTPExpire < Date.now()
+    ) {
+      return res.status(400).json({
+        message: "OTP invalid or expired",
+      });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+
+    const hashed = await bcrypt.hash(
+      newPassword,
+      salt
+    );
+
+    user.password = hashed;
+
+    user.resetOTP = undefined;
+    user.resetOTPExpire = undefined;
+
+    await user.save();
+
+    res.json({
+      message: "Password updated",
+    });
+
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: "Server error",
+    });
   }
 };

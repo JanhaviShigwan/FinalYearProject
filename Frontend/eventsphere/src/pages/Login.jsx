@@ -45,7 +45,7 @@ export default function Login() {
     try {
       setLoading(true);
 
-      const res = await axios.post(`${API_URL}/api/auth/login`, {
+      const res = await axios.post(`${API_URL}/auth/login`, {
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
       });

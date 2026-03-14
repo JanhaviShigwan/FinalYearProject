@@ -18,8 +18,6 @@ export default function Settings() {
   const [updatingNotif, setUpdatingNotif] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  /* ================= PASSWORD STATES ================= */
-
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -31,42 +29,43 @@ export default function Settings() {
   const [passwordMsg, setPasswordMsg] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-
   const studentLocal = JSON.parse(
     localStorage.getItem("eventSphereStudent")
   );
 
-
   /* ================= FETCH ================= */
 
-  useEffect(() => {
+  const fetchStudent = async () => {
 
     if (!studentLocal?._id) {
       setLoading(false);
       return;
     }
 
-    const fetchStudent = async () => {
+    try {
 
-      try {
+      const res = await axios.get(
+        `${API_URL}/student/${studentLocal._id}`
+      );
 
-        const res = await axios.get(
-          `${API_URL}/api/student/${studentLocal._id}`
-        );
+      setCurrentStudent(res.data);
 
-        setCurrentStudent(res.data);
+      localStorage.setItem(
+        "eventSphereStudent",
+        JSON.stringify(res.data)
+      );
 
-      } catch (err) {
-        console.log(err);
-      }
+    } catch (err) {
+      console.log(err);
+    }
 
-      setLoading(false);
+    setLoading(false);
 
-    };
+  };
 
+  useEffect(() => {
     fetchStudent();
-
-  }, [studentLocal?._id]);
+  }, []);
 
 
   /* ================= PASSWORD STRENGTH ================= */
@@ -118,8 +117,8 @@ export default function Settings() {
 
     try {
 
-      const res = await axios.put(
-        `${API_URL}/api/student/change-password/${currentStudent._id}`,
+      await axios.put(
+        `${API_URL}/student/change-password/${currentStudent._id}`,
         {
           currentPassword,
           newPassword,
@@ -144,14 +143,14 @@ export default function Settings() {
   };
 
 
-  /* ================= DELETE ACCOUNT ================= */
+  /* ================= DELETE ================= */
 
   const deleteAccount = async () => {
 
     try {
 
       await axios.delete(
-        `${API_URL}/api/student/delete/${studentLocal._id}`
+        `${API_URL}/student/delete/${studentLocal._id}`
       );
 
       localStorage.clear();
@@ -172,7 +171,7 @@ export default function Settings() {
     try {
 
       const res = await axios.get(
-        `${API_URL}/api/student/login-activity/${studentLocal._id}`
+        `${API_URL}/student/login-activity/${studentLocal._id}`
       );
 
       alert(
@@ -205,13 +204,18 @@ export default function Settings() {
         setUploading(true);
 
         const res = await axios.post(
-          `${API_URL}/api/student/upload-image/${studentLocal._id}`,
+          `${API_URL}/student/upload-image/${studentLocal._id}`,
           {
             image: reader.result
           }
         );
 
         setCurrentStudent(res.data);
+
+        localStorage.setItem(
+          "eventSphereStudent",
+          JSON.stringify(res.data)
+        );
 
       } catch (err) {
         console.log(err);
@@ -226,7 +230,7 @@ export default function Settings() {
   };
 
 
-  /* ================= TOGGLE NOTIFICATIONS ================= */
+  /* ================= TOGGLE NOTIF ================= */
 
   const toggleNotifications = async () => {
 
@@ -234,16 +238,18 @@ export default function Settings() {
 
       setUpdatingNotif(true);
 
-      const newValue = !currentStudent.notificationsEnabled;
+      const newValue =
+        !currentStudent.notificationsEnabled;
 
       const res = await axios.put(
-        `${API_URL}/api/student/notifications/${studentLocal._id}`,
+        `${API_URL}/student/notifications/${studentLocal._id}`,
         { notificationsEnabled: newValue }
       );
 
       setCurrentStudent({
         ...currentStudent,
-        notificationsEnabled: res.data.notificationsEnabled
+        notificationsEnabled:
+          res.data.notificationsEnabled
       });
 
     } catch (err) {
@@ -281,7 +287,18 @@ export default function Settings() {
 
           <StudentVerificationForm
             student={currentStudent}
-            onSuccess={(updated) => setCurrentStudent(updated)}
+            onSuccess={(updated) => {
+
+              localStorage.setItem(
+                "eventSphereStudent",
+                JSON.stringify(updated)
+              );
+
+              setCurrentStudent(updated);
+
+              fetchStudent(); // ✅ auto refresh
+
+            }}
           />
 
         )}
@@ -332,16 +349,18 @@ export default function Settings() {
         )}
 
       </div>
+
       <ConfirmPopup
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         onConfirm={deleteAccount}
         title="Delete Account"
-        description="Are you sure you want to delete your account? This action cannot be undone."
+        description="Are you sure you want to delete your account?"
         confirmText="Delete"
         cancelText="Cancel"
         icon={<Trash2 size={20} />}
       />
+
     </div>
 
   );

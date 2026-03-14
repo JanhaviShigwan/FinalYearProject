@@ -22,7 +22,7 @@ export default function CalendarPage() {
     const fetchEvents = useCallback(async () => {
 
         const res = await axios.get(
-            `${API_URL}/api/events`
+            `${API_URL}/events`
         );
 
         // hide past events

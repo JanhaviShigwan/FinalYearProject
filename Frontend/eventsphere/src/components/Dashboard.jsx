@@ -28,7 +28,7 @@ export default function Dashboard() {
     const fetchDashboard = async () => {
       try {
         const res = await axios.get(
-          `${API_URL}/api/dashboard/${student._id}`
+          `${API_URL}/dashboard/${student._id}`
         );
         setDashboardData(res.data);
       } catch (error) {
@@ -39,7 +39,7 @@ export default function Dashboard() {
     const fetchMyEvents = async () => {
       try {
         const res = await axios.get(
-          `${API_URL}/api/events/student-registrations/${student._id}`
+          `${API_URL}/events/student-registrations/${student._id}`
         );
         setMyEvents(res.data);
       } catch (error) {
@@ -50,7 +50,7 @@ export default function Dashboard() {
     const fetchAnnouncements = async () => {
       try {
         const res = await axios.get(
-          `${API_URL}/api/announcements`
+          `${API_URL}/announcements`
         );
         setAnnouncements(res.data);
       } catch (err) {

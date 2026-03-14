@@ -31,6 +31,14 @@ const studentSchema = new mongoose.Schema(
       required: true,
     },
 
+    resetOTP: {
+      type: String,
+    },
+
+    resetOTPExpire: {
+      type: Date,
+    },
+
     phone: {
       type: String,
       match: [/^\d{10}$/, "Phone number must be 10 digits"],

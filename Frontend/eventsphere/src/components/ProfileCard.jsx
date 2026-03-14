@@ -10,6 +10,21 @@ export default function ProfileCard({
         currentStudent?.profileImage &&
         currentStudent.profileImage.startsWith("data:image");
 
+
+    // ✅ format date to dd-mm-yyyy
+    const formatDate = (date) => {
+        if (!date) return "";
+
+        const d = new Date(date);
+
+        const day = String(d.getDate()).padStart(2, "0");
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const year = d.getFullYear();
+
+        return `${day}-${month}-${year}`;
+    };
+
+
     return (
 
         <div className="bg-[#F6F1EB] rounded-3xl border border-gray-200 overflow-hidden flex">
@@ -17,8 +32,6 @@ export default function ProfileCard({
             {/* LEFT CARD */}
 
             <div className="w-64 bg-white m-6 rounded-2xl shadow-sm border border-gray-200 p-6 flex flex-col items-center">
-
-                {/* PROFILE IMAGE / AVATAR */}
 
                 {hasImage ? (
 
@@ -39,8 +52,6 @@ export default function ProfileCard({
                 )}
 
 
-                {/* UPLOAD BUTTON */}
-
                 <label className="mt-3 text-sm text-[#9B96E5] cursor-pointer">
 
                     {uploading ? "Uploading..." : "Upload Photo"}
@@ -55,8 +66,6 @@ export default function ProfileCard({
                 </label>
 
 
-                {/* NAME */}
-
                 <div className="flex items-center gap-2 mt-4">
 
                     <h2 className="text-lg font-semibold text-[#3F3D56]">
@@ -70,8 +79,6 @@ export default function ProfileCard({
 
                 </div>
 
-
-                {/* EMAIL */}
 
                 <p className="text-gray-500 text-sm text-center">
                     {currentStudent.email}
@@ -96,7 +103,10 @@ export default function ProfileCard({
                     <div>Year: {currentStudent.year}</div>
                     <div>Phone: {currentStudent.phone}</div>
                     <div>Gender: {currentStudent.gender}</div>
-                    <div>DOB: {currentStudent.dob}</div>
+
+                    {/* ✅ FIXED DOB */}
+                    <div>DOB: {formatDate(currentStudent.dob)}</div>
+
                     <div>Division: {currentStudent.division}</div>
 
                 </div>

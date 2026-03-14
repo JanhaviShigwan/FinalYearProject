@@ -15,7 +15,7 @@ export default function MyRegistrations() {
       try {
 
         const res = await axios.get(
-          `${API_URL}/api/events/student-registrations/${student._id}`
+          `${API_URL}/events/student-registrations/${student._id}`
         );
 
         setMyEvents(res.data);
