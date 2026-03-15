@@ -100,7 +100,7 @@ const registerForEvent = async (req, res) => {
       });
     }
 
-    if (!student.profileComplete) {
+    if (student.role !== "admin" && !student.profileComplete) {
       return res.status(400).json({
         type: "PROFILE_INCOMPLETE",
         message: "Please complete your profile first"

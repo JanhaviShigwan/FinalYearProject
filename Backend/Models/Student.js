@@ -1,5 +1,27 @@
 const mongoose = require("mongoose");
 
+async function forceAdminProfileCompleteOnUpdate() {
+  const update = this.getUpdate() || {};
+  const nextRole = update.role || update.$set?.role;
+
+  let effectiveRole = nextRole;
+
+  if (!effectiveRole) {
+    const existingStudent = await this.model.findOne(this.getQuery()).select("role");
+    effectiveRole = existingStudent?.role;
+  }
+
+  if (effectiveRole === "admin") {
+    if (update.$set) {
+      update.$set.profileComplete = true;
+    } else {
+      update.profileComplete = true;
+    }
+
+    this.setUpdate(update);
+  }
+}
+
 const studentSchema = new mongoose.Schema(
   {
     studentId: {
@@ -60,7 +82,9 @@ const studentSchema = new mongoose.Schema(
 
     profileComplete: {
       type: Boolean,
-      default: false,
+      default: function () {
+        return this.role === "admin";
+      },
     },
 
     profileImage: {
@@ -114,6 +138,16 @@ const studentSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+studentSchema.pre("save", function (next) {
+  if (this.role === "admin") {
+    this.profileComplete = true;
+  }
+
+  next();
+});
+
+studentSchema.pre("findOneAndUpdate", forceAdminProfileCompleteOnUpdate);
 
 module.exports =
   mongoose.model("Student", studentSchema);

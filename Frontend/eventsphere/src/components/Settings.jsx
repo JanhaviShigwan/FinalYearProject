@@ -269,7 +269,8 @@ export default function Settings() {
     );
 
 
-  const isVerified = currentStudent?.profileComplete;
+  const isVerified =
+    currentStudent?.role === "admin" || currentStudent?.profileComplete;
 
 
   return (

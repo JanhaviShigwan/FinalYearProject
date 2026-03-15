@@ -21,6 +21,9 @@ export default function Dashboard() {
     ongoingEvents: [],
   });
 
+  const needsProfileCompletion =
+    student?.role !== "admin" && !student?.profileComplete;
+
   // ================= FETCH =================
 
   useEffect(() => {
@@ -118,7 +121,7 @@ const upcomingEventsFiltered = dashboardData.upcomingEventList.filter(
 
       {/* PROFILE ALERT */}
 
-      {!student?.profileComplete && (
+      {needsProfileCompletion && (
 
         <div className="bg-[#FFF4E5] border border-[#F08A6C]/40 rounded-2xl p-5 flex items-center justify-between">
 

@@ -1,6 +1,7 @@
 const express = require("express");
 
 const router = express.Router();
+const adminAuth = require("../middleware/adminAuth");
 
 const {
   getAnnouncements,
@@ -14,11 +15,11 @@ router.get("/", getAnnouncements);
 
 
 // POST
-router.post("/", createAnnouncement);
+router.post("/", adminAuth, createAnnouncement);
 
 
 // DELETE
-router.delete("/:id", deleteAnnouncement);
+router.delete("/:id", adminAuth, deleteAnnouncement);
 
 
 module.exports = router;

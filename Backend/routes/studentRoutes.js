@@ -1,7 +1,13 @@
 const express = require("express");
 const router = express.Router();
+const adminAuth = require("../middleware/adminAuth");
 
 const {
+  getAdminUsers,
+  getAdminUserById,
+  updateAdminUser,
+  deleteAdminUser,
+
   getStudentProfile,
   completeProfile,
   uploadImage,
@@ -14,6 +20,35 @@ const {
 } = require("../controllers/studentController");
 
 const upload = require("../config/multer");
+
+
+/* ========================= */
+/* ADMIN - USERS MANAGEMENT */
+/* ========================= */
+
+router.get(
+  "/admin/users",
+  adminAuth,
+  getAdminUsers
+);
+
+router.get(
+  "/admin/users/:studentId",
+  adminAuth,
+  getAdminUserById
+);
+
+router.patch(
+  "/admin/users/:studentId",
+  adminAuth,
+  updateAdminUser
+);
+
+router.delete(
+  "/admin/users/:studentId",
+  adminAuth,
+  deleteAdminUser
+);
 
 
 /* ========================= */

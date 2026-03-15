@@ -8,6 +8,19 @@ const {
   passwordChangedTemplate,
 } = require("../utils/template");
 
+const syncAdminProfileComplete = async (student) => {
+  if (!student || student.role !== "admin" || student.profileComplete) {
+    return student;
+  }
+
+  student.profileComplete = true;
+  await Student.findByIdAndUpdate(student._id, {
+    $set: { profileComplete: true },
+  });
+
+  return student;
+};
+
 
 // ================= REGISTER =================
 
@@ -95,6 +108,8 @@ exports.loginStudent = async (req, res) => {
         message: "Invalid email or password",
       });
     }
+
+    await syncAdminProfileComplete(student);
 
     res.status(200).json({
       message: "Login successful",

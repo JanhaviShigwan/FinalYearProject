@@ -7,6 +7,222 @@ const {
   passwordChangedTemplate,
 } = require("../utils/template");
 
+const syncAdminProfileComplete = async (student) => {
+  if (!student || student.role !== "admin" || student.profileComplete) {
+    return student;
+  }
+
+  student.profileComplete = true;
+  await Student.findByIdAndUpdate(student._id, {
+    $set: { profileComplete: true },
+  });
+
+  return student;
+};
+
+
+/* ============================= */
+/* ADMIN - LIST USERS */
+/* ============================= */
+
+exports.getAdminUsers = async (req, res) => {
+  try {
+    const {
+      search = "",
+      role = "all",
+      year = "all",
+      department = "all",
+      page = 1,
+      limit = 10,
+    } = req.query;
+
+    const pageNum = Math.max(parseInt(page, 10) || 1, 1);
+    const limitNum = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 50);
+
+    const query = {};
+
+    if (role === "student") {
+      query.$or = [
+        { role: "student" },
+        { role: { $exists: false } },
+        { role: null },
+      ];
+    } else if (role === "admin") {
+      query.role = "admin";
+    }
+
+    if (year !== "all") {
+      query.year = year;
+    }
+
+    if (department !== "all") {
+      query.department = department;
+    }
+
+    if (search.trim()) {
+      const regex = new RegExp(search.trim(), "i");
+      query.$and = query.$and || [];
+      query.$and.push({
+        $or: [
+          { name: regex },
+          { email: regex },
+          { studentId: regex },
+          { course: regex },
+          { division: regex },
+        ],
+      });
+    }
+
+    await Student.updateMany(
+      {
+        role: "admin",
+        $or: [
+          { profileComplete: false },
+          { profileComplete: { $exists: false } },
+          { profileComplete: null },
+        ],
+      },
+      {
+        $set: { profileComplete: true },
+      }
+    );
+
+    const [users, total] = await Promise.all([
+      Student.find(query)
+        .select("-password -resetOTP -resetOTPExpire")
+        .sort({ createdAt: -1 })
+        .skip((pageNum - 1) * limitNum)
+        .limit(limitNum),
+      Student.countDocuments(query),
+    ]);
+
+    res.status(200).json({
+      users,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.max(Math.ceil(total / limitNum), 1),
+      },
+    });
+  } catch (error) {
+    console.log("Admin users fetch error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+/* ============================= */
+/* ADMIN - GET USER BY ID */
+/* ============================= */
+
+exports.getAdminUserById = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    const user = await Student.findById(studentId)
+      .select("-password -resetOTP -resetOTPExpire");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    await syncAdminProfileComplete(user);
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.log("Admin user fetch error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+/* ============================= */
+/* ADMIN - UPDATE USER */
+/* ============================= */
+
+exports.updateAdminUser = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    const existingUser = await Student.findById(studentId).select("role profileComplete");
+
+    if (!existingUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const allowedFields = [
+      "name",
+      "email",
+      "role",
+      "phone",
+      "department",
+      "year",
+      "course",
+      "division",
+      "notificationsEnabled",
+      "profileComplete",
+      "emailPreferences",
+    ];
+
+    const updates = {};
+
+    allowedFields.forEach((field) => {
+      if (Object.prototype.hasOwnProperty.call(req.body, field)) {
+        updates[field] = req.body[field];
+      }
+    });
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: "No valid fields to update" });
+    }
+
+    const targetRole = updates.role || existingUser.role;
+
+    if (targetRole === "admin") {
+      updates.profileComplete = true;
+    }
+
+    const updatedUser = await Student.findByIdAndUpdate(
+      studentId,
+      { $set: updates },
+      { new: true, runValidators: true }
+    ).select("-password -resetOTP -resetOTPExpire");
+
+    res.status(200).json({
+      message: "User updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.log("Admin user update error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+/* ============================= */
+/* ADMIN - DELETE USER */
+/* ============================= */
+
+exports.deleteAdminUser = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    const user = await Student.findById(studentId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    await Student.findByIdAndDelete(studentId);
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.log("Admin user delete error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 
 /* ============================= */
 /* GET STUDENT PROFILE */
@@ -26,6 +242,8 @@ exports.getStudentProfile = async (req, res) => {
         message: "Student not found",
       });
     }
+
+    await syncAdminProfileComplete(student);
 
     res.status(200).json(student);
 

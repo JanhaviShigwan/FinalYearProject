@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const adminAuth = require("../middleware/adminAuth");
 
 const {
   getEvents,
@@ -14,7 +15,7 @@ const {
 
 router.get("/", getEvents);
 
-router.post("/create", createEvent);
+router.post("/create", adminAuth, createEvent);
 
 router.get("/:id", getEventById);
 

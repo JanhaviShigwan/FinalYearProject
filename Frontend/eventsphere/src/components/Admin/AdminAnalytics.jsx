@@ -11,6 +11,7 @@ import {
   Users,
 } from 'lucide-react';
 import API_URL from '../../api';
+import { getAdminRequestConfig } from '../../utils/adminAuth';
 
 export default function AdminAnalytics({
   statsData = {},
@@ -50,12 +51,15 @@ export default function AdminAnalytics({
         setFetchError('');
 
         const query = selectedRange === 'all' ? '' : `?rangeDays=${selectedRange}`;
-        const res = await axios.get(`${API_URL}/dashboard/admin/overview${query}`);
+        const res = await axios.get(
+          `${API_URL}/dashboard/admin/overview${query}`,
+          getAdminRequestConfig()
+        );
 
         setAnalyticsData(res.data);
       } catch (err) {
         console.error('Error fetching analytics data:', err);
-        setFetchError('Could not refresh analytics for the selected date range.');
+        setFetchError(err.response?.data?.message || 'Could not refresh analytics for the selected date range.');
       } finally {
         setIsFetching(false);
       }
