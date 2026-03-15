@@ -73,6 +73,12 @@ const studentSchema = new mongoose.Schema(
       default: true,
     },
 
+    role: {
+      type: String,
+      enum: ["student", "admin"],
+      default: "student",
+    },
+
     // ✅ NEW EMAIL SETTINGS
 
     emailPreferences: {

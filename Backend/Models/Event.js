@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const EventSchema = new mongoose.Schema({
 
   _id: {
-    type: String
+    type: String,
+    default: () => new mongoose.Types.ObjectId().toString()
   },
   
   eventName: {

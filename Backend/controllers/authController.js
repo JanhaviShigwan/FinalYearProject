@@ -98,7 +98,13 @@ exports.loginStudent = async (req, res) => {
 
     res.status(200).json({
       message: "Login successful",
-      student,
+      student: {
+        _id: student._id,
+        name: student.name,
+        email: student.email,
+        role: student.role,
+        profileComplete: student.profileComplete,
+      },
     });
 
   } catch (error) {

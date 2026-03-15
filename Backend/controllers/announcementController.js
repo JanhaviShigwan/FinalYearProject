@@ -1,4 +1,7 @@
 const Announcement = require("../Models/Announcement");
+const Student = require("../Models/Student");
+const sendEmail = require("../utils/sendEmail");
+const { announcementTemplate } = require("../utils/template");
 
 
 // GET all announcements
@@ -25,14 +28,69 @@ exports.createAnnouncement = async (req, res) => {
 
     const { title, message } = req.body;
 
+    if (!title?.trim() || !message?.trim()) {
+      return res.status(400).json({
+        message: "Title and message are required",
+      });
+    }
+
     const newAnnouncement = new Announcement({
-      title,
-      message,
+      title: title.trim(),
+      message: message.trim(),
     });
 
     const saved = await newAnnouncement.save();
 
-    res.json(saved);
+    let emailedCount = 0;
+    let emailFailedCount = 0;
+    let emailRecipientCount = 0;
+
+    try {
+      const students = await Student.find({
+        $or: [{ role: "student" }, { role: { $exists: false } }, { role: null }],
+        email: { $exists: true, $ne: null },
+      }).select("email");
+
+      emailRecipientCount = students.length;
+
+      if (students.length > 0) {
+        const emailHtml = announcementTemplate({
+          title: saved.title,
+          message: saved.message,
+          createdAt: new Date(saved.createdAt).toLocaleString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        });
+
+        const results = await Promise.allSettled(
+          students.map((student) =>
+            sendEmail(
+              student.email,
+              `EventSphere Announcement: ${saved.title}`,
+              emailHtml
+            )
+          )
+        );
+
+        emailedCount = results.filter(
+          (r) => r.status === "fulfilled" && r.value === true
+        ).length;
+        emailFailedCount = students.length - emailedCount;
+      }
+    } catch (emailErr) {
+      console.error("Announcement email broadcast error:", emailErr);
+    }
+
+    res.json({
+      ...saved.toObject(),
+      emailedCount,
+      emailFailedCount,
+      emailRecipientCount,
+    });
 
   } catch (err) {
     res.status(500).json({ message: err.message });

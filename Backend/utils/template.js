@@ -403,3 +403,46 @@ If this was a mistake, you can register again from EventSphere.
     icons.calendar
   );
 };
+
+// ================= ANNOUNCEMENT
+
+exports.announcementTemplate = ({ title, message, createdAt }) =>
+  baseTemplate(
+    "New Announcement",
+    `
+<p style="margin-bottom:15px; line-height:1.6;">
+A new announcement has been posted on <b style="color:#9B96E5;">EventSphere</b>.
+</p>
+
+<div style="
+background:#F6F1EB;
+border-left:4px solid #9B96E5;
+padding:15px;
+margin:20px 0;
+border-radius:6px;
+">
+  <h3 style="margin:0 0 10px 0; color:#9B96E5; font-size:16px;">
+    ${title}
+  </h3>
+  <p style="margin:8px 0; color:#3F3D56; line-height:1.6;">
+    ${message}
+  </p>
+  ${createdAt ? `<p style="margin:10px 0 0 0; color:#666; font-size:13px;"><strong>Posted:</strong> ${createdAt}</p>` : ''}
+</div>
+
+<div style="text-align:center; margin:25px 0;">
+  <a href="http://localhost:3000/dashboard"
+     style="background:#F08A6C;
+            color:white;
+            padding:12px 28px;
+            text-decoration:none;
+            border-radius:8px;
+            font-weight:600;
+            font-size:14px;
+            display:inline-block;">
+    View Dashboard
+  </a>
+</div>
+`,
+    icons.calendar
+  );

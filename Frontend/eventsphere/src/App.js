@@ -18,6 +18,8 @@ import CalendarPage from "./components/CalendarPage";
 
 import MainLayout from "./pages/Layout";
 
+import AdminPage from "./pages/AdminPage";
+
 function App() {
 
   return (
@@ -70,6 +72,9 @@ function App() {
         {/* OTHER PAGES */}
         <Route path="/about" element={<About />} />
         <Route path="/faq" element={<Faq />} />
+
+        {/* ADMIN */}
+        <Route path="/admin" element={<AdminPage />} />
 
       </Routes>
 

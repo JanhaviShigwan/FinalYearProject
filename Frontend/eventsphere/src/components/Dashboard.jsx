@@ -58,11 +58,23 @@ export default function Dashboard() {
       }
     };
 
+    let announcementsInterval;
+
     if (student?._id) {
       fetchDashboard();
       fetchMyEvents();
       fetchAnnouncements();
+
+      announcementsInterval = setInterval(() => {
+        fetchAnnouncements();
+      }, 30000);
     }
+
+    return () => {
+      if (announcementsInterval) {
+        clearInterval(announcementsInterval);
+      }
+    };
 
   }, [student]);
 

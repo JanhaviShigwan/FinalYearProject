@@ -21,9 +21,11 @@ const sendEmail = async (to, subject, html) => {
     await transporter.sendMail(mailOptions);
 
     console.log("Email sent successfully");
+    return true;
 
   } catch (error) {
     console.log("Email error:", error);
+    return false;
   }
 };
 
