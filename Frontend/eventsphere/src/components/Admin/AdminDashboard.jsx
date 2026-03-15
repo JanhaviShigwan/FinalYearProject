@@ -1,18 +1,34 @@
 import React from 'react';
 import { Calendar, Users, ClipboardList, Megaphone, TrendingUp, ArrowUpRight, PlusCircle } from 'lucide-react';
 
-export default function AdminDashboard({ onNavigate }) {
-  const stats = [
-    { label: 'Total Events', value: '24', icon: Calendar, color: 'bg-lavender', trend: '+12%' },
-    { label: 'Total Students', value: '1,240', icon: Users, color: 'bg-coral', trend: '+5%' },
-    { label: 'Total Registrations', value: '856', icon: ClipboardList, color: 'bg-pastel-green', trend: '+18%' },
-    { label: 'Announcements', value: '12', icon: Megaphone, color: 'bg-soft-blush', trend: '0%' },
+export default function AdminDashboard({ onNavigate, statsData = {}, recentRegistrations = [], isLoading = false }) {
+  const formatRelativeTime = (dateValue) => {
+    if (!dateValue) return 'Just now';
+
+    const diffMs = Date.now() - new Date(dateValue).getTime();
+    const mins = Math.floor(diffMs / 60000);
+
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return `${mins} mins ago`;
+
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours} hours ago`;
+
+    const days = Math.floor(hours / 24);
+    return `${days} days ago`;
+  };
+
+  const statCards = [
+    { label: 'Total Events', value: statsData.totalEvents ?? 0, icon: Calendar, color: 'bg-lavender', trend: '+12%' },
+    { label: 'Total Students', value: statsData.totalStudents ?? 0, icon: Users, color: 'bg-coral', trend: '+5%' },
+    { label: 'Total Registrations', value: statsData.totalRegistrations ?? 0, icon: ClipboardList, color: 'bg-pastel-green', trend: '+18%' },
+    { label: 'Announcements', value: statsData.totalAnnouncements ?? 0, icon: Megaphone, color: 'bg-soft-blush', trend: '0%' },
   ];
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => {
+        {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
             <div key={index} className="bg-white p-6 rounded-2xl border border-soft-blush shadow-sm hover:shadow-md transition-shadow group">
@@ -38,24 +54,35 @@ export default function AdminDashboard({ onNavigate }) {
         <div className="lg:col-span-2 bg-white rounded-2xl border border-soft-blush p-6 shadow-sm">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-bold text-deep-slate">Recent Event Activity</h3>
-            <button className="text-sm text-lavender font-semibold hover:underline">View All</button>
+            <button
+              onClick={() => onNavigate?.('events')}
+              className="text-sm text-lavender font-semibold hover:underline"
+            >
+              View All
+            </button>
           </div>
           <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex items-center gap-4 p-4 rounded-xl hover:bg-warm-cream transition-colors border border-transparent hover:border-soft-blush">
-                <div className="w-12 h-12 rounded-lg bg-lavender/10 flex items-center justify-center text-lavender font-bold">
-                  {i}
+            {isLoading ? (
+              <p className="text-sm text-deep-slate/50">Loading dashboard...</p>
+            ) : recentRegistrations.length > 0 ? (
+              recentRegistrations.map((item, index) => (
+                <div key={item._id || index} className="flex items-center gap-4 p-4 rounded-xl hover:bg-warm-cream transition-colors border border-transparent hover:border-soft-blush">
+                  <div className="w-12 h-12 rounded-lg bg-lavender/10 flex items-center justify-center text-lavender font-bold">
+                    {index + 1}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-deep-slate">{item.eventName}</h4>
+                    <p className="text-sm text-deep-slate/50">New registration from {item.studentName}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-deep-slate">{formatRelativeTime(item.registeredAt)}</p>
+                    <p className="text-xs text-pastel-green font-bold">Success</p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <h4 className="font-bold text-deep-slate">Tech Symposium 2026</h4>
-                  <p className="text-sm text-deep-slate/50">New registration from John Doe</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold text-deep-slate">2 mins ago</p>
-                  <p className="text-xs text-pastel-green font-bold">Success</p>
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-sm text-deep-slate/50">No recent registration activity found.</p>
+            )}
           </div>
         </div>
 
@@ -69,11 +96,17 @@ export default function AdminDashboard({ onNavigate }) {
               <PlusCircle className="w-5 h-5" />
               Create New Event
             </button>
-            <button className="w-full py-3 px-4 bg-white border-2 border-soft-blush text-deep-slate rounded-xl font-bold hover:bg-warm-cream transition-all flex items-center justify-center gap-2">
+            <button
+              onClick={() => onNavigate?.('announcements')}
+              className="w-full py-3 px-4 bg-white border-2 border-soft-blush text-deep-slate rounded-xl font-bold hover:bg-warm-cream transition-all flex items-center justify-center gap-2"
+            >
               <Megaphone className="w-5 h-5 text-coral" />
               Post Announcement
             </button>
-            <button className="w-full py-3 px-4 bg-white border-2 border-soft-blush text-deep-slate rounded-xl font-bold hover:bg-warm-cream transition-all flex items-center justify-center gap-2">
+            <button
+              onClick={() => onNavigate?.('analytics')}
+              className="w-full py-3 px-4 bg-white border-2 border-soft-blush text-deep-slate rounded-xl font-bold hover:bg-warm-cream transition-all flex items-center justify-center gap-2"
+            >
               <TrendingUp className="w-5 h-5 text-pastel-green" />
               View Analytics
             </button>

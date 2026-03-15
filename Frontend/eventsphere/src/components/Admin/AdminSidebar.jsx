@@ -6,6 +6,7 @@ import {
   LogOut,
   Megaphone,
   PlusCircle,
+  TrendingUp,
   Settings,
   Users,
 } from 'lucide-react';
@@ -16,6 +17,7 @@ export default function AdminSidebar({ activeTab, setActiveTab, onLogout }) {
     { id: 'events', label: 'Manage Events', icon: Calendar },
     { id: 'create-event', label: 'Create Event', icon: PlusCircle },
     { id: 'announcements', label: 'Announcements', icon: Megaphone },
+    { id: 'analytics', label: 'Analytics', icon: TrendingUp },
     { id: 'registrations', label: 'Registrations', icon: ClipboardList },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'settings', label: 'Settings', icon: Settings },

@@ -7,11 +7,22 @@ import AdminDashboard from '../components/Admin/AdminDashboard';
 import AdminAnnouncements from '../components/Admin/AdminAnnouncments';
 import AdminEvents from '../components/Admin/AdminEvents';
 import AdminCreateEvent from '../components/Admin/AdminCreateEvent';
+import AdminAnalytics from '../components/Admin/AdminAnalytics';
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [announcements, setAnnouncements] = useState([]);
   const [events, setEvents] = useState([]);
+  const [adminOverview, setAdminOverview] = useState({
+    stats: {
+      totalEvents: 0,
+      totalStudents: 0,
+      totalRegistrations: 0,
+      totalAnnouncements: 0,
+    },
+    recentRegistrations: [],
+  });
+  const [isDashboardLoading, setIsDashboardLoading] = useState(false);
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
 
   const tabTitles = {
@@ -19,6 +30,7 @@ export default function AdminPage() {
     announcements: 'Announcements',
     events: 'Manage Events',
     'create-event': 'Create Event',
+    analytics: 'Analytics',
     registrations: 'Registrations',
     users: 'Users',
     settings: 'Settings',
@@ -44,10 +56,29 @@ export default function AdminPage() {
     }
   };
 
+  const fetchAdminOverview = async () => {
+    try {
+      setIsDashboardLoading(true);
+      const res = await axios.get(`${API_URL}/dashboard/admin/overview`);
+      setAdminOverview(res.data);
+    } catch (err) {
+      console.error('Error fetching admin dashboard:', err);
+    } finally {
+      setIsDashboardLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchAnnouncements();
     fetchEvents();
+    fetchAdminOverview();
   }, []);
+
+  useEffect(() => {
+    if (["dashboard", "analytics", "registrations", "users", "settings"].includes(activeTab)) {
+      fetchAdminOverview();
+    }
+  }, [activeTab]);
 
   // Handle posting announcement
   const handlePostAnnouncement = async (announcement) => {
@@ -57,6 +88,7 @@ export default function AdminPage() {
         message: announcement.message,
       });
       setAnnouncements((prev) => [res.data, ...prev]);
+      await fetchAdminOverview();
     } catch (err) {
       console.error('Error posting announcement:', err);
     }
@@ -67,6 +99,7 @@ export default function AdminPage() {
     try {
       await axios.delete(`${API_URL}/announcements/${id}`);
       setAnnouncements((prev) => prev.filter((ann) => ann._id !== id));
+      await fetchAdminOverview();
     } catch (err) {
       console.error('Error deleting announcement:', err);
     }
@@ -77,6 +110,7 @@ export default function AdminPage() {
       setIsCreatingEvent(true);
       const res = await axios.post(`${API_URL}/events/create`, eventData);
       await fetchEvents();
+      await fetchAdminOverview();
       setActiveTab('events');
       return res.data;
     } catch (err) {
@@ -108,7 +142,14 @@ export default function AdminPage() {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <AdminDashboard onNavigate={setActiveTab} />;
+        return (
+          <AdminDashboard
+            onNavigate={setActiveTab}
+            statsData={adminOverview.stats}
+            recentRegistrations={adminOverview.recentRegistrations}
+            isLoading={isDashboardLoading}
+          />
+        );
       case 'announcements':
         return (
           <AdminAnnouncements
@@ -134,14 +175,52 @@ export default function AdminPage() {
             isSubmitting={isCreatingEvent}
           />
         );
+      case 'analytics':
+        return (
+          <AdminAnalytics
+            statsData={adminOverview.stats}
+            events={events}
+            announcements={announcements}
+            recentRegistrations={adminOverview.recentRegistrations}
+            isLoading={isDashboardLoading}
+          />
+        );
       case 'registrations':
-        return <AdminDashboard />;
+        return (
+          <AdminDashboard
+            onNavigate={setActiveTab}
+            statsData={adminOverview.stats}
+            recentRegistrations={adminOverview.recentRegistrations}
+            isLoading={isDashboardLoading}
+          />
+        );
       case 'users':
-        return <AdminDashboard />;
+        return (
+          <AdminDashboard
+            onNavigate={setActiveTab}
+            statsData={adminOverview.stats}
+            recentRegistrations={adminOverview.recentRegistrations}
+            isLoading={isDashboardLoading}
+          />
+        );
       case 'settings':
-        return <AdminDashboard />;
+        return (
+          <AdminDashboard
+            onNavigate={setActiveTab}
+            statsData={adminOverview.stats}
+            recentRegistrations={adminOverview.recentRegistrations}
+            isLoading={isDashboardLoading}
+          />
+        );
       default:
-        return <AdminDashboard />;
+        return (
+          <AdminDashboard
+            onNavigate={setActiveTab}
+            statsData={adminOverview.stats}
+            recentRegistrations={adminOverview.recentRegistrations}
+            isLoading={isDashboardLoading}
+          />
+        );
     }
   };
 
