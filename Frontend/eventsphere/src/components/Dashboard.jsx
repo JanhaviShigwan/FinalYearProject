@@ -66,6 +66,26 @@ export default function Dashboard() {
 
   }, [student]);
 
+  const today = new Date();
+
+const upcomingEventsFiltered = dashboardData.upcomingEventList.filter(
+  (event) => {
+
+    const eventDate = new Date(event.date);
+
+    const isFuture = eventDate > today;
+
+    const isRegistered = myEvents.some(
+      (e) => e._id === event._id
+    );
+
+    const canRegister =
+      event.registrationOpen !== false;
+
+    return isFuture && !isRegistered && canRegister;
+  }
+);
+
   // ================= STATS =================
 
   const stats = [
@@ -78,11 +98,6 @@ export default function Dashboard() {
       icon: <AlarmClock size={28} color="#5ac4eb" />,
       value: dashboardData.upcomingEventList.length,
       label: "Upcoming Events",
-    },
-    {
-      icon: <Flame size={28} color="#F08A6C" />,
-      value: dashboardData.ongoingEvents.length,
-      label: "Ongoing Events",
     },
   ];
 
