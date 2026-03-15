@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import API_URL from '../api';
 import AdminNavbar from '../components/Admin/AdminNavbar';
@@ -264,6 +265,28 @@ export default function AdminPage() {
     }
   };
 
+  const contentTransition = {
+    initial: { opacity: 0, y: 18, filter: 'blur(6px)' },
+    animate: {
+      opacity: 1,
+      y: 0,
+      filter: 'blur(0px)',
+      transition: {
+        duration: 0.34,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    },
+    exit: {
+      opacity: 0,
+      y: -12,
+      filter: 'blur(4px)',
+      transition: {
+        duration: 0.2,
+        ease: [0.4, 0, 1, 1],
+      },
+    },
+  };
+
   return (
     <div className="min-h-screen bg-warm-cream flex">
       <AdminSidebar
@@ -276,7 +299,17 @@ export default function AdminPage() {
         <AdminNavbar title={tabTitles[activeTab] || 'Dashboard'} />
 
         <main className="flex-1 p-6 lg:p-8 bg-warm-cream">
-          {renderContent()}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              variants={contentTransition}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              {renderContent()}
+            </motion.div>
+          </AnimatePresence>
         </main>
 
         <footer className="px-6 py-4 text-center text-sm text-deep-slate/35 border-t border-soft-blush bg-warm-cream">

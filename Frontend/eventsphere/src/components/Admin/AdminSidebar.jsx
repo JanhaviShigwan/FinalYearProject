@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import {
   Calendar,
   ClipboardList,
@@ -37,17 +38,19 @@ export default function AdminSidebar({ activeTab, setActiveTab, onLogout }) {
             const Icon = item.icon;
             return (
               <li key={`${item.id}-${index}`}>
-                <button
+                <motion.button
                   onClick={() => setActiveTab(item.id)}
+                  whileHover={{ x: 4 }}
+                  whileTap={{ scale: 0.98 }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200 ${
                     activeTab === item.id
                       ? 'bg-lavender text-white shadow-[0_12px_25px_rgba(143,138,217,0.35)]'
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                      : 'text-white/70 hover:text-coral hover:bg-coral/15'
                   }`}
                 >
                   <Icon className="w-5 h-5" />
                   <span className="font-semibold">{item.label}</span>
-                </button>
+                </motion.button>
               </li>
             );
           })}
@@ -57,7 +60,7 @@ export default function AdminSidebar({ activeTab, setActiveTab, onLogout }) {
       <div className="mt-auto p-4 border-t border-white/10">
         <button
           onClick={onLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-white/80 hover:text-white hover:bg-white/10 transition-all"
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-white/80 hover:text-coral hover:bg-coral/15 transition-all duration-200"
         >
           <LogOut className="w-5 h-5" />
           <span className="font-semibold">Logout</span>
