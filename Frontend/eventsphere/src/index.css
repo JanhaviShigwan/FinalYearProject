@@ -370,6 +370,10 @@ body {
    FAQ PAGE
    ═══════════════════════════════════════════════════════════════════════════ */
 
+.faq-wrapper {
+  background: linear-gradient(to bottom right, #FFFFFF 0%, #FFFFFF 25%, #F6F1EB 60%, #F9F5FF 100%);
+}
+
 /* Animated grid overlay — ::before pseudo-element */
 .faq-wrapper::before {
   content: "";

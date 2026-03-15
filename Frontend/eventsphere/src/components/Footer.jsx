@@ -5,7 +5,7 @@ import logo from "../assets/EventSphereLogo.png";
 export default function Footer() {
   return (
     <footer
-      className="pt-[70px] pb-[35px] px-4 border-t border-[rgba(155,150,229,0.4)] text-[#3F3D56]"
+      className="w-full pt-[70px] pb-[35px] px-4 border-t border-[rgba(155,150,229,0.4)] text-[#3F3D56]"
       style={{
         backgroundColor: "rgba(249,199,195,0.75)",
         backdropFilter: "blur(8px)",
@@ -13,7 +13,7 @@ export default function Footer() {
       }}
     >
       {/* ── Main grid ── */}
-      <div className="max-w-[1280px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[60px] mb-[50px]">
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[60px] mb-[50px]">
 
         {/* LEFT — About */}
         <div className="text-center sm:text-left">
@@ -67,7 +67,7 @@ export default function Footer() {
       </div>
 
       {/* ── Bottom bar ── */}
-      <div className="max-w-[1280px] mx-auto border-t border-[#EED8D6] pt-5 flex flex-col md:flex-row gap-4 items-center md:justify-between text-[15px] text-[#6B6A80]">
+      <div className="w-full border-t border-[#EED8D6] pt-5 flex flex-col md:flex-row gap-4 items-center md:justify-between text-[15px] text-[#6B6A80]">
         <p>© 2026 EventSphere. All rights reserved.</p>
 
         <div className="flex gap-5">

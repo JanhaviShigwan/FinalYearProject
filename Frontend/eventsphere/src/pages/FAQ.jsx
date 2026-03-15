@@ -20,24 +20,20 @@ export default function Faq() {
   const toggle = (index) => setOpenIndex(openIndex === index ? null : index);
 
   return (
-    <>
-      <Navbar />
+    <div
+      className="faq-wrapper relative min-h-screen flex flex-col pt-0 px-6 page-bg"
+    >
+      <Navbar className="mt-0" />
 
-      {/* faq-wrapper — ::before animated grid kept in index.css as .faq-wrapper */}
-      <div className="faq-wrapper relative min-h-screen py-16 px-6 overflow-hidden page-bg"
-        style={{
-          background:
-            "linear-gradient(to bottom right, #FFFFFF 0%, #FFFFFF 25%, #F6F1EB 60%, #F9F5FF 100%)",
-        }}>
-
+      <div className="flex-1">
         {/* Header */}
-        <div className="relative z-10 max-w-3xl mx-auto text-center mb-12">
+        <div className="relative z-10 max-w-3xl mx-auto text-center mb-12 pt-20">
           <h1 className="text-4xl font-bold mb-4 text-[#9B96E5]">Frequently Asked Questions</h1>
           <p className="text-[#3F3D56]">Find answers to common questions about EventSphere.</p>
         </div>
 
         {/* FAQ list */}
-        <div className="relative z-10 max-w-3xl mx-auto space-y-4">
+        <div className="relative z-10 max-w-3xl mx-auto space-y-4 mb-16">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
 
@@ -76,7 +72,9 @@ export default function Faq() {
         </div>
       </div>
 
-      <Footer />
-    </>
+      <div className="-mx-6 mt-auto">
+        <Footer />
+      </div>
+    </div>
   );
 }

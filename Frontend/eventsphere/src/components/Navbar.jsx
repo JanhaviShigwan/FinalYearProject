@@ -3,7 +3,7 @@ import { Menu, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/EventSphereLogo.png";
 
-export default function Navbar() {
+export default function Navbar({ className = "" }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -31,7 +31,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="navbar-main sticky top-0 z-50 max-w-[1200px] w-full mx-auto mt-5 px-6 bg-white/90 backdrop-blur-md rounded-[18px] shadow-[0_8px_24px_rgba(0,0,0,0.06)] border border-[rgba(155,150,229,0.15)] transition-all duration-300 max-[767px]:w-[calc(100%-28px)] max-[767px]:px-4 max-[767px]:rounded-2xl">
+    <nav className={`navbar-main sticky top-0 z-50 max-w-[1200px] w-full mx-auto mt-5 px-6 bg-white/90 backdrop-blur-md rounded-[18px] shadow-[0_8px_24px_rgba(0,0,0,0.06)] border border-[rgba(155,150,229,0.15)] transition-all duration-300 max-[767px]:w-[calc(100%-28px)] max-[767px]:px-4 max-[767px]:rounded-2xl ${className}`}>
       <div className="py-[18px] flex justify-between items-center">
 
         {/* Logo */}
