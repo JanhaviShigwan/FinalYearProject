@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { Calendar, AlarmClock, Flame, AlertCircle } from "lucide-react";
+import { Calendar, AlarmClock, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import API_URL from "../api";
 
@@ -111,7 +111,7 @@ const upcomingEventsFiltered = dashboardData.upcomingEventList.filter(
     },
     {
       icon: <AlarmClock size={28} color="#5ac4eb" />,
-      value: dashboardData.upcomingEventList.length,
+      value: upcomingEventsFiltered.length,
       label: "Upcoming Events",
     },
   ];

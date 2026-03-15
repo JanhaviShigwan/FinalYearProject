@@ -6,8 +6,6 @@ import {
     ClipboardList,
     Calendar,
     Settings,
-    Bell,
-    MessageSquare,
     Menu,
 } from "lucide-react";
 

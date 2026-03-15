@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Trash2 } from "lucide-react";
 import StudentVerificationForm from "./StudentVerification";
 import ConfirmPopup from "./popup";
@@ -29,15 +29,17 @@ export default function Settings() {
   const [passwordMsg, setPasswordMsg] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  const studentLocal = JSON.parse(
-    localStorage.getItem("eventSphereStudent")
+  const studentLocal = useMemo(
+    () => JSON.parse(localStorage.getItem("eventSphereStudent")),
+    []
   );
+  const studentId = studentLocal?._id;
 
   /* ================= FETCH ================= */
 
-  const fetchStudent = async () => {
+  const fetchStudent = useCallback(async () => {
 
-    if (!studentLocal?._id) {
+    if (!studentId) {
       setLoading(false);
       return;
     }
@@ -45,7 +47,7 @@ export default function Settings() {
     try {
 
       const res = await axios.get(
-        `${API_URL}/student/${studentLocal._id}`
+        `${API_URL}/student/${studentId}`
       );
 
       setCurrentStudent(res.data);
@@ -61,11 +63,11 @@ export default function Settings() {
 
     setLoading(false);
 
-  };
+  }, [studentId]);
 
   useEffect(() => {
     fetchStudent();
-  }, []);
+  }, [fetchStudent]);
 
 
   /* ================= PASSWORD STRENGTH ================= */
@@ -150,7 +152,7 @@ export default function Settings() {
     try {
 
       await axios.delete(
-        `${API_URL}/student/delete/${studentLocal._id}`
+        `${API_URL}/student/delete/${studentId}`
       );
 
       localStorage.clear();
@@ -171,7 +173,7 @@ export default function Settings() {
     try {
 
       const res = await axios.get(
-        `${API_URL}/student/login-activity/${studentLocal._id}`
+        `${API_URL}/student/login-activity/${studentId}`
       );
 
       alert(
@@ -204,7 +206,7 @@ export default function Settings() {
         setUploading(true);
 
         const res = await axios.post(
-          `${API_URL}/student/upload-image/${studentLocal._id}`,
+          `${API_URL}/student/upload-image/${studentId}`,
           {
             image: reader.result
           }
@@ -242,7 +244,7 @@ export default function Settings() {
         !currentStudent.notificationsEnabled;
 
       const res = await axios.put(
-        `${API_URL}/student/notifications/${studentLocal._id}`,
+        `${API_URL}/student/notifications/${studentId}`,
         { notificationsEnabled: newValue }
       );
 
