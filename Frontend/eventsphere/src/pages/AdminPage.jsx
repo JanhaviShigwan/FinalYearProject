@@ -171,16 +171,56 @@ export default function AdminPage() {
   };
 
   // Handle events
-  const handleEditEvent = (event) => {
-    console.log('Edit event:', event);
+  const handleEditEvent = async (eventId, updates) => {
+    try {
+      const res = await axios.patch(
+        `${API_URL}/events/${eventId}`,
+        updates,
+        getAdminRequestConfig()
+      );
+
+      setEvents((prev) =>
+        prev.map((event) =>
+          (event._id || event.id) === eventId ? res.data : event
+        )
+      );
+
+      await fetchAdminOverview();
+      return res.data;
+    } catch (err) {
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        handleLogout();
+      }
+
+      const message = err.response?.data?.message || 'Failed to update event.';
+      throw new Error(message);
+    }
   };
 
-  const handleDeleteEvent = (id) => {
-    console.log('Delete event:', id);
+  const handleDeleteEvent = async (id) => {
+    try {
+      await axios.delete(
+        `${API_URL}/events/${id}`,
+        getAdminRequestConfig()
+      );
+
+      setEvents((prev) =>
+        prev.filter((event) => (event._id || event.id) !== id)
+      );
+
+      await fetchAdminOverview();
+    } catch (err) {
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        handleLogout();
+      }
+
+      const message = err.response?.data?.message || 'Failed to delete event.';
+      throw new Error(message);
+    }
   };
 
   const handleViewEvent = (event) => {
-    console.log('View event:', event);
+    return event;
   };
 
   const renderContent = () => {

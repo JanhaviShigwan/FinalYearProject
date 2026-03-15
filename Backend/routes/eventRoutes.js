@@ -6,6 +6,8 @@ const {
   getEvents,
   getEventById,
   createEvent,
+  updateEvent,
+  deleteEvent,
   registerForEvent,
   checkRegistration,
   getStudentRegistrations,
@@ -16,6 +18,10 @@ const {
 router.get("/", getEvents);
 
 router.post("/create", adminAuth, createEvent);
+
+router.patch("/:id", adminAuth, updateEvent);
+
+router.delete("/:id", adminAuth, deleteEvent);
 
 router.get("/:id", getEventById);
 
