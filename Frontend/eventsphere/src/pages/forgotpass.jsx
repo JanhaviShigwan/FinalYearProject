@@ -156,9 +156,12 @@ export default function ForgotPassword() {
 
   return (
     <>
-      <Navbar />
+      <div
+        className="forgot-wrapper relative min-h-screen flex flex-col px-4 pt-0 pb-12 bg-[#F6F1EB]"
+      >
+        <Navbar className="mt-0" />
 
-      <div className="forgot-wrapper relative min-h-screen flex items-center justify-center overflow-hidden px-4 py-10 bg-[#F6F1EB]">
+        <div className="flex-1 flex items-center justify-center pt-20 pb-10">
 
         {/* blobs */}
         <div className="absolute rounded-full blur-3xl opacity-25 w-64 h-64 bg-[#9B96E5] top-[-30px] left-[-30px]" />
@@ -293,6 +296,7 @@ export default function ForgotPassword() {
             </Link>
           </p>
         </motion.div>
+        </div>
       </div>
 
       <Footer />

@@ -97,11 +97,13 @@ export default function Register() {
 
   return (
     <>
-      <Navbar />
+      <div
+        className="relative min-h-screen flex flex-col px-6 pt-0 pb-12"
+        style={{ background: "linear-gradient(to bottom right, #FFFFFF, #F6F1EB, #F9F5FF)", color: "#3F3D56" }}
+      >
+        <Navbar className="mt-0" />
 
-      {/* Page background */}
-      <div className="relative min-h-screen flex items-center justify-center px-6 py-12"
-           style={{ background: "linear-gradient(to bottom right, #FFFFFF, #F6F1EB, #F9F5FF)", color: "#3F3D56" }}>
+        <div className="flex-1 flex items-center justify-center pt-20 pb-10">
 
         {/* Blobs */}
         <div className="absolute top-[40%] left-[20%] w-[260px] h-[260px] rounded-full opacity-35 z-0 animate-[floatBlob_12s_ease-in-out_infinite]"
@@ -243,6 +245,7 @@ export default function Register() {
             </motion.div>
           </div>
 
+        </div>
         </div>
       </div>
 

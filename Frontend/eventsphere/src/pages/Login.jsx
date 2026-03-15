@@ -78,16 +78,17 @@ export default function Login() {
 
   return (
     <>
-      <Navbar />
-
       <div
-        className="relative min-h-screen flex items-center justify-center px-6 py-12"
+        className="relative min-h-screen flex flex-col px-6 pt-0 pb-12"
         style={{
           background:
             "linear-gradient(to bottom right, #FFFFFF, #F6F1EB, #F9F5FF)",
           color: "#3F3D56",
         }}
       >
+        <Navbar className="mt-0" />
+
+        <div className="flex-1 flex items-center justify-center pt-20 pb-10">
         {/* Background blobs */}
 
         <div
@@ -255,6 +256,8 @@ export default function Login() {
 
             </div>
           </div>
+
+        </div>
 
         </div>
       </div>
