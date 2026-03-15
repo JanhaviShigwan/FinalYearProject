@@ -196,10 +196,6 @@ export default function MainLayout() {
 
                     <div className="flex items-center gap-5">
 
-                        <Bell size={18} />
-
-                        <MessageSquare size={18} />
-
                         <div className="w-10 h-10 bg-[#9B96E5] text-white rounded-full flex items-center justify-center">
                             {student?.name?.charAt(0)}
                         </div>

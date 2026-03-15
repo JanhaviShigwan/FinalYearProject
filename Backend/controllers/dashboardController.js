@@ -1,47 +1,55 @@
 const Event = require("../Models/Event");
-const Student = require("../Models/Student");
+const Registration = require("../Models/Registration");
+const mongoose = require("mongoose");
 
 exports.getDashboardData = async (req, res) => {
   try {
 
+    const { studentId } = req.params;
+
     const now = new Date();
 
-    // Counts
-    const totalEvents = await Event.countDocuments();
-    const totalStudents = await Student.countDocuments();
+    // ================= MY EVENTS =================
 
-    const upcomingEvents = await Event.countDocuments({
-      date: { $gt: now }
+    const myRegistrations = await Registration.find({
+      studentId: new mongoose.Types.ObjectId(studentId),
     });
 
-    const ongoingEvents = await Event.countDocuments({
-      date: { $lte: now }
+    const myEvents = myRegistrations.length;
+
+
+    // ================= GET ALL EVENTS =================
+
+    const events = await Event.find();
+
+
+    // convert string date -> real date
+
+    const upcomingEventsList = events.filter(e => {
+      const eventDate = new Date(e.date);
+      return eventDate > now;
     });
 
-    // Event lists
-    const upcomingEventList = await Event.find({
-      date: { $gt: now }
-    }).limit(3);
+    const ongoingEventsList = events.filter(e => {
+      const eventDate = new Date(e.date);
+      return eventDate <= now;
+    });
 
-    const recentEvents = await Event.find()
-      .sort({ createdAt: -1 })
-      .limit(5);
 
-    // Student list (optional)
-    const students = await Student.find().limit(5);
+    const upcomingEvents = upcomingEventsList.length;
+    const ongoingEvents = ongoingEventsList.length;
+
 
     res.json({
-      totalEvents,
-      totalStudents,
+      myEvents,
       upcomingEvents,
       ongoingEvents,
-      upcomingEventList,
-      recentEvents,
-      students
+      upcomingEventList: upcomingEventsList,
+      ongoingEventList: ongoingEventsList,
     });
 
   } catch (error) {
-    console.error(error);
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
