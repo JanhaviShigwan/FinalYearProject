@@ -19,7 +19,7 @@ function EventDetails() {
     const fetchEvent = async () => {
       try {
 
-        const res = await fetch(`${API_URL}/api/events/${id}`);
+        const res = await fetch(`${API_URL}/events/${id}`);
         const data = await res.json();
         setEvent(data);
 
@@ -27,7 +27,7 @@ function EventDetails() {
 
         if (student) {
           const check = await fetch(
-            `${API_URL}/api/events/check-registration/${id}/${student._id}`
+            `${API_URL}/events/check-registration/${id}/${student._id}`
           );
 
           const checkData = await check.json();
@@ -61,7 +61,7 @@ function EventDetails() {
 
     try {
 
-      const res = await fetch(`${API_URL}/api/events/register/${event._id}`, {
+      const res = await fetch(`${API_URL}/events/register/${event._id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
