@@ -2,7 +2,12 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Users, ClipboardList, Megaphone, TrendingUp, ArrowUpRight, PlusCircle } from 'lucide-react';
 
-export default function AdminDashboard({ onNavigate, statsData = {}, recentRegistrations = [], isLoading = false }) {
+export default function AdminDashboard({
+  onNavigate,
+  statsData = {},
+  recentRegistrations = [],
+  isLoading = false,
+}) {
   const formatRelativeTime = (dateValue) => {
     if (!dateValue) return 'Just now';
 
@@ -164,6 +169,7 @@ export default function AdminDashboard({ onNavigate, statsData = {}, recentRegis
           </div>
         </motion.div>
       </motion.div>
+
     </motion.div>
   );
 }

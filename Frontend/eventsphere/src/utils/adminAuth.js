@@ -12,18 +12,23 @@ export function getStoredStudent() {
   }
 }
 
+function getStudentIdentifier(student) {
+  return student?._id || student?.id || "";
+}
+
 export function isAdminStudent(student) {
-  return Boolean(student?._id) && student?.role === "admin";
+  return Boolean(getStudentIdentifier(student)) && student?.role === "admin";
 }
 
 export function getAdminRequestConfig(config = {}) {
   const student = getStoredStudent();
+  const studentId = getStudentIdentifier(student);
 
   return {
     ...config,
     headers: {
       ...(config.headers || {}),
-      "x-admin-id": student?._id || "",
+      "x-admin-id": studentId,
     },
   };
 }

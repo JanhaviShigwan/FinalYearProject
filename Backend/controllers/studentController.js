@@ -186,7 +186,7 @@ exports.updateAdminUser = async (req, res) => {
     const updatedUser = await Student.findByIdAndUpdate(
       studentId,
       { $set: updates },
-      { new: true, runValidators: true }
+      { returnDocument: "after", runValidators: true }
     ).select("-password -resetOTP -resetOTPExpire");
 
     res.status(200).json({
@@ -348,7 +348,7 @@ exports.uploadImage = async (req, res) => {
     const student = await Student.findByIdAndUpdate(
       req.params.studentId,
       { profileImage: image },
-      { new: true }
+      { returnDocument: "after" }
     );
 
     res.json(student);

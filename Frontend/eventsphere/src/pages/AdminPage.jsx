@@ -12,7 +12,74 @@ import AdminCreateEvent from '../components/Admin/AdminCreateEvent';
 import AdminAnalytics from '../components/Admin/AdminAnalytics';
 import AdminUsers from '../components/Admin/AdminUsers';
 import AdminSettings from '../components/Admin/AdminSettings';
+import AdminReports from '../components/Admin/AdminReports';
 import { getAdminRequestConfig, getStoredStudent, isAdminStudent } from '../utils/adminAuth';
+
+const REPORT_REFRESH_MS = 15000;
+
+const parseEventTime = (rawTime) => {
+  if (!rawTime || typeof rawTime !== 'string') {
+    return null;
+  }
+
+  const value = rawTime.trim();
+
+  const twelveHourMatch = value.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (twelveHourMatch) {
+    const hour12 = Number(twelveHourMatch[1]);
+    const minute = Number(twelveHourMatch[2]);
+    const period = twelveHourMatch[3].toUpperCase();
+
+    if (hour12 < 1 || hour12 > 12 || minute < 0 || minute > 59) {
+      return null;
+    }
+
+    let hour24 = hour12 % 12;
+    if (period === 'PM') {
+      hour24 += 12;
+    }
+
+    return { hours: hour24, minutes: minute };
+  }
+
+  const twentyFourHourMatch = value.match(/^(\d{1,2}):(\d{2})$/);
+  if (twentyFourHourMatch) {
+    const hour = Number(twentyFourHourMatch[1]);
+    const minute = Number(twentyFourHourMatch[2]);
+
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+      return null;
+    }
+
+    return { hours: hour, minutes: minute };
+  }
+
+  return null;
+};
+
+const getEventEndTimestamp = (event) => {
+  if (!event?.date) {
+    return null;
+  }
+
+  const parsedDate = new Date(`${event.date}T00:00:00`);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return null;
+  }
+
+  const parsedTime = parseEventTime(event.time);
+
+  if (parsedTime) {
+    parsedDate.setHours(parsedTime.hours, parsedTime.minutes, 0, 0);
+  } else {
+    parsedDate.setHours(23, 59, 59, 999);
+  }
+
+  parsedDate.setHours(parsedDate.getHours() + 3);
+
+  return parsedDate.getTime();
+};
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -27,9 +94,15 @@ export default function AdminPage() {
       totalAnnouncements: 0,
     },
     recentRegistrations: [],
+    eventReports: [],
+    reportSyncMeta: {
+      totalGeneratedReports: 0,
+      syncedReportsCount: 0,
+    },
   });
   const [isDashboardLoading, setIsDashboardLoading] = useState(false);
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
+  const [reportRefreshToken, setReportRefreshToken] = useState(0);
   const [adminSettings, setAdminSettings] = useState({
     eventDefaults: {
       defaultCapacity: 200,
@@ -61,6 +134,7 @@ export default function AdminPage() {
     'create-event': 'Create Event',
     analytics: 'Analytics',
     registrations: 'Registrations',
+    reports: 'Reports',
     users: 'Users',
     settings: 'Settings',
   };
@@ -129,10 +203,59 @@ export default function AdminPage() {
   }, [fetchAnnouncements, fetchEvents, fetchAdminOverview, fetchAdminSettings]);
 
   useEffect(() => {
-    if (["dashboard", "analytics", "registrations", "users", "settings"].includes(activeTab)) {
+    if (["dashboard", "analytics", "registrations", "reports", "users", "settings"].includes(activeTab)) {
       fetchAdminOverview();
     }
   }, [activeTab, fetchAdminOverview]);
+
+  useEffect(() => {
+    if (!["dashboard", "registrations", "reports"].includes(activeTab)) {
+      return undefined;
+    }
+
+    const intervalId = setInterval(() => {
+      fetchAdminOverview();
+
+      if (activeTab === 'reports') {
+        setReportRefreshToken((prev) => prev + 1);
+      }
+    }, REPORT_REFRESH_MS);
+
+    return () => clearInterval(intervalId);
+  }, [activeTab, fetchAdminOverview]);
+
+  useEffect(() => {
+    if (!["dashboard", "registrations", "reports"].includes(activeTab)) {
+      return undefined;
+    }
+
+    if (!events.length) {
+      return undefined;
+    }
+
+    const now = Date.now();
+    const nextEventEnd = events
+      .map(getEventEndTimestamp)
+      .filter((value) => Number.isFinite(value) && value > now)
+      .sort((a, b) => a - b)[0];
+
+    if (!nextEventEnd) {
+      return undefined;
+    }
+
+    const delay = Math.min(
+      Math.max(1500, nextEventEnd - now + 1200),
+      15 * 60 * 1000
+    );
+
+    const timeoutId = setTimeout(() => {
+      fetchAdminOverview();
+      fetchEvents();
+      setReportRefreshToken((prev) => prev + 1);
+    }, delay);
+
+    return () => clearTimeout(timeoutId);
+  }, [activeTab, events, fetchAdminOverview, fetchEvents]);
 
   // Handle posting announcement
   const handlePostAnnouncement = async (announcement) => {
@@ -201,7 +324,11 @@ export default function AdminPage() {
         handleLogout();
       }
 
-      const message = err.response?.data?.message || 'Failed to create event.';
+      const message = err.response?.data?.message
+        || (err.code === 'ERR_NETWORK' ? 'Backend server is not reachable. Please start the backend and try again.' : '')
+        || (err.code === 'ECONNABORTED' ? 'Request timed out. Please try again.' : '')
+        || err.message
+        || 'Failed to create event.';
       throw new Error(message);
     } finally {
       setIsCreatingEvent(false);
@@ -323,6 +450,13 @@ export default function AdminPage() {
         return (
           <AdminUsers
             onDataChanged={fetchAdminOverview}
+          />
+        );
+      case 'reports':
+        return (
+          <AdminReports
+            onUnauthorized={handleLogout}
+            refreshToken={reportRefreshToken}
           />
         );
       case 'settings':

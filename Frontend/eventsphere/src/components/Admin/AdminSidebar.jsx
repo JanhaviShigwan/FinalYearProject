@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import {
   Calendar,
   ClipboardList,
+  FileCheck2,
   LayoutDashboard,
   LogOut,
   Megaphone,
@@ -20,6 +21,7 @@ export default function AdminSidebar({ activeTab, setActiveTab, onLogout }) {
     { id: 'announcements', label: 'Announcements', icon: Megaphone },
     { id: 'analytics', label: 'Analytics', icon: TrendingUp },
     { id: 'registrations', label: 'Registrations', icon: ClipboardList },
+    { id: 'reports', label: 'Reports', icon: FileCheck2 },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
@@ -28,7 +30,7 @@ export default function AdminSidebar({ activeTab, setActiveTab, onLogout }) {
     <aside className="w-[248px] shrink-0 sticky top-0 h-screen overflow-y-hidden bg-gradient-to-b from-[#3F3D56] to-[#35344A] border-r border-white/10 text-white flex flex-col">
       <div className="px-6 py-7 border-b border-white/10">
         <h2 className="text-[30px] font-extrabold tracking-tight leading-none">
-          EventPro <span className="text-lavender">Admin</span>
+          EventSphere <span className="text-lavender">Admin</span>
         </h2>
       </div>
 
