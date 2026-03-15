@@ -3,29 +3,63 @@ const QRCode = require("qrcode");
 const Registration = require("../Models/Registration");
 const sendEmail = require("../utils/sendEmail");
 const Student = require("../Models/Student");
+const AdminSettings = require("../Models/AdminSettings");
 
 const {
   eventRegisterTemplate,
   eventCancelTemplate,
 } = require("../utils/template");
 
+const getEventDefaultSettings = async () => {
+  const settings = await AdminSettings
+    .findOne({ key: "global" })
+    .select("eventDefaults");
+
+  const eventDefaults = settings?.eventDefaults || {};
+
+  return {
+    defaultCapacity: Number(eventDefaults.defaultCapacity) || 200,
+    registrationOpenDaysBefore:
+      Number.isFinite(Number(eventDefaults.registrationOpenDaysBefore))
+        ? Number(eventDefaults.registrationOpenDaysBefore)
+        : 14,
+    defaultCategory: eventDefaults.defaultCategory || "Workshop",
+    defaultVenue: eventDefaults.defaultVenue || "",
+    autoCloseWhenFull: eventDefaults.autoCloseWhenFull !== false,
+  };
+};
+
 
 // GET all events
 const getEvents = async (req, res) => {
   try {
+    const settings = await getEventDefaultSettings();
 
     const events = await Event.find();
+    const today = new Date();
 
     const eventsWithRegistrationDate = events.map(event => {
 
       const eventDate = new Date(event.date);
 
       const openDate = new Date(eventDate);
-      openDate.setDate(eventDate.getDate() - 14);
+      openDate.setDate(
+        eventDate.getDate() - settings.registrationOpenDaysBefore
+      );
+
+      const eventEnd = new Date(`${event.date} ${event.time}`);
+      eventEnd.setHours(eventEnd.getHours() + 3);
+
+      const isWithinWindow = today >= openDate && today <= eventEnd;
+      const hasSlots = event.registeredUsers < event.totalCapacity;
+      const registrationOpen = settings.autoCloseWhenFull
+        ? isWithinWindow && hasSlots
+        : isWithinWindow;
 
       return {
         ...event._doc,
-        registrationOpenDate: openDate
+        registrationOpenDate: openDate,
+        registrationOpen,
       };
 
     });
@@ -64,7 +98,19 @@ const getEventById = async (req, res) => {
 const createEvent = async (req, res) => {
   try {
 
-    const event = new Event(req.body);
+    const settings = await getEventDefaultSettings();
+
+    const payload = {
+      ...req.body,
+      totalCapacity:
+        Number.isFinite(Number(req.body.totalCapacity)) && Number(req.body.totalCapacity) > 0
+          ? Number(req.body.totalCapacity)
+          : settings.defaultCapacity,
+      category: req.body.category || settings.defaultCategory,
+      venue: req.body.venue || settings.defaultVenue,
+    };
+
+    const event = new Event(payload);
     const savedEvent = await event.save();
 
     res.status(201).json(savedEvent);
@@ -197,11 +243,15 @@ const registerForEvent = async (req, res) => {
     }
 
 
+    const settings = await getEventDefaultSettings();
+
     const eventDate = new Date(event.date);
     const today = new Date();
 
     const openDate = new Date(eventDate);
-    openDate.setDate(eventDate.getDate() - 14);
+    openDate.setDate(
+      eventDate.getDate() - settings.registrationOpenDaysBefore
+    );
 
     const eventEnd = new Date(`${event.date} ${event.time}`);
     eventEnd.setHours(eventEnd.getHours() + 3);

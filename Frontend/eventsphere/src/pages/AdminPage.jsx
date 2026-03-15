@@ -11,6 +11,7 @@ import AdminEvents from '../components/Admin/AdminEvents';
 import AdminCreateEvent from '../components/Admin/AdminCreateEvent';
 import AdminAnalytics from '../components/Admin/AdminAnalytics';
 import AdminUsers from '../components/Admin/AdminUsers';
+import AdminSettings from '../components/Admin/AdminSettings';
 import { getAdminRequestConfig, getStoredStudent, isAdminStudent } from '../utils/adminAuth';
 
 export default function AdminPage() {
@@ -29,6 +30,15 @@ export default function AdminPage() {
   });
   const [isDashboardLoading, setIsDashboardLoading] = useState(false);
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
+  const [adminSettings, setAdminSettings] = useState({
+    eventDefaults: {
+      defaultCapacity: 200,
+      registrationOpenDaysBefore: 14,
+      defaultCategory: 'Workshop',
+      defaultVenue: '',
+      autoCloseWhenFull: true,
+    },
+  });
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem('eventSphereStudent');
@@ -94,11 +104,29 @@ export default function AdminPage() {
     }
   }, [handleLogout]);
 
+  const fetchAdminSettings = useCallback(async () => {
+    try {
+      const res = await axios.get(
+        `${API_URL}/admin/settings`,
+        getAdminRequestConfig()
+      );
+
+      if (res.data?.settings) {
+        setAdminSettings(res.data.settings);
+      }
+    } catch (err) {
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        handleLogout();
+      }
+    }
+  }, [handleLogout]);
+
   useEffect(() => {
     fetchAnnouncements();
     fetchEvents();
     fetchAdminOverview();
-  }, [fetchAnnouncements, fetchEvents, fetchAdminOverview]);
+    fetchAdminSettings();
+  }, [fetchAnnouncements, fetchEvents, fetchAdminOverview, fetchAdminSettings]);
 
   useEffect(() => {
     if (["dashboard", "analytics", "registrations", "users", "settings"].includes(activeTab)) {
@@ -149,9 +177,19 @@ export default function AdminPage() {
   const handleCreateEvent = async (eventData) => {
     try {
       setIsCreatingEvent(true);
+      const resolvedCapacity =
+        Number.isFinite(Number(eventData.totalCapacity)) && Number(eventData.totalCapacity) > 0
+          ? Number(eventData.totalCapacity)
+          : Number(adminSettings?.eventDefaults?.defaultCapacity) || 200;
+
+      const payload = {
+        ...eventData,
+        totalCapacity: resolvedCapacity,
+      };
+
       const res = await axios.post(
         `${API_URL}/events/create`,
-        eventData,
+        payload,
         getAdminRequestConfig()
       );
       await fetchEvents();
@@ -257,6 +295,9 @@ export default function AdminPage() {
             onCreate={handleCreateEvent}
             onCancel={() => setActiveTab('events')}
             isSubmitting={isCreatingEvent}
+            defaultCapacity={Number(adminSettings?.eventDefaults?.defaultCapacity) || 200}
+            defaultCategory={adminSettings?.eventDefaults?.defaultCategory || 'Workshop'}
+            defaultVenue={adminSettings?.eventDefaults?.defaultVenue || ''}
           />
         );
       case 'analytics':
@@ -286,11 +327,11 @@ export default function AdminPage() {
         );
       case 'settings':
         return (
-          <AdminDashboard
-            onNavigate={setActiveTab}
-            statsData={adminOverview.stats}
-            recentRegistrations={adminOverview.recentRegistrations}
-            isLoading={isDashboardLoading}
+          <AdminSettings
+            onSettingsUpdated={(nextSettings) => {
+              setAdminSettings(nextSettings);
+              fetchEvents();
+            }}
           />
         );
       default:

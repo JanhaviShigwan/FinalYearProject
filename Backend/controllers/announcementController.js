@@ -1,5 +1,6 @@
 const Announcement = require("../Models/Announcement");
 const Student = require("../Models/Student");
+const AdminSettings = require("../Models/AdminSettings");
 const sendEmail = require("../utils/sendEmail");
 const { announcementTemplate } = require("../utils/template");
 
@@ -46,6 +47,22 @@ exports.createAnnouncement = async (req, res) => {
     let emailRecipientCount = 0;
 
     try {
+      const settings = await AdminSettings
+        .findOne({ key: "global" })
+        .select("announcementSettings");
+
+      const announcementSettings = settings?.announcementSettings || {};
+
+      if (announcementSettings.enableAnnouncementEmails === false) {
+        return res.json({
+          ...saved.toObject(),
+          emailedCount,
+          emailFailedCount,
+          emailRecipientCount,
+          emailBroadcastDisabled: true,
+        });
+      }
+
       const students = await Student.find({
         $or: [{ role: "student" }, { role: { $exists: false } }, { role: null }],
         email: { $exists: true, $ne: null },
@@ -54,9 +71,17 @@ exports.createAnnouncement = async (req, res) => {
       emailRecipientCount = students.length;
 
       if (students.length > 0) {
+        const subjectPrefix =
+          announcementSettings.defaultEmailSubject || "EventSphere Announcement";
+
+        const signature =
+          announcementSettings.defaultEmailSignature || "EventSphere Admin Team";
+
+        const messageWithSignature = `${saved.message}<br/><br/>${signature}`;
+
         const emailHtml = announcementTemplate({
           title: saved.title,
-          message: saved.message,
+          message: messageWithSignature,
           createdAt: new Date(saved.createdAt).toLocaleString("en-US", {
             year: "numeric",
             month: "short",
@@ -70,7 +95,7 @@ exports.createAnnouncement = async (req, res) => {
           students.map((student) =>
             sendEmail(
               student.email,
-              `EventSphere Announcement: ${saved.title}`,
+              `${subjectPrefix}: ${saved.title}`,
               emailHtml
             )
           )

@@ -1,30 +1,56 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Calendar, Clock3, Image, MapPin, Tag, X, Save } from 'lucide-react';
 
-const initialForm = {
+const buildInitialForm = (defaults) => ({
   eventName: '',
-  category: 'Workshop',
+  category: defaults.defaultCategory || 'Workshop',
   shortDescription: '',
   longDescription: '',
-  venue: '',
+  venue: defaults.defaultVenue || '',
   eventImage: '',
   date: '',
   time: '',
   endDate: '',
   endTime: '',
-};
+  totalCapacity: defaults.defaultCapacity || 200,
+});
 
-export default function AdminCreateEvent({ onCreate, onCancel, isSubmitting }) {
-  const [form, setForm] = useState(initialForm);
+export default function AdminCreateEvent({
+  onCreate,
+  onCancel,
+  isSubmitting,
+  defaultCapacity = 200,
+  defaultCategory = 'Workshop',
+  defaultVenue = '',
+}) {
+  const defaults = useMemo(
+    () => ({
+      defaultCapacity,
+      defaultCategory,
+      defaultVenue,
+    }),
+    [defaultCapacity, defaultCategory, defaultVenue]
+  );
+
+  const [form, setForm] = useState(() => buildInitialForm(defaults));
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  useEffect(() => {
+    setForm((prev) => ({
+      ...prev,
+      category: prev.category || defaults.defaultCategory,
+      venue: prev.venue || defaults.defaultVenue,
+      totalCapacity: prev.totalCapacity || defaults.defaultCapacity,
+    }));
+  }, [defaults]);
 
   const updateField = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleCancel = () => {
-    setForm(initialForm);
+    setForm(buildInitialForm(defaults));
     setError('');
     setSuccess('');
     if (onCancel) onCancel();
@@ -51,6 +77,11 @@ export default function AdminCreateEvent({ onCreate, onCancel, isSubmitting }) {
       return;
     }
 
+    if (!Number.isFinite(Number(form.totalCapacity)) || Number(form.totalCapacity) <= 0) {
+      setError('Total capacity must be a positive number.');
+      return;
+    }
+
     try {
       await onCreate({
         eventName: form.eventName,
@@ -61,11 +92,11 @@ export default function AdminCreateEvent({ onCreate, onCancel, isSubmitting }) {
         date: form.date,
         time: form.time,
         eventImage: form.eventImage,
-        totalCapacity: 200,
+        totalCapacity: Number(form.totalCapacity),
       });
 
       setSuccess('Event created successfully.');
-      setForm(initialForm);
+      setForm(buildInitialForm(defaults));
     } catch (err) {
       setError(err.message || 'Failed to create event.');
     }
@@ -126,6 +157,19 @@ export default function AdminCreateEvent({ onCreate, onCancel, isSubmitting }) {
                   <option>Sports</option>
                   <option>Competition</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-deep-slate mb-2">Total Capacity</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={form.totalCapacity}
+                  onChange={(e) => updateField('totalCapacity', e.target.value)}
+                  placeholder="e.g. 200"
+                  className={inputClass}
+                  required
+                />
               </div>
             </div>
 
