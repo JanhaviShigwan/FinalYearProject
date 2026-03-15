@@ -21,6 +21,20 @@ const syncAdminProfileComplete = async (student) => {
   return student;
 };
 
+const getClientIp = (req) => {
+  const forwardedFor = req.headers["x-forwarded-for"];
+
+  if (typeof forwardedFor === "string" && forwardedFor.trim()) {
+    return forwardedFor.split(",")[0].trim();
+  }
+
+  return req.ip || req.socket?.remoteAddress || "Unknown";
+};
+
+const getClientDevice = (req) => {
+  return req.headers["user-agent"] || "Unknown device";
+};
+
 
 // ================= REGISTER =================
 
@@ -110,6 +124,22 @@ exports.loginStudent = async (req, res) => {
     }
 
     await syncAdminProfileComplete(student);
+
+    await Student.findByIdAndUpdate(student._id, {
+      $push: {
+        loginActivity: {
+          $each: [
+            {
+              date: new Date(),
+              ip: getClientIp(req),
+              device: getClientDevice(req),
+            },
+          ],
+          $position: 0,
+          $slice: 10,
+        },
+      },
+    });
 
     res.status(200).json({
       message: "Login successful",

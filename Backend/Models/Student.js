@@ -139,12 +139,10 @@ const studentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-studentSchema.pre("save", function (next) {
+studentSchema.pre("save", function () {
   if (this.role === "admin") {
     this.profileComplete = true;
   }
-
-  next();
 });
 
 studentSchema.pre("findOneAndUpdate", forceAdminProfileCompleteOnUpdate);

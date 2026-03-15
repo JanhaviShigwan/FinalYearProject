@@ -1,4 +1,4 @@
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, LockKeyhole, ShieldCheck } from "lucide-react";
 
 export default function Security({
   currentPassword,
@@ -18,23 +18,40 @@ export default function Security({
   passwordError,
   changePassword
 }) {
-  return (
-    <div className="bg-[#F6F1EB] border border-gray-200 rounded-3xl p-6 shadow-sm">
+  const strength = getStrength(newPassword);
 
-      <h2 className="text-xl font-semibold text-[#3F3D56] mb-5">
+  const strengthStyles =
+    strength === "Strong"
+      ? "bg-pastel-green/30 text-deep-slate"
+      : strength === "Medium"
+        ? "bg-coral/20 text-coral"
+        : "bg-deep-slate/10 text-deep-slate/60";
+
+  const inputBase =
+    "mt-1 flex items-center rounded-xl border border-soft-blush bg-white px-3 py-2.5 focus-within:border-lavender focus-within:ring-2 focus-within:ring-lavender/20";
+
+  return (
+    <div className="h-full rounded-[28px] border border-soft-blush bg-white p-6 shadow-sm">
+
+      <h2 className="inline-flex items-center gap-2 text-xl font-extrabold text-deep-slate">
+        <ShieldCheck className="h-5 w-5 text-lavender" />
         Security
       </h2>
 
-      <div className="space-y-4">
+      <p className="mt-1 text-sm text-deep-slate/55">
+        Keep your account secure by updating your password regularly.
+      </p>
+
+      <div className="mt-5 space-y-4">
 
         {/* Current */}
         <div>
 
-          <label className="text-sm font-medium">
+          <label className="text-sm font-semibold text-deep-slate/80">
             Current Password
           </label>
 
-          <div className="flex items-center border rounded-xl px-3 py-2 bg-white">
+          <div className={inputBase}>
 
             <input
               type={showCurrent ? "text" : "password"}
@@ -42,7 +59,7 @@ export default function Security({
               onChange={(e) =>
                 setCurrentPassword(e.target.value)
               }
-              className="flex-1 outline-none"
+              className="flex-1 bg-transparent text-sm text-deep-slate outline-none"
             />
 
             <button
@@ -50,6 +67,7 @@ export default function Security({
               onClick={() =>
                 setShowCurrent(!showCurrent)
               }
+              className="text-deep-slate/45 hover:text-lavender"
             >
               {showCurrent ? (
                 <EyeOff size={18} />
@@ -66,11 +84,13 @@ export default function Security({
         {/* New */}
         <div>
 
-          <label className="text-sm font-medium">
+          <label className="text-sm font-semibold text-deep-slate/80">
             New Password
           </label>
 
-          <div className="flex items-center border rounded-xl px-3 py-2 bg-white">
+          <div className={inputBase}>
+
+            <LockKeyhole size={16} className="mr-2 text-lavender/70" />
 
             <input
               type={showNew ? "text" : "password"}
@@ -78,7 +98,7 @@ export default function Security({
               onChange={(e) =>
                 setNewPassword(e.target.value)
               }
-              className="flex-1 outline-none"
+              className="flex-1 bg-transparent text-sm text-deep-slate outline-none"
             />
 
             <button
@@ -86,6 +106,7 @@ export default function Security({
               onClick={() =>
                 setShowNew(!showNew)
               }
+              className="text-deep-slate/45 hover:text-lavender"
             >
               {showNew ? (
                 <EyeOff size={18} />
@@ -96,9 +117,9 @@ export default function Security({
 
           </div>
 
-          <p className="text-xs text-gray-500 mt-1">
-            Strength: {getStrength(newPassword)}
-          </p>
+          <div className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-bold ${strengthStyles}`}>
+            Strength: {strength}
+          </div>
 
         </div>
 
@@ -106,11 +127,11 @@ export default function Security({
         {/* Confirm */}
         <div>
 
-          <label className="text-sm font-medium">
+          <label className="text-sm font-semibold text-deep-slate/80">
             Confirm Password
           </label>
 
-          <div className="flex items-center border rounded-xl px-3 py-2 bg-white">
+          <div className={inputBase}>
 
             <input
               type={showConfirm ? "text" : "password"}
@@ -118,7 +139,7 @@ export default function Security({
               onChange={(e) =>
                 setConfirmPassword(e.target.value)
               }
-              className="flex-1 outline-none"
+              className="flex-1 bg-transparent text-sm text-deep-slate outline-none"
             />
 
             <button
@@ -126,6 +147,7 @@ export default function Security({
               onClick={() =>
                 setShowConfirm(!showConfirm)
               }
+              className="text-deep-slate/45 hover:text-lavender"
             >
               {showConfirm ? (
                 <EyeOff size={18} />
@@ -145,8 +167,8 @@ export default function Security({
           <p
             className={`text-sm ${
               passwordError
-                ? "text-red-500"
-                : "text-green-600"
+                ? "text-coral"
+                : "text-lavender"
             }`}
           >
             {passwordError || passwordMsg}
@@ -159,7 +181,7 @@ export default function Security({
         <button
           type="button"
           onClick={changePassword}
-          className="bg-[#9B96E5] text-white px-6 py-2 rounded-xl"
+          className="inline-flex items-center justify-center rounded-xl bg-lavender px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-lavender/90"
         >
           Change Password
         </button>

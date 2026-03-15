@@ -1,5 +1,6 @@
 const Student = require("../Models/Student");
 const bcrypt = require("bcryptjs");
+const mongoose = require("mongoose");
 
 const sendEmail = require("../utils/sendEmail");
 
@@ -18,6 +19,20 @@ const syncAdminProfileComplete = async (student) => {
   });
 
   return student;
+};
+
+const getClientIp = (req) => {
+  const forwardedFor = req.headers["x-forwarded-for"];
+
+  if (typeof forwardedFor === "string" && forwardedFor.trim()) {
+    return forwardedFor.split(",")[0].trim();
+  }
+
+  return req.ip || req.socket?.remoteAddress || "Unknown";
+};
+
+const getClientDevice = (req) => {
+  return req.headers["user-agent"] || "Unknown device";
 };
 
 
@@ -373,17 +388,33 @@ exports.updateNotifications = async (req, res) => {
 
     const { notificationsEnabled } = req.body;
 
-    const student = await Student.findById(studentId);
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      return res.status(400).json({
+        message: "Invalid student id",
+      });
+    }
+
+    if (typeof notificationsEnabled !== "boolean") {
+      return res.status(400).json({
+        message: "notificationsEnabled must be boolean",
+      });
+    }
+
+    const student = await Student.findByIdAndUpdate(
+      studentId,
+      { $set: { notificationsEnabled } },
+      {
+        returnDocument: "after",
+        runValidators: false,
+        select: "notificationsEnabled",
+      }
+    );
 
     if (!student) {
       return res.status(404).json({
         message: "Student not found",
       });
     }
-
-    student.notificationsEnabled = notificationsEnabled;
-
-    await student.save();
 
     res.status(200).json({
       message: "Notification preference updated",
@@ -412,6 +443,12 @@ exports.changePassword = async (req, res) => {
   try {
 
     const { studentId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      return res.status(400).json({
+        message: "Invalid student id",
+      });
+    }
 
     const {
       currentPassword,
@@ -560,12 +597,45 @@ exports.getLoginActivity = async (req, res) => {
 
     const { studentId } = req.params;
 
-    const student = await Student.findById(studentId);
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      return res.status(400).json({
+        message: "Invalid student id",
+      });
+    }
+
+    const student = await Student.findById(studentId).select("loginActivity");
 
     if (!student) {
       return res.status(404).json({
         message: "Student not found",
       });
+    }
+
+    if (!student.loginActivity?.length) {
+      const updatedStudent = await Student.findByIdAndUpdate(
+        studentId,
+        {
+          $push: {
+            loginActivity: {
+              $each: [
+                {
+                  date: new Date(),
+                  ip: getClientIp(req),
+                  device: getClientDevice(req),
+                },
+              ],
+              $position: 0,
+              $slice: 10,
+            },
+          },
+        },
+        {
+          returnDocument: "after",
+          select: "loginActivity",
+        }
+      );
+
+      return res.status(200).json(updatedStudent.loginActivity || []);
     }
 
     res.status(200).json(

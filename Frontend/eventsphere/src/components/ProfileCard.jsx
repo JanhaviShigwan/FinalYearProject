@@ -1,4 +1,4 @@
-import { CheckCircle, User } from "lucide-react";
+import { CheckCircle2, User } from "lucide-react";
 
 export default function ProfileCard({
     currentStudent,
@@ -27,87 +27,112 @@ export default function ProfileCard({
 
     return (
 
-        <div className="bg-[#F6F1EB] rounded-3xl border border-gray-200 overflow-hidden flex">
+        <div className="overflow-hidden rounded-[28px] border border-soft-blush bg-white shadow-sm">
 
-            {/* LEFT CARD */}
+            <div className="h-2 bg-gradient-to-r from-lavender via-soft-blush to-coral" />
 
-            <div className="w-64 bg-white m-6 rounded-2xl shadow-sm border border-gray-200 p-6 flex flex-col items-center">
+            <div className="grid grid-cols-1 gap-6 p-6 md:p-8 lg:grid-cols-[300px_minmax(0,1fr)]">
 
-                {hasImage ? (
+                {/* LEFT CARD */}
 
-                    <img
-                        src={currentStudent.profileImage}
-                        alt="profile"
-                        className="w-24 h-24 rounded-full object-cover border"
-                    />
+                <div className="rounded-2xl border border-soft-blush bg-warm-cream p-6 text-center">
 
-                ) : (
+                    {hasImage ? (
 
-                    <div className="w-24 h-24 rounded-full border flex items-center justify-center bg-gray-100">
+                        <img
+                            src={currentStudent.profileImage}
+                            alt="profile"
+                            className="mx-auto h-28 w-28 rounded-full border-4 border-white object-cover shadow-sm"
+                        />
 
-                        <User size={40} className="text-gray-400" />
+                    ) : (
+
+                        <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-full border-4 border-white bg-white shadow-sm">
+
+                            <User size={42} className="text-deep-slate/35" />
+
+                        </div>
+
+                    )}
+
+
+                    <label className="mt-4 inline-flex cursor-pointer items-center justify-center rounded-full border border-lavender/30 bg-white px-4 py-2 text-sm font-bold text-lavender transition-colors hover:bg-lavender hover:text-white">
+
+                        {uploading ? "Uploading..." : "Upload Photo"}
+
+                        <input
+                            type="file"
+                            accept="image/png, image/jpeg, image/jpg, image/webp"
+                            hidden
+                            onChange={uploadImage}
+                        />
+
+                    </label>
+
+
+                    <div className="mt-5 flex items-center justify-center gap-2">
+
+                        <h2 className="text-xl font-extrabold text-deep-slate">
+                            {currentStudent?.name || "Student"}
+                        </h2>
+
+                        <CheckCircle2
+                            size={18}
+                            className="text-lavender"
+                        />
 
                     </div>
 
-                )}
 
+                    <p className="mt-1 text-sm text-deep-slate/55">
+                        {currentStudent?.email || "No email"}
+                    </p>
 
-                <label className="mt-3 text-sm text-[#9B96E5] cursor-pointer">
-
-                    {uploading ? "Uploading..." : "Upload Photo"}
-
-                    <input
-                        type="file"
-                        accept="image/png, image/jpeg, image/jpg, image/webp"
-                        hidden
-                        onChange={uploadImage}
-                    />
-
-                </label>
-
-
-                <div className="flex items-center gap-2 mt-4">
-
-                    <h2 className="text-lg font-semibold text-[#3F3D56]">
-                        {currentStudent.name}
-                    </h2>
-
-                    <CheckCircle
-                        size={18}
-                        className="text-green-500"
-                    />
+                    <p className="mt-2 inline-flex rounded-full bg-lavender/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.11em] text-lavender">
+                        {currentStudent?.role || "Student"}
+                    </p>
 
                 </div>
 
 
-                <p className="text-gray-500 text-sm text-center">
-                    {currentStudent.email}
-                </p>
+                {/* RIGHT SIDE */}
 
-            </div>
+                <div className="flex-1">
 
+                    <h2 className="text-2xl font-extrabold text-deep-slate">
+                        Student Information
+                    </h2>
 
-            {/* RIGHT SIDE */}
+                    <p className="mt-1 text-sm text-deep-slate/55">
+                        Keep your academic and contact details up to date for smoother event registrations.
+                    </p>
 
-            <div className="flex-1 p-8">
+                    <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
 
-                <h2 className="text-2xl font-semibold mb-6">
-                    Student Information
-                </h2>
+                        {[
+                            ["Department", currentStudent?.department],
+                            ["College", currentStudent?.college],
+                            ["Course", currentStudent?.course],
+                            ["Year", currentStudent?.year],
+                            ["Phone", currentStudent?.phone],
+                            ["Gender", currentStudent?.gender],
+                            ["DOB", formatDate(currentStudent?.dob)],
+                            ["Division", currentStudent?.division],
+                        ].map(([label, value]) => (
+                            <div
+                                key={label}
+                                className="rounded-2xl border border-soft-blush bg-warm-cream/60 px-4 py-3"
+                            >
+                                <p className="text-[11px] font-bold uppercase tracking-[0.11em] text-deep-slate/45">
+                                    {label}
+                                </p>
+                                <p className="mt-1 text-sm font-semibold text-deep-slate">
+                                    {value || "-"}
+                                </p>
+                            </div>
+                        ))}
 
-                <div className="grid grid-cols-2 gap-6">
-
-                    <div>Department: {currentStudent.department}</div>
-                    <div>College: {currentStudent.college}</div>
-                    <div>Course: {currentStudent.course}</div>
-                    <div>Year: {currentStudent.year}</div>
-                    <div>Phone: {currentStudent.phone}</div>
-                    <div>Gender: {currentStudent.gender}</div>
-
-                    {/* ✅ FIXED DOB */}
-                    <div>DOB: {formatDate(currentStudent.dob)}</div>
-
-                    <div>Division: {currentStudent.division}</div>
+                    </div>
 
                 </div>
 
