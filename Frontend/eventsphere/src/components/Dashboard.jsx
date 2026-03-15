@@ -1,6 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { Calendar, AlarmClock, AlertCircle } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  Calendar,
+  AlarmClock,
+  AlertCircle,
+  MapPin,
+  Bell,
+  ChevronRight,
+  Zap,
+  BookOpen,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import API_URL from "../api";
 
@@ -101,138 +111,199 @@ const upcomingEventsFiltered = dashboardData.upcomingEventList.filter(
   }
 );
 
-  // ================= STATS =================
+  const ongoingCount = dashboardData.ongoingEvents?.length ?? 0;
 
-  const stats = [
-    {
-      icon: <Calendar size={28} color="#9B96E5" />,
-      value: myEvents.length,
-      label: "My Registered Events",
-    },
-    {
-      icon: <AlarmClock size={28} color="#5ac4eb" />,
-      value: upcomingEventsFiltered.length,
-      label: "Upcoming Events",
-    },
-  ];
+  const fade = {
+    hidden: { opacity: 0, y: 18 },
+    visible: (i = 0) => ({
+      opacity: 1,
+      y: 0,
+      transition: { delay: i * 0.07, duration: 0.35, ease: "easeOut" },
+    }),
+  };
+
+  const initials = student?.name
+    ? student.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
+    : "?";
+
+  const todayLabel = new Date().toLocaleDateString("en-US", {
+    weekday: "long", month: "long", day: "numeric",
+  });
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-7">
 
-      {/* PROFILE ALERT */}
+      {/* ── HERO GREETING ── */}
+      <motion.div
+        variants={fade} initial="hidden" animate="visible" custom={0}
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-lavender via-soft-blush to-coral p-7 text-white shadow-md"
+      >
+        {/* decorative blobs */}
+        <div className="pointer-events-none absolute -right-10 -top-10 w-48 h-48 rounded-full bg-white/10" />
+        <div className="pointer-events-none absolute right-20 bottom-0 w-28 h-28 rounded-full bg-white/10" />
 
-      {needsProfileCompletion && (
-
-        <div className="bg-[#FFF4E5] border border-[#F08A6C]/40 rounded-2xl p-5 flex items-center justify-between">
-
-          <div className="flex items-center gap-3">
-
-            <AlertCircle size={22} color="#F08A6C" />
-
-            <p className="text-[#3F3D56] font-medium">
-              Complete your profile to register for events.
-            </p>
-
+        <div className="relative flex items-center gap-5">
+          {/* avatar */}
+          <div className="w-16 h-16 rounded-2xl bg-white/25 flex items-center justify-center text-2xl font-extrabold tracking-wide shrink-0">
+            {initials}
           </div>
 
-          <button
-            onClick={() => navigate("/settings")}
-            className="bg-[#F08A6C] text-white px-5 py-2 rounded-xl"
-          >
-            Complete Profile
-          </button>
+          <div className="flex-1 min-w-0">
+            <p className="text-white/70 text-sm font-medium">{todayLabel}</p>
+            <h1 className="text-2xl md:text-3xl font-extrabold leading-tight truncate">
+              Hey, {student?.name?.split(" ")[0] || "there"} 👋
+            </h1>
+            <p className="text-white/80 text-sm mt-0.5">
+              {ongoingCount > 0
+                ? `${ongoingCount} event${ongoingCount > 1 ? "s are" : " is"} happening right now!`
+                : "No events happening right now — check what's coming up! "}
+            </p>
+          </div>
 
+          {needsProfileCompletion && (
+            <button
+              onClick={() => navigate("/settings")}
+              className="shrink-0 flex items-center gap-2 bg-white/20 hover:bg-white/30 transition-colors rounded-xl px-4 py-2 text-sm font-bold"
+            >
+              <AlertCircle className="w-4 h-4" />
+              Complete Profile
+            </button>
+          )}
         </div>
+      </motion.div>
 
-      )}
-
-      {/* WELCOME */}
-
-      <div className="bg-white rounded-2xl border p-8">
-
-        <h1 className="text-3xl font-semibold text-[#3F3D56]">
-          Welcome back, {student?.name} ✨
-        </h1>
-
-        <p className="text-gray-500 mt-2">
-          Explore events happening across campus.
-        </p>
-
-      </div>
-
-      {/* STATS */}
-
-      <div className="grid grid-cols-3 gap-6">
-
-        {stats.map(({ icon, value, label }) => (
-
+      {/* ── STAT CHIPS ── */}
+      <motion.div
+        variants={fade} initial="hidden" animate="visible" custom={1}
+        className="grid grid-cols-3 gap-4"
+      >
+        {[
+          { icon: Calendar,   color: "bg-lavender/10 border-lavender/30 text-lavender",    value: myEvents.length,               label: "Registered" },
+          { icon: AlarmClock, color: "bg-coral/10 border-coral/30 text-coral",              value: upcomingEventsFiltered.length, label: "Open to Join" },
+          { icon: Zap,        color: "bg-pastel-green/20 border-pastel-green/40 text-deep-slate", value: ongoingCount,             label: "Live Now" },
+        ].map(({ icon: Icon, color, value, label }) => (
           <div
             key={label}
-            className="rounded-3xl border p-6 flex flex-col gap-4 hover:shadow-lg transition bg-[#fcf9f6]"
+            className={`flex items-center gap-5 rounded-2xl border px-7 py-6 ${color} bg-opacity-10`}
           >
+            <div className="p-3.5 rounded-xl bg-white shadow-sm">
+              <Icon className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-3xl font-extrabold text-deep-slate leading-none">{value}</p>
+              <p className="text-sm font-semibold text-deep-slate/60 mt-1">{label}</p>
+            </div>
+          </div>
+        ))}
+      </motion.div>
 
-            <div>{icon}</div>
+      {/* ── MAIN TWO-COLUMN CONTENT ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
-            <h2 className="text-3xl font-semibold text-[#3F3D56]">
-              {value}
+        {/* LEFT — Upcoming Events (wider) */}
+        <motion.section
+          variants={fade} initial="hidden" animate="visible" custom={2}
+          className="lg:col-span-3 flex flex-col gap-4"
+        >
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-extrabold text-deep-slate flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-lavender" />
+              Upcoming Events
             </h2>
-
-            <p className="text-gray-600">{label}</p>
-
+            <button
+              onClick={() => navigate("/events")}
+              className="text-xs font-bold text-lavender flex items-center gap-1 hover:underline"
+            >
+              View all <ChevronRight className="w-3.5 h-3.5" />
+            </button>
           </div>
 
-        ))}
+          {upcomingEventsFiltered.length === 0 ? (
+            <div className="rounded-2xl border border-soft-blush bg-warm-cream px-6 py-10 text-center text-deep-slate/50 text-sm font-medium">
+              No upcoming events to display right now.
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {upcomingEventsFiltered.slice(0, 5).map((event, i) => (
+                <motion.div
+                  key={event._id}
+                  variants={fade} initial="hidden" animate="visible" custom={3 + i * 0.5}
+                  onClick={() => navigate(`/events/${event._id}`)}
+                  className="flex items-center gap-5 rounded-2xl border border-soft-blush bg-white p-5 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer group"
+                >
+                  {/* thumbnail */}
+                  <div className="w-20 h-18 rounded-xl bg-warm-cream border border-soft-blush overflow-hidden shrink-0">
+                    {event.eventImage ? (
+                      <img src={event.eventImage} alt={event.eventName} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-deep-slate/30">
+                        <Calendar className="w-6 h-6" />
+                      </div>
+                    )}
+                  </div>
 
-      </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-deep-slate truncate text-base">{event.eventName}</p>
+                    <div className="flex flex-wrap gap-3 mt-2">
+                      <span className="inline-flex items-center gap-1.5 text-sm text-deep-slate/60 font-medium">
+                        <AlarmClock className="w-3.5 h-3.5" />
+                        {event.date} {event.time ? `· ${event.time}` : ""}
+                      </span>
+                      {event.venue && (
+                        <span className="inline-flex items-center gap-1.5 text-sm text-deep-slate/60 font-medium">
+                          <MapPin className="w-3.5 h-3.5" />
+                          {event.venue}
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
+                  <span className="shrink-0 text-sm font-bold px-4 py-2 rounded-lg bg-lavender/10 text-lavender border border-lavender/20 group-hover:bg-lavender group-hover:text-white transition-colors">
+                    Register
+                  </span>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </motion.section>
 
-      {/* ANNOUNCEMENTS */}
+        {/* RIGHT — Announcements (narrower) */}
+        <motion.section
+          variants={fade} initial="hidden" animate="visible" custom={3}
+          className="lg:col-span-2 flex flex-col gap-4"
+        >
+          <h2 className="text-lg font-extrabold text-deep-slate flex items-center gap-2">
+            <Bell className="w-5 h-5 text-coral" />
+            Announcements
+          </h2>
 
-      <div>
-
-        <h2 className="text-2xl font-bold mb-4 text-[#3F3D56]">
-          Announcements
-        </h2>
-
-        <div className="grid grid-cols-2 gap-4">
-
-          {announcements
-            .slice(0, 4)
-            .map((a) => (
-
-              <div
-                key={a._id}
-                className="
-                  p-5
-                  rounded-xl
-                  border
-                  bg-[#FCF9F6]
-                  hover:shadow-xl
-                  hover:scale-[1.02]
-                  transition-all
-                  duration-300
-                  cursor-pointer
-                "
-              >
-
-                <h3 className="text-[20px] font-bold text-[#9B96E5]">
-                  {a.title}
-                </h3>
-
-                <p className="text-sm text-[#3F3D56] mt-1">
-                  {a.message}
-                </p>
-
-                <span className="text-xs text-gray-500">
-                  {new Date(a.createdAt).toLocaleDateString()}
-                </span>
-
-              </div>
-
-            ))}
-
-        </div>
-
+          {announcements.length === 0 ? (
+            <div className="rounded-2xl border border-soft-blush bg-warm-cream px-6 py-10 text-center text-deep-slate/50 text-sm font-medium">
+              No announcements yet.
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {announcements.slice(0, 5).map((a, i) => (
+                <motion.div
+                  key={a._id}
+                  variants={fade} initial="hidden" animate="visible" custom={4 + i * 0.4}
+                  className="rounded-2xl border border-soft-blush bg-warm-cream p-5 hover:shadow-sm transition-shadow"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="w-2.5 h-2.5 mt-1.5 rounded-full bg-coral shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-base font-bold text-deep-slate leading-snug truncate">{a.title}</p>
+                      <p className="text-sm text-deep-slate/65 mt-1 line-clamp-2">{a.message}</p>
+                      <p className="text-xs text-deep-slate/40 mt-2 font-medium">
+                        {new Date(a.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </motion.section>
       </div>
 
     </div>
