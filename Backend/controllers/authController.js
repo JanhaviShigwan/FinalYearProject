@@ -1,7 +1,12 @@
 const Student = require("../Models/Student");
 const bcrypt = require("bcryptjs");
 const sendEmail = require("../utils/sendEmail");
-const emailTemplate = require("../utils/emailTemplate");
+
+const {
+  registrationTemplate,
+  resetTemplate,
+  passwordChangedTemplate,
+} = require("../utils/template");
 
 
 // ================= REGISTER =================
@@ -23,6 +28,7 @@ exports.registerStudent = async (req, res) => {
     }
 
     const salt = await bcrypt.genSalt(10);
+
     const hashedPassword = await bcrypt.hash(
       password,
       salt
@@ -35,12 +41,14 @@ exports.registerStudent = async (req, res) => {
       profileComplete: false,
     });
 
-    const htmlContent = emailTemplate(name);
+    // ✅ Beautiful email
+
+    const html = registrationTemplate(name);
 
     await sendEmail(
       lowerEmail,
-      "Welcome to EventSphere 🎉",
-      htmlContent
+      "Welcome to EventSphere",
+      html
     );
 
     res.status(201).json({
@@ -50,6 +58,7 @@ exports.registerStudent = async (req, res) => {
 
   } catch (error) {
     console.log(error);
+
     res.status(500).json({
       message: "Server error",
     });
@@ -93,7 +102,6 @@ exports.loginStudent = async (req, res) => {
     });
 
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       message: "Server error",
     });
@@ -126,15 +134,20 @@ exports.forgotPassword = async (req, res) => {
       ).toString();
 
     user.resetOTP = otp;
+
     user.resetOTPExpire =
       Date.now() + 5 * 60 * 1000;
 
     await user.save();
 
+    // ✅ beautiful reset email
+
+    const html = resetTemplate(otp);
+
     await sendEmail(
       lowerEmail,
-      "EventSphere OTP",
-      `Your OTP is ${otp}. Valid for 5 minutes`
+      "Reset Password",
+      html
     );
 
     res.json({
@@ -230,6 +243,14 @@ exports.resetPassword = async (req, res) => {
     user.resetOTPExpire = undefined;
 
     await user.save();
+
+    // ✅ password changed email
+
+    await sendEmail(
+      lowerEmail,
+      "Password Changed",
+      passwordChangedTemplate()
+    );
 
     res.json({
       message: "Password updated",

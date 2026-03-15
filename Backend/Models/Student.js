@@ -31,13 +31,9 @@ const studentSchema = new mongoose.Schema(
       required: true,
     },
 
-    resetOTP: {
-      type: String,
-    },
+    resetOTP: String,
 
-    resetOTPExpire: {
-      type: Date,
-    },
+    resetOTPExpire: Date,
 
     phone: {
       type: String,
@@ -77,7 +73,26 @@ const studentSchema = new mongoose.Schema(
       default: true,
     },
 
-    /* ✅ NEW FIELD */
+    // ✅ NEW EMAIL SETTINGS
+
+    emailPreferences: {
+
+      promotions: {
+        type: Boolean,
+        default: true,
+      },
+
+      reminders: {
+        type: Boolean,
+        default: true,
+      },
+
+      announcements: {
+        type: Boolean,
+        default: true,
+      },
+
+    },
 
     loginActivity: [
       {
@@ -89,8 +104,10 @@ const studentSchema = new mongoose.Schema(
         device: String,
       },
     ],
+
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Student", studentSchema);
+module.exports =
+  mongoose.model("Student", studentSchema);

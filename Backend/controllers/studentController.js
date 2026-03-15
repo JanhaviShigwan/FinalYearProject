@@ -1,6 +1,12 @@
 const Student = require("../Models/Student");
 const bcrypt = require("bcryptjs");
 
+const sendEmail = require("../utils/sendEmail");
+
+const {
+  passwordChangedTemplate,
+} = require("../utils/template");
+
 
 /* ============================= */
 /* GET STUDENT PROFILE */
@@ -40,10 +46,6 @@ exports.getStudentProfile = async (req, res) => {
 /* COMPLETE PROFILE */
 /* ============================= */
 
-/* ============================= */
-/* COMPLETE PROFILE */
-/* ============================= */
-
 exports.completeProfile = async (req, res) => {
   try {
 
@@ -61,8 +63,6 @@ exports.completeProfile = async (req, res) => {
       dob,
     } = req.body;
 
-
-    // ✅ check duplicate studentId
 
     const existing = await Student.findOne({
       studentId: studentIdNumber,
@@ -114,6 +114,7 @@ exports.completeProfile = async (req, res) => {
 
   }
 };
+
 
 
 /* ============================= */
@@ -188,20 +189,44 @@ exports.updateNotifications = async (req, res) => {
 /* ============================= */
 /* CHANGE PASSWORD */
 /* ============================= */
+
 exports.changePassword = async (req, res) => {
   try {
+
     const { studentId } = req.params;
-    const { currentPassword, newPassword } = req.body;
+
+    const {
+      currentPassword,
+      oldPassword,
+      password,
+      newPassword,
+    } = req.body;
+
+    // ✅ support multiple field names
+    const oldPass =
+      currentPassword ||
+      oldPassword ||
+      password;
+
+    if (!oldPass || !newPassword) {
+      return res.status(400).json({
+        message: "Password fields missing",
+      });
+    }
 
     const student = await Student.findById(studentId);
 
     if (!student) {
-      return res.status(404).json({ message: "Student not found" });
+      return res.status(404).json({
+        message: "Student not found",
+      });
     }
 
-    // check current password
+
+    // ✅ correct compare
+
     const isMatch = await bcrypt.compare(
-      currentPassword,
+      oldPass,
       student.password
     );
 
@@ -211,7 +236,9 @@ exports.changePassword = async (req, res) => {
       });
     }
 
-    // ❗ check new password same as old
+
+    // prevent same password
+
     const samePassword = await bcrypt.compare(
       newPassword,
       student.password
@@ -224,7 +251,7 @@ exports.changePassword = async (req, res) => {
       });
     }
 
-    // ❗ minimum length check
+
     if (newPassword.length < 8) {
       return res.status(400).json({
         message:
@@ -232,8 +259,9 @@ exports.changePassword = async (req, res) => {
       });
     }
 
-    // hash new password
+
     const salt = await bcrypt.genSalt(10);
+
     student.password = await bcrypt.hash(
       newPassword,
       salt
@@ -241,16 +269,33 @@ exports.changePassword = async (req, res) => {
 
     await student.save();
 
+
+    // ✅ EMAIL
+
+    await sendEmail(
+      student.email,
+      "Password Changed",
+      passwordChangedTemplate()
+    );
+
+
     res.json({
       message: "Password changed successfully",
     });
 
   } catch (err) {
+
+    console.log(err);
+
     res.status(500).json({
       message: "Server error",
     });
+
   }
 };
+
+
+
 /* ============================= */
 /* DELETE ACCOUNT */
 /* ============================= */
@@ -284,6 +329,8 @@ exports.deleteAccount = async (req, res) => {
 
   }
 };
+
+
 
 /* ============================= */
 /* GET LOGIN ACTIVITY */

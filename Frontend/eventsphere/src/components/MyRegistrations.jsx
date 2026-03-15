@@ -37,7 +37,7 @@ export default function MyRegistrations() {
     try {
 
       await axios.delete(
-        `${API_URL}/api/events/cancel-registration/${student._id}/${eventId}`
+        `${API_URL}/events/cancel-registration/${student._id}/${eventId}`
       );
 
       setMyEvents((prev) => prev.filter((e) => e._id !== eventId));

@@ -1,9 +1,13 @@
 const Event = require("../Models/Event");
 const QRCode = require("qrcode");
 const Registration = require("../Models/Registration");
-const eventTicketTemplate = require("../utils/eventTicketTemplate");
 const sendEmail = require("../utils/sendEmail");
 const Student = require("../Models/Student");
+
+const {
+  eventRegisterTemplate,
+  eventCancelTemplate,
+} = require("../utils/template");
 
 
 // GET all events
@@ -34,6 +38,7 @@ const getEvents = async (req, res) => {
 };
 
 
+
 // GET event by ID
 const getEventById = async (req, res) => {
   try {
@@ -52,6 +57,7 @@ const getEventById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 // CREATE event
@@ -158,35 +164,23 @@ const registerForEvent = async (req, res) => {
     await event.save();
 
 
-    // QR
+    // EMAIL
 
-    const qrData = JSON.stringify({
-      ticketId: registration._id,
-      event: event.eventName,
-      student: student.name
-    });
+    const emailHTML =
+      eventRegisterTemplate({
+        name: event.eventName,
+        date: event.date,
+        time: event.time,
+        location: event.venue,
+        capacity: event.totalCapacity - event.registeredUsers
+      });
 
-
-    const qrCodeImage = await QRCode.toDataURL(qrData, {
-      width: 250,
-      margin: 2
-    });
-
-
-    const emailHTML = eventTicketTemplate(
-      student,
-      event,
-      qrCodeImage
-    );
-
-
-    // ✅ SEND EMAIL ONLY IF NOTIFICATIONS ENABLED
 
     if (student.notificationsEnabled) {
 
       await sendEmail(
         student.email,
-        `Event Registration Confirmed - ${event.eventName}`,
+        "Event Registration Confirmed",
         emailHTML
       );
 
@@ -275,7 +269,7 @@ const getStudentRegistrations = async (req, res) => {
 
 
 
-// CANCEL
+// ================= CANCEL =================
 
 const cancelRegistration = async (req, res) => {
 
@@ -283,10 +277,11 @@ const cancelRegistration = async (req, res) => {
 
     const { studentId, eventId } = req.params;
 
-    const registration = await Registration.findOneAndDelete({
-      studentId,
-      eventId
-    });
+    const registration =
+      await Registration.findOneAndDelete({
+        studentId,
+        eventId
+      });
 
     if (!registration) {
       return res.status(404).json({
@@ -295,11 +290,37 @@ const cancelRegistration = async (req, res) => {
     }
 
     const event = await Event.findById(eventId);
+    const student = await Student.findById(studentId);
 
     if (event && event.registeredUsers > 0) {
       event.registeredUsers -= 1;
       await event.save();
     }
+
+
+    // ✅ CANCEL EMAIL
+
+    if (
+      student &&
+      student.notificationsEnabled
+    ) {
+
+      const html =
+        eventCancelTemplate({
+          name: event.eventName,
+          date: event.date,
+          time: event.time,
+          location: event.venue
+        });
+
+      await sendEmail(
+        student.email,
+        "Event Cancelled",
+        html
+      );
+
+    }
+
 
     res.json({
       message: "Cancelled"

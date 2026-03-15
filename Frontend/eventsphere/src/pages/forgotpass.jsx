@@ -25,7 +25,7 @@ export default function ForgotPassword() {
     useState("");
 
   const [showPass, setShowPass] = useState(false);
-
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -80,7 +80,7 @@ export default function ForgotPassword() {
     } catch (err) {
       setError(
         err.response?.data?.message ||
-          "Error sending OTP"
+        "Error sending OTP"
       );
     }
   };
@@ -104,7 +104,7 @@ export default function ForgotPassword() {
     } catch (err) {
       setError(
         err.response?.data?.message ||
-          "Invalid OTP"
+        "Invalid OTP"
       );
     }
   };
@@ -149,7 +149,7 @@ export default function ForgotPassword() {
     } catch (err) {
       setError(
         err.response?.data?.message ||
-          "Error resetting password"
+        "Error resetting password"
       );
     }
   };
@@ -170,7 +170,8 @@ export default function ForgotPassword() {
           className="relative z-10 w-full max-w-md p-8 rounded-2xl shadow-xl bg-white"
         >
           <h2 className="text-2xl font-bold text-center mb-4 text-[#3F3D56]">
-            Forgot Password 🔐
+            Forgot Password
+            <Lock size={25} className="inline-block ml-2 text-[#9B96E5]" />
           </h2>
 
           {error && (
@@ -191,11 +192,12 @@ export default function ForgotPassword() {
             <form onSubmit={sendOTP}>
               <label>Email</label>
 
-              <div className="flex items-center border rounded-lg px-3 py-2 mb-4">
+              <div className="flex items-center border rounded-lg px-3 py-2  mb-4">
                 <Mail size={18} />
                 <input
                   type="email"
-                  className="w-full ml-2 outline-none"
+                  placeholder="Enter your email"
+                  className="w-full ml-2  outline-none"
                   value={email}
                   onChange={(e) =>
                     setEmail(e.target.value)
@@ -247,49 +249,37 @@ export default function ForgotPassword() {
                 <Lock size={18} />
 
                 <input
-                  type={
-                    showPass
-                      ? "text"
-                      : "password"
-                  }
+                  type={showPass ? "text" : "password"}
                   className="w-full ml-2 outline-none"
                   value={password}
-                  onChange={(e) =>
-                    setPassword(
-                      e.target.value
-                    )
-                  }
+                  onChange={(e) => setPassword(e.target.value)}
                 />
 
                 {showPass ? (
-                  <EyeOff
-                    onClick={() =>
-                      setShowPass(false)
-                    }
-                  />
+                  <EyeOff onClick={() => setShowPass(false)} />
                 ) : (
-                  <Eye
-                    onClick={() =>
-                      setShowPass(true)
-                    }
-                  />
+                  <Eye onClick={() => setShowPass(true)} />
                 )}
               </div>
 
-              <label>
-                Confirm Password
-              </label>
+              <label>Confirm Password</label>
 
-              <input
-                type="password"
-                className="w-full border rounded-lg px-3 py-2 mb-4"
-                value={confirmPassword}
-                onChange={(e) =>
-                  setConfirmPassword(
-                    e.target.value
-                  )
-                }
-              />
+              <div className="flex items-center border rounded-lg px-3 py-2 mb-4">
+                <Lock size={18} />
+
+                <input
+                  type={showConfirmPass ? "text" : "password"}
+                  className="w-full ml-2 outline-none"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+
+                {showConfirmPass ? (
+                  <EyeOff onClick={() => setShowConfirmPass(false)} />
+                ) : (
+                  <Eye onClick={() => setShowConfirmPass(true)} />
+                )}
+              </div>
 
               <button className="w-full py-3 text-white rounded-lg bg-gradient-to-r from-[#9B96E5] to-[#F08A6C]">
                 Reset Password
