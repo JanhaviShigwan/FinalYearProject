@@ -279,6 +279,31 @@ body {
   transform: translateX(-50%);
 }
 
+/* Admin sidebar scrollbar */
+.admin-sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(155, 150, 229, 0.55) rgba(255, 255, 255, 0.08);
+}
+
+.admin-sidebar-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.admin-sidebar-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}
+
+.admin-sidebar-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(155, 150, 229, 0.85), rgba(127, 120, 216, 0.85));
+  border-radius: 999px;
+  border: 2px solid rgba(47, 46, 66, 0.9);
+}
+
+.admin-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(176, 170, 244, 0.95), rgba(143, 138, 217, 0.95));
+}
+
 /* Sidebar slide-in on mobile */
 @media (max-width: 768px) {
   .sidebar-mobile-hidden { transform: translateX(-100%); transition: 0.3s; }
