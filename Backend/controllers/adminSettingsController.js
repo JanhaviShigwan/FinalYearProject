@@ -190,7 +190,8 @@ exports.updateAdminPassword = async (req, res) => {
     await sendEmail(
       admin.email,
       "Admin Password Changed",
-      passwordChangedTemplate()
+      passwordChangedTemplate(),
+      { topic: "PASSWORD_CHANGED" }
     );
 
     res.status(200).json({
@@ -231,7 +232,8 @@ exports.sendTestAnnouncementEmail = async (req, res) => {
     const sent = await sendEmail(
       req.adminUser.email,
       `${subject} (Test)` ,
-      html
+      html,
+      { topic: "ANNOUNCEMENT" }
     );
 
     if (!sent) {

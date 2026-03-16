@@ -308,9 +308,12 @@ const registerForEvent = async (req, res) => {
       await sendEmail(
         student.email,
         "Event Registration Confirmed",
-        emailHTML
+        emailHTML,
+        { topic: "EVENT_REGISTRATION" }
       );
 
+    } else {
+      console.log(`[MAIL][EVENT_REGISTRATION] Skipped — notifications disabled for ${student.email}`);
     }
 
 
@@ -443,9 +446,12 @@ const cancelRegistration = async (req, res) => {
       await sendEmail(
         student.email,
         "Event Cancelled",
-        html
+        html,
+        { topic: "EVENT_CANCELLATION" }
       );
 
+    } else if (student) {
+      console.log(`[MAIL][EVENT_CANCELLATION] Skipped — notifications disabled for ${student.email}`);
     }
 
 

@@ -96,7 +96,8 @@ exports.createAnnouncement = async (req, res) => {
             sendEmail(
               student.email,
               `${subjectPrefix}: ${saved.title}`,
-              emailHtml
+              emailHtml,
+              { topic: "ANNOUNCEMENT" }
             )
           )
         );

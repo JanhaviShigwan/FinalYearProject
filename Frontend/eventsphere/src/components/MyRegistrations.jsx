@@ -17,6 +17,7 @@ export default function MyRegistrations() {
   const [myEvents, setMyEvents] = useState([]);
   const [qrEvent, setQrEvent] = useState(null);
   const [cancelTarget, setCancelTarget] = useState(null);
+  const [cancelError, setCancelError] = useState("");
 
   const student = JSON.parse(localStorage.getItem("eventSphereStudent"));
 
@@ -41,10 +42,15 @@ export default function MyRegistrations() {
         `${API_URL}/events/cancel-registration/${student._id}/${cancelTarget}`
       );
       setMyEvents((prev) => prev.filter((e) => e._id !== cancelTarget));
+      setCancelTarget(null);
+      setCancelError("");
     } catch (error) {
       console.error("Cancel registration error:", error);
-    } finally {
-      setCancelTarget(null);
+      setCancelError(
+        error.response?.status === 404
+          ? "Registration not found. It may have already been cancelled."
+          : "Failed to cancel registration. Please try again."
+      );
     }
   };
 
@@ -231,9 +237,14 @@ export default function MyRegistrations() {
                 <h3 className="text-lg font-extrabold text-deep-slate">Cancel Registration?</h3>
                 <p className="text-sm text-deep-slate/55 mt-1">This action cannot be undone. Your spot will be released.</p>
               </div>
+              {cancelError && (
+                <p className="text-sm text-coral font-semibold text-center w-full bg-coral/10 rounded-xl px-4 py-2">
+                  {cancelError}
+                </p>
+              )}
               <div className="flex gap-3 w-full">
                 <button
-                  onClick={() => setCancelTarget(null)}
+                  onClick={() => { setCancelTarget(null); setCancelError(""); }}
                   className="flex-1 py-2.5 rounded-xl border border-soft-blush text-deep-slate/70 font-bold text-sm hover:bg-warm-cream transition-colors"
                 >
                   Keep It

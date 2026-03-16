@@ -77,7 +77,8 @@ exports.registerStudent = async (req, res) => {
     const emailSent = await sendEmail(
       lowerEmail,
       emailSubject,
-      html
+      html,
+      { topic: "REGISTRATION" }
     );
 
     res.status(201).json({
@@ -203,7 +204,8 @@ exports.forgotPassword = async (req, res) => {
     await sendEmail(
       lowerEmail,
       "Reset Password",
-      html
+      html,
+      { topic: "PASSWORD_RESET" }
     );
 
     res.json({
@@ -305,7 +307,8 @@ exports.resetPassword = async (req, res) => {
     await sendEmail(
       lowerEmail,
       "Password Changed",
-      passwordChangedTemplate()
+      passwordChangedTemplate(),
+      { topic: "PASSWORD_CHANGED" }
     );
 
     res.json({

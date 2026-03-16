@@ -530,7 +530,8 @@ exports.changePassword = async (req, res) => {
     await sendEmail(
       student.email,
       "Password Changed",
-      passwordChangedTemplate()
+      passwordChangedTemplate(),
+      { topic: "PASSWORD_CHANGED" }
     );
 
 

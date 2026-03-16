@@ -1,7 +1,60 @@
 const nodemailer = require("nodemailer");
 
+const CATEGORY_LABELS = {
+  REGISTRATION: "Register",
+  EVENT_REGISTRATION: "Event Registration",
+  EVENT_CANCELLATION: "Event Cancelled",
+  ANNOUNCEMENT: "New Announcement",
+  PASSWORD_RESET: "Forgot Password",
+  PASSWORD_CHANGED: "Password Changed",
+  GENERAL: "General"
+};
+
+const TOPIC_ALIASES = {
+  REGISTER: "REGISTRATION",
+  REGISTRATION: "REGISTRATION",
+  EVENT_REGISTRATION: "EVENT_REGISTRATION",
+  EVENT_CANCELLED: "EVENT_CANCELLATION",
+  EVENT_CANCELLATION: "EVENT_CANCELLATION",
+  ANNOUNCEMENT: "ANNOUNCEMENT",
+  NEW_ANNOUNCEMENT: "ANNOUNCEMENT",
+  FORGOT_PASSWORD: "PASSWORD_RESET",
+  PASSWORD_RESET: "PASSWORD_RESET",
+  PASSWORD_CHANGED: "PASSWORD_CHANGED",
+  GENERAL: "GENERAL"
+};
+
+const normalizeTopic = (topic) => {
+  if (!topic) {
+    return null;
+  }
+
+  const key = String(topic)
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, "_");
+
+  return TOPIC_ALIASES[key] || null;
+};
+
 const inferTopic = (subject = "") => {
   const normalized = String(subject).toLowerCase();
+
+  if (normalized.includes("event registration")) {
+    return "EVENT_REGISTRATION";
+  }
+
+  if (
+    normalized.includes("event cancelled") ||
+    normalized.includes("event canceled") ||
+    normalized.includes("event cancellation")
+  ) {
+    return "EVENT_CANCELLATION";
+  }
+
+  if (normalized.includes("new announcement") || normalized.includes("announcement")) {
+    return "ANNOUNCEMENT";
+  }
 
   if (normalized.includes("welcome") || normalized.includes("register")) {
     return "REGISTRATION";
@@ -15,23 +68,12 @@ const inferTopic = (subject = "") => {
     return "PASSWORD_CHANGED";
   }
 
-  if (normalized.includes("announcement")) {
-    return "ANNOUNCEMENT";
-  }
-
-  if (normalized.includes("event registration")) {
-    return "EVENT_REGISTRATION";
-  }
-
-  if (normalized.includes("event cancelled") || normalized.includes("canceled")) {
-    return "EVENT_CANCELLATION";
-  }
-
   return "GENERAL";
 };
 
 const sendEmail = async (to, subject, html, options = {}) => {
-  const topic = options.topic || inferTopic(subject);
+  const topic = normalizeTopic(options.topic) || inferTopic(subject);
+  const category = CATEGORY_LABELS[topic] || topic;
 
   try {
 
@@ -40,7 +82,7 @@ const sendEmail = async (to, subject, html, options = {}) => {
     const secure = smtpPort === 465;
 
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.log(`[MAIL][${topic}] FAILED to ${to} | subject: ${subject}`);
+      console.log(`[MAIL][${category}] FAILED to ${to} | subject: ${subject}`);
       console.log("[MAIL][CONFIG] EMAIL_USER or EMAIL_PASS is missing");
       return false;
     }
@@ -69,14 +111,33 @@ const sendEmail = async (to, subject, html, options = {}) => {
       html: html
     };
 
-    await transporter.sendMail(mailOptions);
+    console.log(`[MAIL] Sending Email | Category: ${category} | to: ${to} | subject: ${subject}`);
 
-    console.log(`[MAIL][${topic}] Email sent successfully to ${to} | subject: ${subject}`);
+    const info = await transporter.sendMail(mailOptions);
+    const deliveredTo = Array.isArray(info?.accepted) && info.accepted.length
+      ? info.accepted.join(", ")
+      : to;
+    const timestamp = new Date().toLocaleString("en-IN", { hour12: true });
+
+    console.log(`\n================ EMAIL SENT ================`);
+    console.log(`  Category : ${category}`);
+    console.log(`  To       : ${deliveredTo}`);
+    console.log(`  Subject  : ${subject}`);
+    console.log(`  Time     : ${timestamp}`);
+    console.log(`  MsgId    : ${info?.messageId || "N/A"}`);
+    console.log(`============================================\n`);
+
     return true;
 
   } catch (error) {
-    console.log(`[MAIL][${topic}] FAILED to ${to} | subject: ${subject}`);
-    console.log(`[MAIL][${topic}] Error: ${error.message}`);
+    const timestamp = new Date().toLocaleString("en-IN", { hour12: true });
+    console.log(`\n=============== EMAIL FAILED ===============`);
+    console.log(`  Category : ${category}`);
+    console.log(`  To       : ${to}`);
+    console.log(`  Subject  : ${subject}`);
+    console.log(`  Time     : ${timestamp}`);
+    console.log(`  Error    : ${error.message}`);
+    console.log(`============================================\n`);
     return false;
   }
 };

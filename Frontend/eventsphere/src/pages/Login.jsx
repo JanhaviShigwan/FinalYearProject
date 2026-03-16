@@ -50,8 +50,6 @@ export default function Login() {
         password: formData.password,
       });
 
-      console.log("Login Response:", res.data);
-
       const studentData = res.data.student;
 
       if (!studentData || !studentData._id) {
