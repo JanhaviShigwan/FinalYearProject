@@ -416,3 +416,24 @@ border-radius:6px;
 `,
     icons.calendar
   );
+
+// ================= PROFILE APPROVED
+
+exports.profileApprovedTemplate = (name = "Student") =>
+  baseTemplate(
+    "Profile Approved",
+    `
+<p style="margin-bottom:15px; line-height:1.6;">
+Hello <b style="color:#9B96E5;">${name}</b>,
+</p>
+
+<p style="margin:15px 0; line-height:1.6; color:#3F3D56;">
+Your profile has been approved by admin.
+</p>
+
+<p style="margin:15px 0; line-height:1.6; color:#3F3D56;">
+You can now register for events. Check your dashboard for upcoming events, availability updates, and announcements.
+</p>
+`,
+    icons.user
+  );

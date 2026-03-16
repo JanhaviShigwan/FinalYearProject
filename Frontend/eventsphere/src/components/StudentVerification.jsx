@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import API_URL from "../api";
 import PopupCard from "../components/PopUpCard";
@@ -13,6 +13,36 @@ import {
 } from "lucide-react";
 
 export default function StudentVerificationForm({ student, onSuccess }) {
+
+  const draftKey = useMemo(
+    () => `studentProfileDraft_${student?._id || "unknown"}`,
+    [student?._id]
+  );
+
+  const collegeOptions = [
+    "K J Somaiya College of Engineering",
+    "K J Somaiya Institute of Technology",
+    "K J Somaiya School of Engineering",
+    "K J Somaiya Institute of Management",
+    "K J Somaiya School of Business",
+    "K J Somaiya School of Banking and Finance",
+    "K J Somaiya College of Arts and Commerce",
+    "K J Somaiya College of Science and Commerce",
+    "K J Somaiya School of Design",
+    "K J Somaiya School of Humanities and Social Sciences",
+    "K J Somaiya School of Dharma Studies",
+    "K J Somaiya Medical College",
+    "K J Somaiya College of Physiotherapy",
+    "K J Somaiya School of Nursing",
+    "K J Somaiya College of Education",
+    "K J Somaiya Polytechnic",
+    "K J Somaiya School of Basic and Applied Sciences",
+    "S K Somaiya College of Arts Science and Commerce",
+    "S K Somaiya College",
+    "S K Somaiya College of Education",
+    "S K Somaiya Vinay Mandir",
+    "S K Somaiya Shishu Niketan",
+  ];
 
   const [popup, setPopup] = useState(null);
 
@@ -36,27 +66,74 @@ export default function StudentVerificationForm({ student, onSuccess }) {
     "Science": ["BSc Physics", "BSc Chemistry", "BSc Maths"]
   };
 
+  useEffect(() => {
+    const formatDob = (value) => {
+      if (!value) return "";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "";
+      return date.toISOString().split("T")[0];
+    };
+
+    if (!student?._id) {
+      return;
+    }
+
+    const draftRaw = localStorage.getItem(draftKey);
+
+    if (draftRaw) {
+      try {
+        const parsed = JSON.parse(draftRaw);
+        setFormData((prev) => ({ ...prev, ...parsed }));
+        return;
+      } catch (error) {
+        localStorage.removeItem(draftKey);
+      }
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      studentIdNumber: student.studentId || "",
+      phone: student.phone || "",
+      department: student.department || "",
+      college: student.college || "",
+      year: student.year || "",
+      course: student.course || "",
+      division: student.division || "",
+      gender: student.gender || "",
+      dob: formatDob(student.dob),
+    }));
+  }, [draftKey, student]);
+
 
   const handleChange = (e) => {
 
     const { name, value } = e.target;
 
+    let nextState;
+
     if (name === "department") {
 
-      setFormData({
+      nextState = {
         ...formData,
         department: value,
         course: ""
-      });
+      };
 
     } else {
 
-      setFormData({
+      nextState = {
         ...formData,
         [name]: value,
-      });
+      };
 
     }
+
+    setFormData(nextState);
+
+    localStorage.setItem(
+      draftKey,
+      JSON.stringify(nextState)
+    );
 
   };
 
@@ -85,6 +162,16 @@ export default function StudentVerificationForm({ student, onSuccess }) {
       return;
     }
 
+    if (!formData.college) {
+
+      setPopup({
+        title: "College Required",
+        message: "Please select your college",
+      });
+
+      return;
+    }
+
     try {
 
       await axios.put(
@@ -95,12 +182,15 @@ export default function StudentVerificationForm({ student, onSuccess }) {
       const updatedStudent = {
         ...student,
         profileComplete: true,
+        profileStatus: "pending",
       };
 
       localStorage.setItem(
         "eventSphereStudent",
         JSON.stringify(updatedStudent)
       );
+
+      localStorage.removeItem(draftKey);
 
       onSuccess(updatedStudent);
 
@@ -150,6 +240,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
 
               <input
                 name="studentIdNumber"
+                value={formData.studentIdNumber}
                 maxLength="10"
                 inputMode="numeric"
                 onChange={handleChange}
@@ -206,12 +297,20 @@ export default function StudentVerificationForm({ student, onSuccess }) {
 
               <Building2 size={18} className="absolute left-3 top-3 text-gray-400" />
 
-              <input
+              <select
                 name="college"
+                value={formData.college}
                 onChange={handleChange}
                 className={inputStyle}
                 required
-              />
+              >
+                <option value="">Select College</option>
+                {collegeOptions.map((collegeName) => (
+                  <option key={collegeName} value={collegeName}>
+                    {collegeName}
+                  </option>
+                ))}
+              </select>
 
             </div>
 
@@ -273,6 +372,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
 
               <select
                 name="year"
+                value={formData.year}
                 onChange={handleChange}
                 className={inputStyle}
                 required
@@ -281,6 +381,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
                 <option>FY</option>
                 <option>SY</option>
                 <option>TY</option>
+                <option>Final Year</option>
               </select>
 
             </div>
@@ -305,6 +406,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
 
               <input
                 name="phone"
+                value={formData.phone}
                 maxLength="10"
                 inputMode="numeric"
                 onChange={handleChange}
@@ -326,6 +428,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
 
             <input
               name="division"
+              value={formData.division}
               onChange={handleChange}
               className="w-full bg-white border border-gray-200 rounded-xl py-3 px-3 outline-none focus:border-[#9B96E5]"
             />
@@ -341,6 +444,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
 
             <select
               name="gender"
+              value={formData.gender}
               onChange={handleChange}
               className="w-full bg-white border border-gray-200 rounded-xl py-3 px-3 outline-none focus:border-[#9B96E5]"
             >

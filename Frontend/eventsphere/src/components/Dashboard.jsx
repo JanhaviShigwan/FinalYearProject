@@ -21,9 +21,14 @@ export default function Dashboard() {
   const [myEvents, setMyEvents] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
 
-  const student = useMemo(() => {
+  const [currentStudent, setCurrentStudent] = useState(() => {
     return JSON.parse(localStorage.getItem("eventSphereStudent")) || {};
-  }, []);
+  });
+
+  const studentId = useMemo(
+    () => currentStudent?._id || currentStudent?.id,
+    [currentStudent]
+  );
 
   const [dashboardData, setDashboardData] = useState({
     myRegistrations: [],
@@ -32,7 +37,12 @@ export default function Dashboard() {
   });
 
   const needsProfileCompletion =
-    student?.role !== "admin" && !student?.profileComplete;
+    currentStudent?.role !== "admin" && !currentStudent?.profileComplete;
+
+  const profileStatus =
+    currentStudent?.role === "admin"
+      ? "approved"
+      : (currentStudent?.profileStatus || (currentStudent?.profileComplete ? "approved" : "pending"));
 
   // ================= FETCH =================
 
@@ -41,7 +51,7 @@ export default function Dashboard() {
     const fetchDashboard = async () => {
       try {
         const res = await axios.get(
-          `${API_URL}/dashboard/${student._id}`
+          `${API_URL}/dashboard/${studentId}`
         );
         setDashboardData(res.data);
       } catch (error) {
@@ -52,9 +62,19 @@ export default function Dashboard() {
     const fetchMyEvents = async () => {
       try {
         const res = await axios.get(
-          `${API_URL}/events/student-registrations/${student._id}`
+          `${API_URL}/events/student-registrations/${studentId}`
         );
         setMyEvents(res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const fetchProfileStatus = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/student/${studentId}`);
+        setCurrentStudent(res.data || {});
+        localStorage.setItem("eventSphereStudent", JSON.stringify(res.data || {}));
       } catch (error) {
         console.error(error);
       }
@@ -73,12 +93,14 @@ export default function Dashboard() {
 
     let refreshInterval;
 
-    if (student?._id) {
+    if (studentId) {
+      fetchProfileStatus();
       fetchDashboard();
       fetchMyEvents();
       fetchAnnouncements();
 
       refreshInterval = setInterval(() => {
+        fetchProfileStatus();
         fetchDashboard();
         fetchMyEvents();
         fetchAnnouncements();
@@ -91,7 +113,7 @@ export default function Dashboard() {
       }
     };
 
-  }, [student]);
+  }, [studentId]);
 
   const today = new Date();
 
@@ -124,8 +146,8 @@ const upcomingEventsFiltered = dashboardData.upcomingEventList.filter(
     }),
   };
 
-  const initials = student?.name
-    ? student.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
+  const initials = currentStudent?.name
+    ? currentStudent.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
     : "?";
 
   const todayLabel = new Date().toLocaleDateString("en-US", {
@@ -135,10 +157,19 @@ const upcomingEventsFiltered = dashboardData.upcomingEventList.filter(
   return (
     <div className="flex flex-col gap-7">
 
+      {profileStatus === "pending" && currentStudent?.role !== "admin" && (
+        <motion.div
+          variants={fade} initial="hidden" animate="visible" custom={0}
+          className="rounded-2xl border border-soft-blush bg-white px-6 py-4 text-deep-slate font-semibold"
+        >
+          Your profile is under review by admin
+        </motion.div>
+      )}
+
       {/* ── HERO GREETING ── */}
       <motion.div
         variants={fade} initial="hidden" animate="visible" custom={0}
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-lavender via-soft-blush to-coral p-7 text-white shadow-md"
+        className="relative overflow-hidden rounded-3xl bg-lavender p-7 text-white shadow-md"
       >
         {/* decorative blobs */}
         <div className="pointer-events-none absolute -right-10 -top-10 w-48 h-48 rounded-full bg-white/10" />
@@ -153,7 +184,7 @@ const upcomingEventsFiltered = dashboardData.upcomingEventList.filter(
           <div className="flex-1 min-w-0">
             <p className="text-white/70 text-sm font-medium">{todayLabel}</p>
             <h1 className="text-2xl md:text-3xl font-extrabold leading-tight truncate">
-              Hey, {student?.name?.split(" ")[0] || "there"} 👋
+              Hey, {currentStudent?.name?.split(" ")[0] || "there"} 👋
             </h1>
             <p className="text-white/80 text-sm mt-0.5">
               {ongoingCount > 0
@@ -165,7 +196,7 @@ const upcomingEventsFiltered = dashboardData.upcomingEventList.filter(
           {needsProfileCompletion && (
             <button
               onClick={() => navigate("/settings")}
-              className="shrink-0 flex items-center gap-2 bg-white/20 hover:bg-white/30 transition-colors rounded-xl px-4 py-2 text-sm font-bold"
+              className="shrink-0 flex items-center gap-2 bg-coral hover:bg-coral/90 transition-colors rounded-xl px-6 py-3 text-base font-bold"
             >
               <AlertCircle className="w-4 h-4" />
               Complete Profile
@@ -261,7 +292,7 @@ const upcomingEventsFiltered = dashboardData.upcomingEventList.filter(
                   </div>
 
                   <span className="shrink-0 text-sm font-bold px-4 py-2 rounded-lg bg-lavender/10 text-lavender border border-lavender/20 group-hover:bg-lavender group-hover:text-white transition-colors">
-                    Register
+                    View
                   </span>
                 </motion.div>
               ))}

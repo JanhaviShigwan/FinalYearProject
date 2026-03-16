@@ -149,6 +149,16 @@ export default function AdminUsers({ onDataChanged }) {
     return 'Student';
   };
 
+  const getProfileStatus = (user) => {
+    if (user.role === 'admin') return 'approved';
+    return user.profileStatus || (user.profileComplete ? 'approved' : 'pending');
+  };
+
+  const updateProfileStatus = async (user, nextStatus) => {
+    if (!user?._id) return;
+    await patchUser(user._id, { profileStatus: nextStatus });
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       <div className="bg-white rounded-2xl border border-soft-blush p-5 shadow-sm">
@@ -240,6 +250,8 @@ export default function AdminUsers({ onDataChanged }) {
                 users.map((user) => {
                   const isBusy = busyUserId === user._id;
                   const isAdmin = user.role === 'admin';
+                  const profileStatus = getProfileStatus(user);
+                  const canShowApprove = Boolean(user.profileComplete);
 
                   return (
                     <tr key={user._id} className="hover:bg-warm-cream/25 transition-colors">
@@ -263,8 +275,8 @@ export default function AdminUsers({ onDataChanged }) {
                       <td className="px-5 py-4 text-sm text-deep-slate/70">{user.year || '-'}</td>
 
                       <td className="px-5 py-4">
-                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${isAdmin ? 'bg-deep-slate/10 text-deep-slate' : user.profileComplete ? 'bg-[#5CA76A]/15 text-[#4E8C5A]' : 'bg-soft-blush text-[#A9756A]'}`}>
-                          {isAdmin ? 'Admin Account' : user.profileComplete ? 'Complete' : 'Incomplete'}
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${isAdmin ? 'bg-deep-slate/10 text-deep-slate' : profileStatus === 'approved' ? 'bg-[#5CA76A]/15 text-[#4E8C5A]' : profileStatus === 'rejected' ? 'bg-soft-blush text-[#A9756A]' : 'bg-lavender/10 text-lavender'}`}>
+                          {isAdmin ? 'Admin Account' : profileStatus === 'approved' ? 'Approved' : profileStatus === 'rejected' ? 'Rejected' : 'Pending'}
                         </span>
                       </td>
 
@@ -284,14 +296,32 @@ export default function AdminUsers({ onDataChanged }) {
 
                       <td className="px-5 py-4 text-right">
                         {!isAdmin ? (
-                          <button
-                            disabled={isBusy}
-                            onClick={() => requestDeleteUser(user)}
-                            className="inline-flex items-center gap-1.5 text-sm text-red-500 hover:text-red-600 font-semibold"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                            Delete
-                          </button>
+                          <div className="inline-flex items-center gap-2">
+                            {canShowApprove ? (
+                              <button
+                                disabled={isBusy || profileStatus === 'approved'}
+                                onClick={() => updateProfileStatus(user, 'approved')}
+                                className="text-xs font-semibold px-2.5 py-1 rounded-full bg-pastel-green/20 text-[#4E8C5A] disabled:opacity-40"
+                              >
+                                Approve
+                              </button>
+                            ) : null}
+                            <button
+                              disabled={isBusy || profileStatus === 'rejected'}
+                              onClick={() => updateProfileStatus(user, 'rejected')}
+                              className="text-xs font-semibold px-2.5 py-1 rounded-full bg-soft-blush text-[#A9756A] disabled:opacity-40"
+                            >
+                              Reject
+                            </button>
+                            <button
+                              disabled={isBusy}
+                              onClick={() => requestDeleteUser(user)}
+                              className="inline-flex items-center gap-1.5 text-sm text-red-500 hover:text-red-600 font-semibold"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              Delete
+                            </button>
+                          </div>
                         ) : null}
                       </td>
                     </tr>

@@ -14,8 +14,10 @@ async function forceAdminProfileCompleteOnUpdate() {
   if (effectiveRole === "admin") {
     if (update.$set) {
       update.$set.profileComplete = true;
+      update.$set.profileStatus = "approved";
     } else {
       update.profileComplete = true;
+      update.profileStatus = "approved";
     }
 
     this.setUpdate(update);
@@ -87,6 +89,14 @@ const studentSchema = new mongoose.Schema(
       },
     },
 
+    profileStatus: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: function () {
+        return this.role === "admin" ? "approved" : "pending";
+      },
+    },
+
     profileImage: {
       type: String,
       default: "",
@@ -142,6 +152,9 @@ const studentSchema = new mongoose.Schema(
 studentSchema.pre("save", function () {
   if (this.role === "admin") {
     this.profileComplete = true;
+    this.profileStatus = "approved";
+  } else if (!this.profileStatus) {
+    this.profileStatus = "pending";
   }
 });
 

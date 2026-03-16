@@ -9,14 +9,25 @@ const {
 } = require("../utils/template");
 
 const syncAdminProfileComplete = async (student) => {
-  if (!student || student.role !== "admin" || student.profileComplete) {
+  if (!student) {
     return student;
   }
 
-  student.profileComplete = true;
-  await Student.findByIdAndUpdate(student._id, {
-    $set: { profileComplete: true },
-  });
+  if (student.role === "admin") {
+    const needsAdminSync =
+      !student.profileComplete || student.profileStatus !== "approved";
+
+    if (needsAdminSync) {
+      student.profileComplete = true;
+      student.profileStatus = "approved";
+
+      await Student.findByIdAndUpdate(student._id, {
+        $set: { profileComplete: true, profileStatus: "approved" },
+      });
+    }
+  } else if (!student.profileStatus) {
+    student.profileStatus = student.profileComplete ? "approved" : "pending";
+  }
 
   return student;
 };
@@ -131,6 +142,11 @@ exports.loginStudent = async (req, res) => {
 
     await syncAdminProfileComplete(student);
 
+    const resolvedProfileStatus =
+      student.role === "admin"
+        ? "approved"
+        : (student.profileStatus || (student.profileComplete ? "approved" : "pending"));
+
     await Student.findByIdAndUpdate(student._id, {
       $push: {
         loginActivity: {
@@ -155,6 +171,7 @@ exports.loginStudent = async (req, res) => {
         email: student.email,
         role: student.role,
         profileComplete: student.profileComplete,
+        profileStatus: resolvedProfileStatus,
       },
     });
 

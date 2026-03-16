@@ -230,6 +230,25 @@ const registerForEvent = async (req, res) => {
       });
     }
 
+    const resolvedProfileStatus =
+      student.role === "admin"
+        ? "approved"
+        : (student.profileStatus || (student.profileComplete ? "approved" : "pending"));
+
+    if (student.role !== "admin" && resolvedProfileStatus !== "approved") {
+      if (resolvedProfileStatus === "rejected") {
+        return res.status(400).json({
+          type: "PROFILE_REJECTED",
+          message: "Your profile was rejected. Please update your details and resubmit."
+        });
+      }
+
+      return res.status(400).json({
+        type: "PROFILE_UNDER_REVIEW",
+        message: "Your profile is under review by admin"
+      });
+    }
+
     const existing = await Registration.findOne({
       studentId,
       eventId

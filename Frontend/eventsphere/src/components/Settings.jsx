@@ -74,6 +74,16 @@ export default function Settings() {
     fetchStudent();
   }, [fetchStudent]);
 
+  useEffect(() => {
+    if (!studentId) return undefined;
+
+    const intervalId = setInterval(() => {
+      fetchStudent();
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [fetchStudent, studentId]);
+
 
   /* ================= PASSWORD STRENGTH ================= */
 
@@ -318,8 +328,21 @@ export default function Settings() {
     );
 
 
-  const isVerified =
-    currentStudent?.role === "admin" || currentStudent?.profileComplete;
+  const profileStatus =
+    currentStudent?.role === "admin"
+      ? "approved"
+      : (currentStudent?.profileStatus || (currentStudent?.profileComplete ? "approved" : "pending"));
+
+  const showVerificationForm =
+    currentStudent?.role !== "admin"
+    && (!currentStudent?.profileComplete || profileStatus === "rejected");
+
+  const statusLabel =
+    profileStatus === "approved"
+      ? "Approved"
+      : profileStatus === "rejected"
+        ? "Rejected"
+        : "Pending";
 
   const formatLoginDate = (value) => {
     if (!value) return "Unknown time";
@@ -374,9 +397,9 @@ export default function Settings() {
               </div>
               <div className="rounded-2xl border border-soft-blush bg-white px-4 py-3">
                 <p className="text-xs font-bold uppercase tracking-[0.12em] text-deep-slate/45">Status</p>
-                <p className={`mt-1 text-sm font-extrabold inline-flex items-center gap-1.5 ${isVerified ? "text-lavender" : "text-coral"}`}>
+                <p className={`mt-1 text-sm font-extrabold inline-flex items-center gap-1.5 ${profileStatus === "approved" ? "text-lavender" : "text-coral"}`}>
                   <ShieldCheck className="h-4 w-4" />
-                  {isVerified ? "Verified" : "Pending"}
+                  {statusLabel}
                 </p>
               </div>
             </div>
@@ -384,7 +407,7 @@ export default function Settings() {
         </section>
 
 
-        {!isVerified && (
+        {showVerificationForm && (
 
           <section className="rounded-[28px] border border-soft-blush bg-white p-6 shadow-sm md:p-8">
             <StudentVerificationForm
@@ -407,7 +430,7 @@ export default function Settings() {
         )}
 
 
-        {isVerified && (
+        {!showVerificationForm && (
 
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
 

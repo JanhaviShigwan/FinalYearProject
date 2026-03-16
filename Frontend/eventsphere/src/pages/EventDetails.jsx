@@ -86,6 +86,21 @@ function EventDetails() {
             }
           });
 
+        } else if (data.type === "PROFILE_UNDER_REVIEW") {
+
+          setPopup({
+            title: "Profile Under Review",
+            message: "Your profile is under review by admin. You can register after approval."
+          });
+
+        } else if (data.type === "PROFILE_REJECTED") {
+
+          setPopup({
+            title: "Profile Rejected",
+            message: "Your profile was rejected. Please update your details and resubmit.",
+            action: () => navigate("/settings")
+          });
+
         } else {
 
           setPopup({

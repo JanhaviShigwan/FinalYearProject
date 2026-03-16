@@ -6,17 +6,28 @@ const sendEmail = require("../utils/sendEmail");
 
 const {
   passwordChangedTemplate,
+  profileApprovedTemplate,
 } = require("../utils/template");
 
 const syncAdminProfileComplete = async (student) => {
-  if (!student || student.role !== "admin" || student.profileComplete) {
+  if (!student) {
     return student;
   }
 
-  student.profileComplete = true;
-  await Student.findByIdAndUpdate(student._id, {
-    $set: { profileComplete: true },
-  });
+  if (student.role === "admin") {
+    const needsAdminSync =
+      !student.profileComplete || student.profileStatus !== "approved";
+
+    if (needsAdminSync) {
+      student.profileComplete = true;
+      student.profileStatus = "approved";
+      await Student.findByIdAndUpdate(student._id, {
+        $set: { profileComplete: true, profileStatus: "approved" },
+      });
+    }
+  } else if (!student.profileStatus) {
+    student.profileStatus = student.profileComplete ? "approved" : "pending";
+  }
 
   return student;
 };
@@ -98,7 +109,7 @@ exports.getAdminUsers = async (req, res) => {
         ],
       },
       {
-        $set: { profileComplete: true },
+        $set: { profileComplete: true, profileStatus: "approved" },
       }
     );
 
@@ -160,7 +171,7 @@ exports.updateAdminUser = async (req, res) => {
   try {
     const { studentId } = req.params;
 
-    const existingUser = await Student.findById(studentId).select("role profileComplete");
+    const existingUser = await Student.findById(studentId).select("role profileComplete profileStatus");
 
     if (!existingUser) {
       return res.status(404).json({ message: "User not found" });
@@ -177,6 +188,7 @@ exports.updateAdminUser = async (req, res) => {
       "division",
       "notificationsEnabled",
       "profileComplete",
+      "profileStatus",
       "emailPreferences",
     ];
 
@@ -193,9 +205,40 @@ exports.updateAdminUser = async (req, res) => {
     }
 
     const targetRole = updates.role || existingUser.role;
+    const existingProfileStatus =
+      existingUser.role === "admin"
+        ? "approved"
+        : (existingUser.profileStatus || (existingUser.profileComplete ? "approved" : "pending"));
+
+    const targetProfileStatus =
+      updates.profileStatus
+      || existingUser.profileStatus
+      || (existingUser.profileComplete ? "approved" : "pending");
+
+    const targetProfileComplete =
+      Object.prototype.hasOwnProperty.call(updates, "profileComplete")
+        ? Boolean(updates.profileComplete)
+        : Boolean(existingUser.profileComplete);
+
+    const isTryingToApproveIncompleteProfile =
+      targetRole !== "admin"
+      && updates.profileStatus === "approved"
+      && !targetProfileComplete;
+
+    if (isTryingToApproveIncompleteProfile) {
+      return res.status(400).json({
+        message: "Cannot approve profile before it is completed",
+      });
+    }
+
+    const shouldSendApprovalEmail =
+      targetRole !== "admin"
+      && updates.profileStatus === "approved"
+      && existingProfileStatus !== "approved";
 
     if (targetRole === "admin") {
       updates.profileComplete = true;
+      updates.profileStatus = "approved";
     }
 
     const updatedUser = await Student.findByIdAndUpdate(
@@ -203,6 +246,19 @@ exports.updateAdminUser = async (req, res) => {
       { $set: updates },
       { returnDocument: "after", runValidators: true }
     ).select("-password -resetOTP -resetOTPExpire");
+
+    if (shouldSendApprovalEmail && updatedUser?.email) {
+      try {
+        await sendEmail(
+          updatedUser.email,
+          "Profile Approved - EventSphere",
+          profileApprovedTemplate(updatedUser.name || "Student"),
+          { topic: "PROFILE_APPROVED" }
+        );
+      } catch (emailError) {
+        console.error("Profile approval email error:", emailError);
+      }
+    }
 
     res.status(200).json({
       message: "User updated successfully",
@@ -259,6 +315,13 @@ exports.getStudentProfile = async (req, res) => {
     }
 
     await syncAdminProfileComplete(student);
+
+    if (!student.profileStatus) {
+      student.profileStatus =
+        student.role === "admin"
+          ? "approved"
+          : (student.profileComplete ? "approved" : "pending");
+    }
 
     res.status(200).json(student);
 
@@ -329,6 +392,7 @@ exports.completeProfile = async (req, res) => {
     student.dob = dob;
 
     student.profileComplete = true;
+    student.profileStatus = student.role === "admin" ? "approved" : "pending";
 
     await student.save();
 

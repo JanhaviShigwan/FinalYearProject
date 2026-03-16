@@ -1,5 +1,5 @@
 import { Outlet, useNavigate, NavLink, useLocation } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
     LayoutDashboard,
     Search,
@@ -7,7 +7,6 @@ import {
     Calendar,
     Settings,
     Menu,
-    Bell,
     User,
     Home,
     LogOut,
@@ -16,6 +15,7 @@ import {
 } from "lucide-react";
 
 import logo from "../assets/EventSphereLogo.png";
+import API_URL from "../api";
 
 export default function MainLayout() {
 
@@ -25,9 +25,46 @@ export default function MainLayout() {
 
     const location = useLocation();
 
-    const student = useMemo(() => {
+    const [student, setStudent] = useState(() => {
         return JSON.parse(localStorage.getItem("eventSphereStudent")) || {};
-    }, []);
+    });
+
+    const studentId = useMemo(
+        () => student?._id || student?.id,
+        [student]
+    );
+
+    useEffect(() => {
+        if (!studentId) return undefined;
+
+        const fetchLatestStudent = async () => {
+            try {
+                const res = await fetch(`${API_URL}/student/${studentId}`);
+
+                if (!res.ok) {
+                    return;
+                }
+
+                const latestStudent = await res.json();
+
+                setStudent(latestStudent || {});
+                localStorage.setItem(
+                    "eventSphereStudent",
+                    JSON.stringify(latestStudent || {})
+                );
+            } catch (error) {
+                console.error("Layout student refresh error:", error);
+            }
+        };
+
+        fetchLatestStudent();
+
+        const intervalId = setInterval(() => {
+            fetchLatestStudent();
+        }, 5000);
+
+        return () => clearInterval(intervalId);
+    }, [studentId]);
 
     const pageLabels = {
         "/dashboard": "Dashboard",
@@ -249,20 +286,14 @@ export default function MainLayout() {
                     <div className="flex items-center gap-6">
 
                         {/* Search */}
-                        <div className="relative hidden md:block">
-                            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#3F3D56]/40" />
-                            <input
-                                type="text"
-                                placeholder="Search events..."
-                                className="pl-10 pr-4 py-2.5 bg-white border border-[#e8e0d5] rounded-full text-sm text-[#3F3D56] placeholder-[#3F3D56]/40 focus:outline-none focus:ring-2 focus:ring-[#9B96E5]/40 w-64 transition-all"
-                            />
+                        <div className="relative hidden md:block invisible" aria-hidden="true">
+                            <div className="w-64 h-[42px]" />
                         </div>
 
                         {/* Bell */}
-                        <button className="relative p-2 text-[#3F3D56]/60 hover:text-[#9B96E5] transition-colors">
-                            <Bell className="w-5 h-5" />
-                            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#F08A6C] rounded-full border-2 border-[#F6F1EB]" />
-                        </button>
+                        <div className="p-2 invisible" aria-hidden="true">
+                            <div className="w-5 h-5" />
+                        </div>
 
                         {/* User chip */}
                         <div
