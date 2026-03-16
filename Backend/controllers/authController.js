@@ -72,14 +72,19 @@ exports.registerStudent = async (req, res) => {
 
     const html = registrationTemplate(name);
 
-    await sendEmail(
+    const emailSubject = "Welcome to EventSphere";
+
+    const emailSent = await sendEmail(
       lowerEmail,
-      "Welcome to EventSphere",
+      emailSubject,
       html
     );
 
     res.status(201).json({
-      message: "Registration successful",
+      message: emailSent
+        ? "Registration successful"
+        : "Registration successful, but confirmation email could not be sent",
+      emailSent,
       student: newStudent,
     });
 

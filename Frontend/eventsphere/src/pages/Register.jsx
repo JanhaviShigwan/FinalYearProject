@@ -78,7 +78,15 @@ export default function Register() {
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
       });
-      setSuccess(`Registration successful! Your Student ID: ${res.data.student.studentId}`);
+
+      const successParts = [res.data.message || "Registration successful"];
+
+      if (res.data.student?.studentId) {
+        successParts.push(`Your Student ID: ${res.data.student.studentId}`);
+      }
+
+      setSuccess(successParts.join(" "));
+
       setFormData({ name: "", email: "", password: "", confirmPassword: "" });
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
