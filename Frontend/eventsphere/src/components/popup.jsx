@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import { createPortal } from "react-dom";
 
 export default function ConfirmPopup({
   open,
@@ -12,8 +13,10 @@ export default function ConfirmPopup({
 }) {
   if (!open) return null;
 
-  return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <div className="fixed top-0 left-0 w-full h-full bg-black/40 flex items-center justify-center z-[9999]">
 
       <div className="bg-white rounded-2xl p-6 w-[400px] shadow-lg">
 
@@ -72,5 +75,5 @@ export default function ConfirmPopup({
       </div>
 
     </div>
-  );
+  , document.body);
 }

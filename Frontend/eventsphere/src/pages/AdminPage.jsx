@@ -11,11 +11,10 @@ import AdminEvents from '../components/Admin/AdminEvents';
 import AdminCreateEvent from '../components/Admin/AdminCreateEvent';
 import AdminAnalytics from '../components/Admin/AdminAnalytics';
 import AdminUsers from '../components/Admin/AdminUsers';
-import AdminSettings from '../components/Admin/AdminSettings';
 import AdminReports from '../components/Admin/AdminReports';
 import { getAdminRequestConfig, getStoredStudent, isAdminStudent } from '../utils/adminAuth';
 
-const REPORT_REFRESH_MS = 15000;
+const REPORT_REFRESH_MS = 5000;
 
 const parseEventTime = (rawTime) => {
   if (!rawTime || typeof rawTime !== 'string') {
@@ -133,10 +132,8 @@ export default function AdminPage() {
     events: 'Manage Events',
     'create-event': 'Create Event',
     analytics: 'Analytics',
-    registrations: 'Registrations',
     reports: 'Reports',
     users: 'Users',
-    settings: 'Settings',
   };
 
   // Fetch announcements
@@ -159,9 +156,14 @@ export default function AdminPage() {
     }
   }, []);
 
-  const fetchAdminOverview = useCallback(async () => {
+  const fetchAdminOverview = useCallback(async (options = {}) => {
+    const isSilent = options.silent === true;
+
     try {
-      setIsDashboardLoading(true);
+      if (!isSilent) {
+        setIsDashboardLoading(true);
+      }
+
       const res = await axios.get(
         `${API_URL}/dashboard/admin/overview`,
         getAdminRequestConfig()
@@ -174,7 +176,9 @@ export default function AdminPage() {
         handleLogout();
       }
     } finally {
-      setIsDashboardLoading(false);
+      if (!isSilent) {
+        setIsDashboardLoading(false);
+      }
     }
   }, [handleLogout]);
 
@@ -203,29 +207,24 @@ export default function AdminPage() {
   }, [fetchAnnouncements, fetchEvents, fetchAdminOverview, fetchAdminSettings]);
 
   useEffect(() => {
-    if (["dashboard", "analytics", "registrations", "reports", "users", "settings"].includes(activeTab)) {
+    if (["dashboard", "analytics", "reports", "users"].includes(activeTab)) {
       fetchAdminOverview();
     }
   }, [activeTab, fetchAdminOverview]);
 
   useEffect(() => {
-    if (!["dashboard", "registrations", "reports"].includes(activeTab)) {
-      return undefined;
-    }
-
     const intervalId = setInterval(() => {
-      fetchAdminOverview();
-
-      if (activeTab === 'reports') {
-        setReportRefreshToken((prev) => prev + 1);
-      }
+      fetchAnnouncements();
+      fetchEvents();
+      fetchAdminOverview({ silent: true });
+      setReportRefreshToken((prev) => prev + 1);
     }, REPORT_REFRESH_MS);
 
     return () => clearInterval(intervalId);
-  }, [activeTab, fetchAdminOverview]);
+  }, [fetchAnnouncements, fetchEvents, fetchAdminOverview]);
 
   useEffect(() => {
-    if (!["dashboard", "registrations", "reports"].includes(activeTab)) {
+    if (!["dashboard", "reports"].includes(activeTab)) {
       return undefined;
     }
 
@@ -437,15 +436,6 @@ export default function AdminPage() {
             isLoading={isDashboardLoading}
           />
         );
-      case 'registrations':
-        return (
-          <AdminDashboard
-            onNavigate={setActiveTab}
-            statsData={adminOverview.stats}
-            recentRegistrations={adminOverview.recentRegistrations}
-            isLoading={isDashboardLoading}
-          />
-        );
       case 'users':
         return (
           <AdminUsers
@@ -457,15 +447,6 @@ export default function AdminPage() {
           <AdminReports
             onUnauthorized={handleLogout}
             refreshToken={reportRefreshToken}
-          />
-        );
-      case 'settings':
-        return (
-          <AdminSettings
-            onSettingsUpdated={(nextSettings) => {
-              setAdminSettings(nextSettings);
-              fetchEvents();
-            }}
           />
         );
       default:

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, Search, User } from 'lucide-react';
+import { User } from 'lucide-react';
 
 export default function AdminNavbar({ title }) {
   return (
@@ -7,19 +7,13 @@ export default function AdminNavbar({ title }) {
       <h2 className="text-[34px] font-bold text-deep-slate leading-none">{title.replace('-', ' ')}</h2>
       
       <div className="flex items-center gap-6">
-        <div className="relative hidden md:block">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-deep-slate/40" />
-          <input 
-            type="text" 
-            placeholder="Search events..." 
-            className="pl-10 pr-4 py-2.5 bg-warm-cream/70 border border-transparent rounded-full text-sm focus:ring-2 focus:ring-lavender w-64 transition-all"
-          />
+        <div className="relative hidden md:block invisible" aria-hidden="true">
+          <div className="w-64 h-[42px]" />
         </div>
         
-        <button className="relative p-2 text-deep-slate/60 hover:text-lavender transition-colors">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-coral rounded-full border-2 border-white"></span>
-        </button>
+        <div className="p-2 invisible" aria-hidden="true">
+          <div className="w-5 h-5" />
+        </div>
         
         <div className="flex items-center gap-3 pl-4 border-l border-soft-blush">
           <div className="text-right hidden sm:block">

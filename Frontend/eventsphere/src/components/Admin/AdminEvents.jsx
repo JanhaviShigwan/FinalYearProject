@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Edit2, Trash2, Eye, Search, Calendar, X, Save, Filter } from 'lucide-react';
+import ConfirmPopup from '../popup';
 
 export default function AdminEvents({ events, onEdit, onDelete, onView }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,6 +23,7 @@ export default function AdminEvents({ events, onEdit, onDelete, onView }) {
   });
   const [isSaving, setIsSaving] = useState(false);
   const [deletingId, setDeletingId] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [error, setError] = useState('');
 
   const categoryOptions = useMemo(() => {
@@ -39,16 +41,24 @@ export default function AdminEvents({ events, onEdit, onDelete, onView }) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    const resolveEventDate = (event) => {
+      const rawDate = event.eventDate || event.date || event.startDate;
+      const parsedDate = new Date(rawDate);
+      return Number.isNaN(parsedDate.getTime()) ? Number.MAX_SAFE_INTEGER : parsedDate.getTime();
+    };
+
     const base = events.filter((event) => {
       const categoryMatch = categoryFilter === 'all' || event.category === categoryFilter;
       const venueMatch = venueFilter === 'all' || event.venue === venueFilter;
 
-      const eventDate = new Date(event.date);
+      const eventDate = new Date(event.eventDate || event.date || event.startDate);
       eventDate.setHours(0, 0, 0, 0);
 
       let statusMatch = true;
 
-      if (statusFilter === 'upcoming') {
+      if (statusFilter === 'all') {
+        statusMatch = eventDate >= today;
+      } else if (statusFilter === 'upcoming') {
         statusMatch = eventDate >= today;
       } else if (statusFilter === 'past') {
         statusMatch = eventDate < today;
@@ -57,16 +67,16 @@ export default function AdminEvents({ events, onEdit, onDelete, onView }) {
       return categoryMatch && venueMatch && statusMatch;
     });
 
-    if (!query) {
-      return base;
-    }
-
-    return base.filter((event) => {
+    const result = query
+      ? base.filter((event) => {
       const name = (event.eventName || event.name || '').toLowerCase();
       const category = (event.category || '').toLowerCase();
       const venue = (event.venue || '').toLowerCase();
       return name.includes(query) || category.includes(query) || venue.includes(query);
-    });
+      })
+      : base;
+
+    return [...result].sort((a, b) => resolveEventDate(a) - resolveEventDate(b));
   }, [events, searchTerm, categoryFilter, venueFilter, statusFilter]);
 
   const resetFilters = () => {
@@ -145,18 +155,26 @@ export default function AdminEvents({ events, onEdit, onDelete, onView }) {
     }
   };
 
-  const handleDelete = async (event) => {
-    const eventId = event._id || event.id;
-    const eventName = event.eventName || event.name || 'this event';
+  const requestDelete = (event) => {
+    setDeleteTarget(event);
+    setError('');
+  };
 
-    const confirmed = window.confirm(`Delete ${eventName}? This cannot be undone.`);
+  const closeDeletePopup = () => {
+    if (deletingId) return;
+    setDeleteTarget(null);
+  };
 
-    if (!confirmed) return;
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+
+    const eventId = deleteTarget._id || deleteTarget.id;
 
     try {
       setDeletingId(eventId);
       setError('');
       await onDelete?.(eventId);
+      setDeleteTarget(null);
     } catch (err) {
       setError(err.message || 'Failed to delete event.');
     } finally {
@@ -290,7 +308,7 @@ export default function AdminEvents({ events, onEdit, onDelete, onView }) {
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() => handleDelete(event)}
+                            onClick={() => requestDelete(event)}
                             disabled={deletingId === eventId}
                             className="p-2 text-deep-slate/40 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all disabled:opacity-50"
                             title="Delete Event"
@@ -380,6 +398,17 @@ export default function AdminEvents({ events, onEdit, onDelete, onView }) {
           </div>
         </div>
       ) : null}
+
+      <ConfirmPopup
+        open={Boolean(deleteTarget)}
+        onClose={closeDeletePopup}
+        onConfirm={confirmDelete}
+        title="Delete Event"
+        description={deleteTarget ? `Delete ${(deleteTarget.eventName || deleteTarget.name || 'this event')}? This cannot be undone.` : ''}
+        confirmText={deleteTarget && deletingId === (deleteTarget._id || deleteTarget.id) ? 'Deleting...' : 'Confirm Delete'}
+        cancelText="Cancel"
+        icon={<Trash2 size={18} />}
+      />
     </div>
   );
 }

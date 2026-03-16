@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Calendar, Clock3, Image, MapPin, Tag, X, Save } from 'lucide-react';
+import { Image, MapPin, Tag, X, Save } from 'lucide-react';
 
 const buildInitialForm = (defaults) => ({
   eventName: '',
-  category: defaults.defaultCategory || 'Workshop',
+  category: '',
   shortDescription: '',
   longDescription: '',
   venue: defaults.defaultVenue || '',
@@ -12,7 +12,7 @@ const buildInitialForm = (defaults) => ({
   time: '',
   endDate: '',
   endTime: '',
-  totalCapacity: defaults.defaultCapacity || 200,
+  totalCapacity: '',
 });
 
 export default function AdminCreateEvent({
@@ -20,7 +20,7 @@ export default function AdminCreateEvent({
   onCancel,
   isSubmitting,
   defaultCapacity = 200,
-  defaultCategory = 'Workshop',
+  defaultCategory = '',
   defaultVenue = '',
 }) {
   const defaults = useMemo(
@@ -39,11 +39,11 @@ export default function AdminCreateEvent({
   useEffect(() => {
     setForm((prev) => ({
       ...prev,
-      category: prev.category || defaults.defaultCategory,
       venue: prev.venue || defaults.defaultVenue,
-      totalCapacity: prev.totalCapacity || defaults.defaultCapacity,
     }));
   }, [defaults]);
+
+  const todayDate = new Date().toISOString().split('T')[0];
 
   const updateField = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -61,24 +61,43 @@ export default function AdminCreateEvent({
     setError('');
     setSuccess('');
 
+    if (!form.category) {
+      setError('Please select a category.');
+      return;
+    }
+
     if (!form.eventName || !form.shortDescription || !form.venue || !form.eventImage || !form.date || !form.time) {
       setError('Please fill all required fields.');
       return;
     }
 
-    const time24hPattern = /^([01]\d|2[0-3]):([0-5]\d)$/;
-    if (!time24hPattern.test(form.time)) {
-      setError('Start time must be in HH:MM format (24-hour), e.g. 14:30.');
+    if (form.date < todayDate) {
+      setError('Past dates cannot be selected.');
       return;
     }
 
-    if (form.endTime && !time24hPattern.test(form.endTime)) {
-      setError('End time must be in HH:MM format (24-hour), e.g. 16:00.');
+    if (form.endDate && form.endDate < form.date) {
+      setError('End date cannot be earlier than start date.');
       return;
     }
 
-    if (!Number.isFinite(Number(form.totalCapacity)) || Number(form.totalCapacity) <= 0) {
-      setError('Total capacity must be a positive number.');
+    if (
+      form.endDate
+      && form.endTime
+      && form.endDate === form.date
+      && form.endTime <= form.time
+    ) {
+      setError('End time must be greater than start time.');
+      return;
+    }
+
+    if (!Number.isFinite(Number(form.totalCapacity))) {
+      setError('Total capacity must be a valid number.');
+      return;
+    }
+
+    if (Number(form.totalCapacity) < 0) {
+      setError('Total capacity cannot be negative.');
       return;
     }
 
@@ -149,13 +168,15 @@ export default function AdminCreateEvent({
                   value={form.category}
                   onChange={(e) => updateField('category', e.target.value)}
                   className={inputClass}
+                  required
                 >
-                  <option>Workshop</option>
-                  <option>Hackathon</option>
-                  <option>Seminar</option>
-                  <option>Cultural</option>
-                  <option>Sports</option>
-                  <option>Competition</option>
+                  <option value="">Select Category</option>
+                  <option value="Workshop">Workshop</option>
+                  <option value="Hackathon">Hackathon</option>
+                  <option value="Seminar">Seminar</option>
+                  <option value="Cultural">Cultural</option>
+                  <option value="Sports">Sports</option>
+                  <option value="Competition">Competition</option>
                 </select>
               </div>
 
@@ -163,7 +184,7 @@ export default function AdminCreateEvent({
                 <label className="block text-sm font-bold text-deep-slate mb-2">Total Capacity</label>
                 <input
                   type="number"
-                  min="1"
+                  min="0"
                   value={form.totalCapacity}
                   onChange={(e) => updateField('totalCapacity', e.target.value)}
                   placeholder="e.g. 200"
@@ -235,60 +256,46 @@ export default function AdminCreateEvent({
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-5">
               <div>
                 <label className="block text-sm font-bold text-deep-slate mb-2">Start Date</label>
-                <div className="relative">
-                  <Calendar className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 text-deep-slate/45" />
-                  <input
-                    type="date"
-                    value={form.date}
-                    onChange={(e) => updateField('date', e.target.value)}
-                    className={`${inputClass} pr-10`}
-                    required
-                  />
-                </div>
+                <input
+                  type="date"
+                  value={form.date}
+                  onChange={(e) => updateField('date', e.target.value)}
+                  min={todayDate}
+                  className={inputClass}
+                  required
+                />
               </div>
 
               <div>
                 <label className="block text-sm font-bold text-deep-slate mb-2">Start Time</label>
-                <div className="relative">
-                  <Clock3 className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 text-deep-slate/45" />
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={form.time}
-                    onChange={(e) => updateField('time', e.target.value)}
-                    placeholder="HH:MM"
-                    className={`${inputClass} pr-10`}
-                    required
-                  />
-                </div>
+                <input
+                  type="time"
+                  value={form.time}
+                  onChange={(e) => updateField('time', e.target.value)}
+                  className={inputClass}
+                  required
+                />
               </div>
 
               <div>
                 <label className="block text-sm font-bold text-deep-slate mb-2">End Date</label>
-                <div className="relative">
-                  <Calendar className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 text-deep-slate/45" />
-                  <input
-                    type="date"
-                    value={form.endDate}
-                    onChange={(e) => updateField('endDate', e.target.value)}
-                    className={`${inputClass} pr-10`}
-                  />
-                </div>
+                <input
+                  type="date"
+                  value={form.endDate}
+                  onChange={(e) => updateField('endDate', e.target.value)}
+                  min={form.date || todayDate}
+                  className={inputClass}
+                />
               </div>
 
               <div>
                 <label className="block text-sm font-bold text-deep-slate mb-2">End Time</label>
-                <div className="relative">
-                  <Clock3 className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 text-deep-slate/45" />
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={form.endTime}
-                    onChange={(e) => updateField('endTime', e.target.value)}
-                    placeholder="HH:MM"
-                    className={`${inputClass} pr-10`}
-                  />
-                </div>
+                <input
+                  type="time"
+                  value={form.endTime}
+                  onChange={(e) => updateField('endTime', e.target.value)}
+                  className={inputClass}
+                />
               </div>
             </div>
           </section>

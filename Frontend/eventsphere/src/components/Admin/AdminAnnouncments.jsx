@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Megaphone, Send, Calendar, Trash2, User, Clock } from 'lucide-react';
+import { Megaphone, Send, Calendar, Trash2, Clock } from 'lucide-react';
+import ConfirmPopup from '../popup';
 
 export default function AdminAnnouncements({ announcements, onPost, onDelete }) {
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -23,6 +25,12 @@ export default function AdminAnnouncements({ announcements, onPost, onDelete }) 
     
     setTitle('');
     setMessage('');
+  };
+
+  const confirmDeleteAnnouncement = async () => {
+    if (!deleteTarget) return;
+    await onDelete(deleteTarget._id);
+    setDeleteTarget(null);
   };
 
   return (
@@ -69,16 +77,6 @@ export default function AdminAnnouncements({ announcements, onPost, onDelete }) 
             </button>
           </form>
         </div>
-
-        <div className="bg-lavender/10 p-6 rounded-2xl border border-lavender/20">
-          <h4 className="font-bold text-lavender flex items-center gap-2 mb-2">
-            <User className="w-4 h-4" />
-            Pro Tip
-          </h4>
-          <p className="text-sm text-deep-slate/70 leading-relaxed">
-            Announcements are sent as push notifications and emails to all registered students. Keep them concise and clear.
-          </p>
-        </div>
       </div>
 
       {/* Announcements List */}
@@ -97,7 +95,7 @@ export default function AdminAnnouncements({ announcements, onPost, onDelete }) 
                 <div className="flex justify-between items-start mb-3">
                   <h4 className="text-lg font-bold text-deep-slate group-hover:text-coral transition-colors">{ann.title}</h4>
                   <button 
-                    onClick={() => onDelete(ann._id)}
+                    onClick={() => setDeleteTarget(ann)}
                     className="p-2 text-deep-slate/20 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -127,6 +125,17 @@ export default function AdminAnnouncements({ announcements, onPost, onDelete }) 
           )}
         </div>
       </div>
+
+      <ConfirmPopup
+        open={Boolean(deleteTarget)}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDeleteAnnouncement}
+        title="Delete Announcement"
+        description={deleteTarget ? `Delete ${deleteTarget.title}? This action cannot be undone.` : ''}
+        confirmText="Confirm Delete"
+        cancelText="Cancel"
+        icon={<Trash2 size={18} />}
+      />
     </div>
   );
 }

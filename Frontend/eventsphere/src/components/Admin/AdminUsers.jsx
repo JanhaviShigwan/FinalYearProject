@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
-import { Mail, Search, ShieldCheck, Trash2, Users } from 'lucide-react';
+import { Mail, Search, Trash2, Users } from 'lucide-react';
 import API_URL from '../../api';
 import { getAdminRequestConfig } from '../../utils/adminAuth';
+import ConfirmPopup from '../popup';
 
 export default function AdminUsers({ onDataChanged }) {
   const [users, setUsers] = useState([]);
@@ -23,12 +24,17 @@ export default function AdminUsers({ onDataChanged }) {
   });
 
   const [busyUserId, setBusyUserId] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const fetchUsers = useCallback(async (opts = {}) => {
     const targetPage = opts.page ?? 1;
+    const isSilent = opts.silent === true;
 
     try {
-      setLoading(true);
+      if (!isSilent) {
+        setLoading(true);
+      }
+
       setError('');
 
       const res = await axios.get(`${API_URL}/student/admin/users`, {
@@ -49,7 +55,9 @@ export default function AdminUsers({ onDataChanged }) {
       console.error('Error fetching users:', err);
       setError(err.response?.data?.message || 'Failed to load users. Please try again.');
     } finally {
-      setLoading(false);
+      if (!isSilent) {
+        setLoading(false);
+      }
     }
   }, [departmentFilter, roleFilter, search, yearFilter]);
 
@@ -65,6 +73,14 @@ export default function AdminUsers({ onDataChanged }) {
 
     return () => clearTimeout(timer);
   }, [fetchUsers, search]);
+
+  useEffect(() => {
+    const refreshInterval = setInterval(() => {
+      fetchUsers({ page, silent: true });
+    }, 5000);
+
+    return () => clearInterval(refreshInterval);
+  }, [fetchUsers, page]);
 
   const departments = useMemo(() => {
     const set = new Set(users.map((u) => u.department).filter(Boolean));
@@ -91,26 +107,32 @@ export default function AdminUsers({ onDataChanged }) {
     }
   };
 
-  const handleRoleChange = async (user, nextRole) => {
-    await patchUser(user._id, { role: nextRole });
-  };
-
   const handleNotificationToggle = async (user) => {
     await patchUser(user._id, { notificationsEnabled: !user.notificationsEnabled });
   };
 
-  const handleDeleteUser = async (user) => {
-    const ok = window.confirm(`Delete ${user.name} (${user.email})? This action cannot be undone.`);
-    if (!ok) return;
+  const requestDeleteUser = (user) => {
+    setDeleteTarget(user);
+    setError('');
+  };
+
+  const closeDeletePopup = () => {
+    if (busyUserId) return;
+    setDeleteTarget(null);
+  };
+
+  const confirmDeleteUser = async () => {
+    if (!deleteTarget) return;
 
     try {
-      setBusyUserId(user._id);
+      setBusyUserId(deleteTarget._id);
       await axios.delete(
-        `${API_URL}/student/admin/users/${user._id}`,
+        `${API_URL}/student/admin/users/${deleteTarget._id}`,
         getAdminRequestConfig()
       );
       await fetchUsers({ page });
       if (onDataChanged) await onDataChanged();
+      setDeleteTarget(null);
     } catch (err) {
       console.error('Error deleting user:', err);
       setError(err.response?.data?.message || 'Failed to delete user');
@@ -119,13 +141,21 @@ export default function AdminUsers({ onDataChanged }) {
     }
   };
 
+  const getRoleLabel = (roleValue) => {
+    const role = (roleValue || '').toLowerCase();
+
+    if (role === 'admin') return 'Admin';
+    if (role === 'organizer') return 'Organizer';
+    return 'Student';
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       <div className="bg-white rounded-2xl border border-soft-blush p-5 shadow-sm">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
             <h3 className="text-2xl font-bold text-deep-slate">Users Management</h3>
-            <p className="text-sm text-deep-slate/55 mt-1">Manage roles, notifications, and student accounts.</p>
+            <p className="text-sm text-deep-slate/55 mt-1">Manage notifications and student accounts.</p>
           </div>
           <span className="inline-flex items-center gap-2 text-sm font-semibold bg-lavender/10 text-lavender px-3 py-1.5 rounded-full">
             <Users className="w-4 h-4" />
@@ -225,15 +255,9 @@ export default function AdminUsers({ onDataChanged }) {
                       </td>
 
                       <td className="px-5 py-4">
-                        <select
-                          value={user.role || 'student'}
-                          disabled={isBusy}
-                          onChange={(e) => handleRoleChange(user, e.target.value)}
-                          className="rounded-lg px-3 py-2 bg-warm-cream border border-transparent focus:outline-none focus:ring-2 focus:ring-lavender/45"
-                        >
-                          <option value="student">Student</option>
-                          <option value="admin">Admin</option>
-                        </select>
+                        <span className="text-sm font-semibold text-deep-slate/75">
+                          {getRoleLabel(user.role)}
+                        </span>
                       </td>
 
                       <td className="px-5 py-4 text-sm text-deep-slate/70">{user.year || '-'}</td>
@@ -259,14 +283,16 @@ export default function AdminUsers({ onDataChanged }) {
                       </td>
 
                       <td className="px-5 py-4 text-right">
-                        <button
-                          disabled={isBusy}
-                          onClick={() => handleDeleteUser(user)}
-                          className="inline-flex items-center gap-1.5 text-sm text-red-500 hover:text-red-600 font-semibold"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                          Delete
-                        </button>
+                        {!isAdmin ? (
+                          <button
+                            disabled={isBusy}
+                            onClick={() => requestDeleteUser(user)}
+                            className="inline-flex items-center gap-1.5 text-sm text-red-500 hover:text-red-600 font-semibold"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Delete
+                          </button>
+                        ) : null}
                       </td>
                     </tr>
                   );
@@ -308,13 +334,16 @@ export default function AdminUsers({ onDataChanged }) {
         </div>
       </div>
 
-      <div className="bg-lavender/10 border border-lavender/20 rounded-2xl p-5 text-sm text-deep-slate/75">
-        <p className="font-bold text-lavender inline-flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4" />
-          Admin Tip
-        </p>
-        <p className="mt-2">Role and notification changes are saved directly to the database and reflected immediately across the platform.</p>
-      </div>
+      <ConfirmPopup
+        open={Boolean(deleteTarget)}
+        onClose={closeDeletePopup}
+        onConfirm={confirmDeleteUser}
+        title="Delete User"
+        description={deleteTarget ? `Delete ${deleteTarget.name} (${deleteTarget.email})? This action cannot be undone.` : ''}
+        confirmText={deleteTarget && busyUserId === deleteTarget._id ? 'Deleting...' : 'Confirm Delete'}
+        cancelText="Cancel"
+        icon={<Trash2 size={18} />}
+      />
     </div>
   );
 }

@@ -15,7 +15,7 @@ import API_URL from '../../api';
 import { getAdminRequestConfig } from '../../utils/adminAuth';
 
 const PAGE_SIZE = 8;
-const AUTO_REFRESH_MS = 15000;
+const AUTO_REFRESH_MS = 5000;
 
 const formatBreakdown = (items = []) => {
   if (!Array.isArray(items) || items.length === 0) {

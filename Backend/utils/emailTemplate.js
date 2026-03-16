@@ -97,20 +97,9 @@ const emailTemplate = (userData) => {
 
         ${eventDetailsHTML}
 
-        <div style="text-align:center; margin:35px 0;">
-          <a href="http://localhost:5173"
-             style="background:#F08A6C;
-                    color:white;
-                    padding:14px 32px;
-                    text-decoration:none;
-                    border-radius:8px;
-                    font-weight:600;
-                    font-size:16px;
-                    display:inline-block;
-                    transition:all 0.3s ease;">
-            View More Events
-          </a>
-        </div>
+        <p style="line-height:1.6; margin:20px 0; color:#3F3D56;">
+          You can continue browsing upcoming events from your EventSphere account dashboard, where you can also track schedules, updates, and registration status in one place.
+        </p>
 
         <p style="line-height:1.6; margin:20px 0; color:#666; font-size:14px;">
           <svg style="width:14px; height:14px; margin-right:6px; display:inline; color:#9B96E5;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

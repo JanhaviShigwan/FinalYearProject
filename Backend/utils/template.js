@@ -167,19 +167,9 @@ border-radius:6px;
   </p>
 </div>
 
-<div style="text-align:center; margin:25px 0;">
-  <a href="http://localhost:5173"
-     style="background:#F08A6C;
-            color:white;
-            padding:12px 28px;
-            text-decoration:none;
-            border-radius:8px;
-            font-weight:600;
-            font-size:14px;
-            display:inline-block;">
-    Start Exploring
-  </a>
-</div>
+<p style="margin:15px 0; line-height:1.6; color:#3F3D56;">
+  Next steps: complete your profile details, review upcoming events, and keep notifications enabled so you never miss registration windows or event updates.
+</p>
 `,
     icons.user
   );
@@ -354,19 +344,9 @@ border-radius:6px;
   ${details.description ? `<p style="margin:8px 0; color:#3F3D56; display:flex; align-items:flex-start;"><svg style="width:14px; height:14px; margin-right:6px; margin-top:2px; color:#9B96E5; flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg><strong>Description:</strong> ${details.description}</p>` : ''}
 </div>
 
-<div style="text-align:center; margin:25px 0;">
-  <a href="http://localhost:5173/events"
-     style="background:#F08A6C;
-            color:white;
-            padding:12px 28px;
-            text-decoration:none;
-            border-radius:8px;
-            font-weight:600;
-            font-size:14px;
-            display:inline-block;">
-    Register Now
-  </a>
-</div>
+<p style="margin:15px 0; line-height:1.6; color:#3F3D56;">
+  Seats may be limited for this event. Please review the schedule and venue details in your dashboard and complete your registration at the earliest.
+</p>
 `,
     icons.calendar
   );
@@ -430,19 +410,9 @@ border-radius:6px;
   ${createdAt ? `<p style="margin:10px 0 0 0; color:#666; font-size:13px;"><strong>Posted:</strong> ${createdAt}</p>` : ''}
 </div>
 
-<div style="text-align:center; margin:25px 0;">
-  <a href="http://localhost:3000/dashboard"
-     style="background:#F08A6C;
-            color:white;
-            padding:12px 28px;
-            text-decoration:none;
-            border-radius:8px;
-            font-weight:600;
-            font-size:14px;
-            display:inline-block;">
-    View Dashboard
-  </a>
-</div>
+<p style="margin:15px 0; line-height:1.6; color:#3F3D56;">
+  Please review this announcement carefully and check your dashboard notifications for any follow-up updates, deadlines, or schedule changes.
+</p>
 `,
     icons.calendar
   );

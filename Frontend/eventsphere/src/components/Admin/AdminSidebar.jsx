@@ -3,14 +3,12 @@ import { motion } from 'framer-motion';
 import {
   Calendar,
   ChevronRight,
-  ClipboardList,
   FileCheck2,
   LayoutDashboard,
   LogOut,
   Megaphone,
   PlusCircle,
   TrendingUp,
-  Settings,
   Users,
   Shield,
   Sparkles,
@@ -23,10 +21,8 @@ export default function AdminSidebar({ activeTab, setActiveTab, onLogout }) {
     { id: 'create-event', label: 'Create Event', icon: PlusCircle },
     { id: 'announcements', label: 'Announcements', icon: Megaphone },
     { id: 'analytics', label: 'Analytics', icon: TrendingUp },
-    { id: 'registrations', label: 'Registrations', icon: ClipboardList },
     { id: 'reports', label: 'Reports', icon: FileCheck2 },
     { id: 'users', label: 'Users', icon: Users },
-    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   return (

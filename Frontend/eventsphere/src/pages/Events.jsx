@@ -20,13 +20,23 @@ function Events() {
 
   /* ── Fetch events ── */
   useEffect(() => {
-    fetch(`${API_URL}/events`)
-      .then(res => res.json())
-      .then(data => {
-        setEvents(data);
-        setFeaturedEvents(data.filter(e => e.isFeatured === true));
-      })
-      .catch(err => console.log(err));
+    const fetchEventsData = () => {
+      fetch(`${API_URL}/events`)
+        .then(res => res.json())
+        .then(data => {
+          setEvents(data);
+          setFeaturedEvents(data.filter(e => e.isFeatured === true));
+        })
+        .catch(err => console.log(err));
+    };
+
+    fetchEventsData();
+
+    const refreshInterval = setInterval(() => {
+      fetchEventsData();
+    }, 5000);
+
+    return () => clearInterval(refreshInterval);
   }, []);
 
   /* ── Category from URL ── */

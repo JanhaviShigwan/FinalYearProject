@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
+import ConfirmPopup from "./popup";
 import {
   CalendarDays,
   Clock,
@@ -9,7 +10,6 @@ import {
   QrCode,
   X,
   Ticket,
-  AlertTriangle,
 } from "lucide-react";
 import API_URL from "../api";
 
@@ -32,7 +32,18 @@ export default function MyRegistrations() {
         console.error("Error fetching registrations:", error);
       }
     };
-    if (student?._id) fetchMyEvents();
+
+    if (!student?._id) {
+      return undefined;
+    }
+
+    fetchMyEvents();
+
+    const refreshInterval = setInterval(() => {
+      fetchMyEvents();
+    }, 5000);
+
+    return () => clearInterval(refreshInterval);
   }, [student?._id]);
 
   const confirmCancel = async () => {
@@ -216,50 +227,24 @@ export default function MyRegistrations() {
         )}
       </AnimatePresence>
 
-      {/* Cancel Confirmation Modal */}
-      <AnimatePresence>
-        {cancelTarget && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-            onClick={() => setCancelTarget(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.88, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.88, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full flex flex-col items-center gap-5"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="w-14 h-14 rounded-2xl bg-coral/10 flex items-center justify-center">
-                <AlertTriangle className="w-7 h-7 text-coral" />
-              </div>
-              <div className="text-center">
-                <h3 className="text-lg font-extrabold text-deep-slate">Cancel Registration?</h3>
-                <p className="text-sm text-deep-slate/55 mt-1">This action cannot be undone. Your spot will be released.</p>
-              </div>
-              {cancelError && (
-                <p className="text-sm text-coral font-semibold text-center w-full bg-coral/10 rounded-xl px-4 py-2">
-                  {cancelError}
-                </p>
-              )}
-              <div className="flex gap-3 w-full">
-                <button
-                  onClick={() => { setCancelTarget(null); setCancelError(""); }}
-                  className="flex-1 py-2.5 rounded-xl border border-soft-blush text-deep-slate/70 font-bold text-sm hover:bg-warm-cream transition-colors"
-                >
-                  Keep It
-                </button>
-                <button
-                  onClick={confirmCancel}
-                  className="flex-1 py-2.5 rounded-xl bg-coral text-white font-bold text-sm hover:bg-coral/90 transition-colors"
-                >
-                  Yes, Cancel
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {cancelError ? (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+          {cancelError}
+        </div>
+      ) : null}
+
+      <ConfirmPopup
+        open={Boolean(cancelTarget)}
+        onClose={() => {
+          setCancelTarget(null);
+          setCancelError("");
+        }}
+        onConfirm={confirmCancel}
+        title="Cancel Registration"
+        description="This action cannot be undone. Your spot will be released."
+        confirmText="Yes, Cancel"
+        cancelText="Keep It"
+      />
 
     </div>
   );
