@@ -3,6 +3,7 @@ const nodemailer = require("nodemailer");
 const CATEGORY_LABELS = {
   REGISTRATION: "Register",
   EVENT_REGISTRATION: "Event Registration",
+  EVENT_REMINDER: "Event Reminder",
   EVENT_CANCELLATION: "Event Cancelled",
   ANNOUNCEMENT: "New Announcement",
   PASSWORD_RESET: "Forgot Password",
@@ -14,6 +15,7 @@ const TOPIC_ALIASES = {
   REGISTER: "REGISTRATION",
   REGISTRATION: "REGISTRATION",
   EVENT_REGISTRATION: "EVENT_REGISTRATION",
+  EVENT_REMINDER: "EVENT_REMINDER",
   EVENT_CANCELLED: "EVENT_CANCELLATION",
   EVENT_CANCELLATION: "EVENT_CANCELLATION",
   ANNOUNCEMENT: "ANNOUNCEMENT",
@@ -42,6 +44,10 @@ const inferTopic = (subject = "") => {
 
   if (normalized.includes("event registration")) {
     return "EVENT_REGISTRATION";
+  }
+
+  if (normalized.includes("event reminder") || normalized.includes("reminder")) {
+    return "EVENT_REMINDER";
   }
 
   if (

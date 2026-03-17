@@ -7,6 +7,7 @@
   const mongoose = require("mongoose");
   const cors = require("cors");
   const aiRoutes = require("./routes/aiRoutes");
+  const { startEventReminderScheduler } = require("./services/eventReminderScheduler");
 
   const app = express();
 
@@ -25,6 +26,7 @@
     })
     .then(() => {
       console.log("Connected to DB:", mongoose.connection.name);
+      startEventReminderScheduler();
     })
     .catch((err) => {
       console.log("DB Error:", err);

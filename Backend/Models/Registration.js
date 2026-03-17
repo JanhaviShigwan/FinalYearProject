@@ -16,6 +16,11 @@ const registrationSchema = new mongoose.Schema(
   registeredAt: {
     type: Date,
     default: Date.now
+  },
+
+  reminderDaysSent: {
+    type: [Number],
+    default: []
   }
 },
 { timestamps: true }
