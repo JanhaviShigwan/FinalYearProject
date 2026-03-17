@@ -5,53 +5,66 @@ import { useNavigate } from "react-router-dom";
 function FeaturedEventCard({ _id, category, title, description, date, location, users, image }) {
   const navigate = useNavigate();
 
+  const hasImage = Boolean(image);
+
   return (
-    <div className="flex bg-white rounded-2xl overflow-hidden shadow-md border border-gray-200 mb-9 last:mb-0">
+    <div className="mb-7 overflow-hidden rounded-[24px] border border-[#EAE7FA] bg-white shadow-[0_14px_30px_rgba(54,47,88,0.1)] last:mb-0">
 
-      {/* ── LEFT: Image ── */}
-      <div className="relative w-[45%] overflow-hidden group">
-        <img
-          src={image}
-          alt={title}
-          className="w-full h-full object-cover transition-transform duration-[400ms] ease-in-out group-hover:scale-[1.05]"
-        />
-        <span className="absolute top-4 left-4 bg-[#F08A6C] text-white text-[13px] font-semibold px-3 py-1.5 rounded-full">
-          Featured
-        </span>
-      </div>
+      <div className="flex flex-col lg:flex-row">
 
-      {/* ── RIGHT: Content ── */}
-      <div className="w-[55%] p-10">
-        <span className="inline-block bg-[#EED8D6] text-[#3F3D56] text-[13px] px-3.5 py-1.5 rounded-full mb-3.5">
-          {category}
-        </span>
+        <div className="group relative h-[230px] w-full overflow-hidden lg:h-auto lg:w-[43%]">
+          {hasImage ? (
+            <img
+              src={image}
+              alt={title}
+              className="h-full w-full object-cover transition-transform duration-[450ms] ease-in-out group-hover:scale-[1.06]"
+            />
+          ) : (
+            <div className="h-full w-full bg-gradient-to-br from-[#D9D4FF] via-[#F5E9DE] to-[#DDEDD6]" />
+          )}
 
-        <h2 className="text-[32px] font-bold text-[#3F3D56] mb-3">{title}</h2>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/15 to-transparent" />
 
-        <p className="text-base text-[#6b6b80] mb-5 leading-relaxed">{description}</p>
-
-        {/* Details */}
-        <div className="flex flex-col gap-2.5 mb-[22px]">
-          {[
-            { icon: <Calendar size={18} />, text: date     },
-            { icon: <MapPin   size={18} />, text: location },
-            { icon: <Users    size={18} />, text: users    },
-          ].map(({ icon, text }) => (
-            <div key={text} className="flex items-center gap-2.5 text-[#6b6b80] text-[15px]">
-              <span className="text-[#9B96E5]">{icon}</span>
-              <span>{text}</span>
-            </div>
-          ))}
+          <span className="absolute left-4 top-4 rounded-full bg-[#F08A6C] px-3 py-1.5 text-[12px] font-semibold uppercase tracking-wide text-white">
+            Featured
+          </span>
         </div>
 
-        <button
-          onClick={() => navigate(`/events/${_id}`)}
-          className="bg-[#F08A6C] text-white font-semibold px-[22px] py-3 rounded-[30px] transition-all duration-300 hover:bg-[#e67758]"
-        >
-          View Details →
-        </button>
-      </div>
+        <div className="w-full p-6 sm:p-8 lg:w-[57%] lg:p-9">
+          <span className="mb-3 inline-block rounded-full bg-[#EEEAFE] px-3.5 py-1.5 text-[12px] font-semibold uppercase tracking-wide text-[#5F5A94]">
+            {category || "General"}
+          </span>
 
+          <h2 className="mb-2 text-2xl font-bold leading-tight text-[#302E49] sm:text-[30px]">
+            {title}
+          </h2>
+
+          <p className="mb-5 text-sm leading-relaxed text-[#6b6b80] sm:text-base">
+            {description}
+          </p>
+
+          <div className="mb-6 grid gap-2.5 sm:grid-cols-2">
+            {[
+              { icon: <Calendar size={17} />, text: date },
+              { icon: <MapPin size={17} />, text: location },
+              { icon: <Users size={17} />, text: users },
+            ].map(({ icon, text }, index) => (
+              <div key={`${text}-${index}`} className="flex items-center gap-2 rounded-xl bg-[#FAF9FF] px-3 py-2 text-sm text-[#6b6b80]">
+                <span className="text-[#9B96E5]">{icon}</span>
+                <span className="truncate">{text}</span>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => navigate(`/events/${_id}`)}
+            className="rounded-full bg-[#F08A6C] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#e67758] sm:text-base"
+          >
+            View Details →
+          </button>
+        </div>
+
+      </div>
     </div>
   );
 }
