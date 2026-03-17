@@ -326,14 +326,53 @@ body {
    EVENT DETAILS PAGE
    ═══════════════════════════════════════════════════════════════════════════ */
 
+.event-details-shell {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(240, 138, 108, 0.18), transparent 38%),
+    radial-gradient(circle at 92% 22%, rgba(155, 150, 229, 0.2), transparent 40%),
+    linear-gradient(180deg, #f7f2ec 0%, #f4f0eb 45%, #f6f2f0 100%);
+}
+
+.event-details-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(155, 150, 229, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(155, 150, 229, 0.1) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.55;
+}
+
+.event-details-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 20% 90%, rgba(216, 232, 209, 0.28), transparent 35%),
+    radial-gradient(circle at 88% 85%, rgba(240, 138, 108, 0.15), transparent 32%);
+}
+
 /* Hero: 3fr / 2fr — not expressible in standard Tailwind */
 .event-hero-grid {
   display: grid;
-  grid-template-columns: 3fr 2fr;
+  grid-template-columns: 1.22fr 0.9fr;
 }
 
 @media (max-width: 1024px) {
   .event-hero-grid { grid-template-columns: 1fr; }
+}
+
+.event-details-help-card {
+  background:
+    linear-gradient(140deg, rgba(255, 239, 224, 0.95) 0%, rgba(255, 229, 214, 0.95) 50%, rgba(255, 238, 226, 0.92) 100%);
+  border: 1px solid rgba(242, 191, 170, 0.7);
 }
 
 /* Details: repeat(4, 1fr) — needs responsive fallback */
