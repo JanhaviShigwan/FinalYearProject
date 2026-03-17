@@ -478,6 +478,13 @@ body {
   background: linear-gradient(to bottom right, #FFFFFF 0%, #FFFFFF 25%, #F6F1EB 60%, #F9F5FF 100%);
 }
 
+.faq-shell {
+  background:
+    radial-gradient(circle at 10% 16%, rgba(155, 150, 229, 0.2), transparent 34%),
+    radial-gradient(circle at 88% 24%, rgba(240, 138, 108, 0.16), transparent 35%),
+    linear-gradient(180deg, #faf7f3 0%, #f6f1eb 58%, #f7f3ef 100%);
+}
+
 /* Animated grid overlay — ::before pseudo-element */
 .faq-wrapper::before {
   content: "";
@@ -490,6 +497,39 @@ body {
     linear-gradient(to bottom, rgba(155, 150, 229, 0.08) 1px, transparent 1px);
   background-size: 50px 50px;
   animation: faqGridMove 20s linear infinite;
+}
+
+.faq-wrapper::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 22% 88%, rgba(216, 232, 209, 0.26), transparent 38%),
+    radial-gradient(circle at 92% 78%, rgba(155, 150, 229, 0.13), transparent 32%);
+}
+
+.faq-hero-card {
+  position: relative;
+  background:
+    linear-gradient(145deg, rgba(254, 252, 255, 0.9) 0%, rgba(247, 242, 255, 0.85) 54%, rgba(255, 246, 240, 0.84) 100%);
+}
+
+.faq-hero-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 86% 24%, rgba(155, 150, 229, 0.16), transparent 42%),
+    radial-gradient(circle at 16% 85%, rgba(240, 138, 108, 0.14), transparent 34%);
+}
+
+.faq-hero-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 @keyframes faqGridMove {
