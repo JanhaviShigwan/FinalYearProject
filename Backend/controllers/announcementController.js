@@ -66,11 +66,18 @@ exports.createAnnouncement = async (req, res) => {
       const students = await Student.find({
         $or: [{ role: "student" }, { role: { $exists: false } }, { role: null }],
         email: { $exists: true, $ne: null },
-      }).select("email");
+      }).select("email notificationsEnabled emailPreferences");
 
-      emailRecipientCount = students.length;
+      const eligibleRecipients = students.filter((student) => {
+        const notificationsEnabled = student.notificationsEnabled !== false;
+        const announcementOptIn = student.emailPreferences?.announcements !== false;
+        const promotionsOptIn = student.emailPreferences?.promotions !== false;
+        return notificationsEnabled && announcementOptIn && promotionsOptIn;
+      });
 
-      if (students.length > 0) {
+      emailRecipientCount = eligibleRecipients.length;
+
+      if (eligibleRecipients.length > 0) {
         const subjectPrefix =
           announcementSettings.defaultEmailSubject || "EventSphere Announcement";
 
@@ -92,7 +99,7 @@ exports.createAnnouncement = async (req, res) => {
         });
 
         const results = await Promise.allSettled(
-          students.map((student) =>
+          eligibleRecipients.map((student) =>
             sendEmail(
               student.email,
               `${subjectPrefix}: ${saved.title}`,
@@ -105,7 +112,7 @@ exports.createAnnouncement = async (req, res) => {
         emailedCount = results.filter(
           (r) => r.status === "fulfilled" && r.value === true
         ).length;
-        emailFailedCount = students.length - emailedCount;
+        emailFailedCount = eligibleRecipients.length - emailedCount;
       }
     } catch (emailErr) {
       console.error("Announcement email broadcast error:", emailErr);

@@ -454,7 +454,7 @@ const registerForEvent = async (req, res) => {
       });
 
 
-    if (student.notificationsEnabled) {
+    if (student?.email) {
 
       await sendEmail(
         student.email,
@@ -474,7 +474,7 @@ const registerForEvent = async (req, res) => {
       );
 
     } else {
-      console.log(`[MAIL][EVENT_REGISTRATION] Skipped — notifications disabled for ${student.email}`);
+      console.log("[MAIL][EVENT_REGISTRATION] Skipped — student email missing");
     }
 
 
@@ -591,10 +591,7 @@ const cancelRegistration = async (req, res) => {
 
     // ✅ CANCEL EMAIL
 
-    if (
-      student &&
-      student.notificationsEnabled
-    ) {
+    if (student?.email) {
 
       const html =
         eventCancelTemplate({
@@ -611,8 +608,8 @@ const cancelRegistration = async (req, res) => {
         { topic: "EVENT_CANCELLATION" }
       );
 
-    } else if (student) {
-      console.log(`[MAIL][EVENT_CANCELLATION] Skipped — notifications disabled for ${student.email}`);
+    } else {
+      console.log("[MAIL][EVENT_CANCELLATION] Skipped — student email missing");
     }
 
 

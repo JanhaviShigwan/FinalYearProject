@@ -3,15 +3,15 @@ const sendEmail = require("../utils/sendEmail");
 const { reminderTemplate } = require("../utils/template");
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-const DEFAULT_REMINDER_DAYS = [7, 3, 1];
 
 let schedulerHandle = null;
 
 const parseReminderDays = () => {
   const raw = process.env.EVENT_REMINDER_DAYS;
 
+  // Default behavior: daily countdown reminders until the event starts.
   if (!raw || !raw.trim()) {
-    return DEFAULT_REMINDER_DAYS;
+    return null;
   }
 
   const parsedDays = raw
@@ -19,7 +19,19 @@ const parseReminderDays = () => {
     .map((value) => Number.parseInt(value.trim(), 10))
     .filter((value) => Number.isFinite(value) && value > 0);
 
-  return parsedDays.length ? Array.from(new Set(parsedDays)).sort((a, b) => b - a) : DEFAULT_REMINDER_DAYS;
+  return parsedDays.length ? Array.from(new Set(parsedDays)).sort((a, b) => b - a) : null;
+};
+
+const shouldSendReminderForDay = (daysUntilEvent, configuredDays) => {
+  if (daysUntilEvent < 1) {
+    return false;
+  }
+
+  if (!configuredDays) {
+    return true;
+  }
+
+  return configuredDays.includes(daysUntilEvent);
 };
 
 const getSchedulerInterval = () => {
@@ -53,6 +65,7 @@ const getReminderSubject = (eventName, daysUntilEvent) => {
 
 const runReminderCycle = async () => {
   const reminderDays = parseReminderDays();
+  const reminderModeLabel = reminderDays ? reminderDays.join(",") : "daily";
   const now = new Date();
 
   const registrations = await Registration.find({})
@@ -72,7 +85,11 @@ const runReminderCycle = async () => {
       continue;
     }
 
-    if (student.notificationsEnabled === false || student.emailPreferences?.reminders === false) {
+    if (
+      student.notificationsEnabled === false ||
+      student.emailPreferences?.reminders === false ||
+      student.emailPreferences?.promotions === false
+    ) {
       skippedCount += 1;
       continue;
     }
@@ -86,7 +103,7 @@ const runReminderCycle = async () => {
 
     const daysUntilEvent = Math.ceil((eventStart.getTime() - now.getTime()) / DAY_MS);
 
-    if (!reminderDays.includes(daysUntilEvent)) {
+    if (!shouldSendReminderForDay(daysUntilEvent, reminderDays)) {
       skippedCount += 1;
       continue;
     }
@@ -146,7 +163,7 @@ const runReminderCycle = async () => {
   }
 
   console.log(
-    `[REMINDER] Cycle complete | sent: ${sentCount} | skipped: ${skippedCount} | intervals: ${parseReminderDays().join(",")}`
+    `[REMINDER] Cycle complete | sent: ${sentCount} | skipped: ${skippedCount} | intervals: ${reminderModeLabel}`
   );
 };
 
