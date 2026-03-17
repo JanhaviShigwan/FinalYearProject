@@ -33,7 +33,6 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   const emailRegex = /^[a-zA-Z0-9._%+-]+@somaiya\.edu$/;
@@ -58,7 +57,6 @@ export default function Register() {
     e.preventDefault();
     if (loading) return;
     setError("");
-    setSuccess("");
 
     if (!emailRegex.test(formData.email)) {
       setError("Email must be a valid @somaiya.edu address.");
@@ -81,16 +79,19 @@ export default function Register() {
         password: formData.password,
       });
 
-      const successParts = [res.data.message || "Registration successful"];
+      const studentData = res.data?.student;
 
-      if (res.data.student?.studentId) {
-        successParts.push(`Your Student ID: ${res.data.student.studentId}`);
+      if (!studentData?._id) {
+        setError("Registration failed. Invalid student data.");
+        return;
       }
 
-      setSuccess(successParts.join(" "));
+      localStorage.setItem(
+        "eventSphereStudent",
+        JSON.stringify(studentData)
+      );
 
-      setFormData({ name: "", email: "", password: "", confirmPassword: "" });
-      setTimeout(() => navigate("/login"), 1500);
+      navigate("/dashboard");
     } catch (err) {
       if (err.response)       setError(err.response.data.message);
       else if (err.request)   setError("Server not responding. Is backend running?");
@@ -193,12 +194,6 @@ export default function Register() {
               {error && (
                 <p className="mt-5 rounded-xl border border-[#F7D4CB] bg-[#FFF2EE] px-4 py-3 text-sm font-medium text-[#CC6245]">
                   {error}
-                </p>
-              )}
-
-              {success && (
-                <p className="mt-5 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
-                  {success}
                 </p>
               )}
 

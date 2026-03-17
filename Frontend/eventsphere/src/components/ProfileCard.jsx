@@ -1,9 +1,11 @@
-import { CheckCircle2, User } from "lucide-react";
+import { CheckCircle2, Trash2, User } from "lucide-react";
 
 export default function ProfileCard({
     currentStudent,
     uploadImage,
-    uploading
+    uploading,
+    removeImage,
+    removingImage
 }) {
 
     const hasImage =
@@ -68,6 +70,18 @@ export default function ProfileCard({
                         />
 
                     </label>
+
+                    {hasImage && (
+                        <button
+                            type="button"
+                            onClick={removeImage}
+                            disabled={removingImage || uploading}
+                            className="mt-3 inline-flex items-center justify-center gap-2 rounded-full border border-coral/25 bg-coral/10 px-4 py-2 text-sm font-bold text-coral transition-colors hover:bg-coral hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            <Trash2 size={15} />
+                            {removingImage ? "Removing..." : "Remove Photo"}
+                        </button>
+                    )}
 
 
                     <div className="mt-5 flex items-center justify-center gap-2">

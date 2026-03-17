@@ -14,6 +14,14 @@ import {
 
 export default function StudentVerificationForm({ student, onSuccess }) {
 
+  const profileStatus =
+    student?.role === "admin"
+      ? "approved"
+      : (student?.profileStatus || (student?.profileComplete ? "approved" : "pending"));
+
+  const isResubmission =
+    Boolean(student?.profileComplete) || profileStatus === "rejected";
+
   const draftKey = useMemo(
     () => `studentProfileDraft_${student?._id || "unknown"}`,
     [student?._id]
@@ -65,6 +73,12 @@ export default function StudentVerificationForm({ student, onSuccess }) {
     "Humanity": ["BA", "Psychology"],
     "Science": ["BSc Physics", "BSc Chemistry", "BSc Maths"]
   };
+
+  const maxDobDate = useMemo(() => {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() - 15);
+    return date.toISOString().split("T")[0];
+  }, []);
 
   useEffect(() => {
     const formatDob = (value) => {
@@ -172,15 +186,52 @@ export default function StudentVerificationForm({ student, onSuccess }) {
       return;
     }
 
+    if (!formData.dob) {
+      setPopup({
+        title: "Date of Birth Required",
+        message: "You are not of age to attend events",
+      });
+      return;
+    }
+
+    const dobDate = new Date(formData.dob);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (Number.isNaN(dobDate.getTime()) || dobDate >= today) {
+      setPopup({
+        title: "Invalid Date of Birth",
+        message: "You are not of age to attend events",
+      });
+      return;
+    }
+
+    let age = today.getFullYear() - dobDate.getFullYear();
+    const monthDiff = today.getMonth() - dobDate.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobDate.getDate())) {
+      age -= 1;
+    }
+
+    if (age < 15) {
+      setPopup({
+        title: "Age Restriction",
+        message: "You are not of age to attend events",
+      });
+      return;
+    }
+
     try {
 
-      await axios.put(
+      const response = await axios.put(
         `${API_URL}/student/complete-profile/${student._id}`,
         formData
       );
 
-      const updatedStudent = {
+      const updatedStudent = response.data?.student || {
         ...student,
+        ...formData,
+        studentId: formData.studentIdNumber,
         profileComplete: true,
         profileStatus: "pending",
       };
@@ -219,8 +270,14 @@ export default function StudentVerificationForm({ student, onSuccess }) {
       <form onSubmit={handleSubmit} className="space-y-8">
 
         <h2 className="text-2xl font-semibold text-[#3F3D56]">
-          Student Verification
+          {isResubmission ? "Edit Profile Details" : "Student Verification"}
         </h2>
+
+        <p className="-mt-4 text-sm text-[#3F3D56]/70">
+          {isResubmission
+            ? "You can keep updating these details until admin approval. Every save syncs to the database and stays in the approval queue."
+            : "Complete your profile so the admin can review and approve your account."}
+        </p>
 
 
         <div className="grid grid-cols-2 gap-6">
@@ -476,6 +533,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
                 name="dob"
                 value={formData.dob}
                 onChange={handleChange}
+                max={maxDobDate}
                 className={inputStyle}
               />
 
@@ -493,7 +551,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
             className="flex items-center gap-2 bg-[#9B96E5] text-white px-7 py-3 rounded-xl hover:opacity-90"
           >
             <Save size={18} />
-            Save Profile
+            {isResubmission ? "Save Changes" : "Save Profile"}
           </button>
 
         </div>

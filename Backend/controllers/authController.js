@@ -79,6 +79,13 @@ exports.registerStudent = async (req, res) => {
       profileComplete: false,
     });
 
+    await syncAdminProfileComplete(newStudent);
+
+    const resolvedProfileStatus =
+      newStudent.role === "admin"
+        ? "approved"
+        : (newStudent.profileStatus || (newStudent.profileComplete ? "approved" : "pending"));
+
     // ✅ Beautiful email
 
     const html = registrationTemplate(name);
@@ -97,7 +104,14 @@ exports.registerStudent = async (req, res) => {
         ? "Registration successful"
         : "Registration successful, but confirmation email could not be sent",
       emailSent,
-      student: newStudent,
+      student: {
+        _id: newStudent._id,
+        name: newStudent.name,
+        email: newStudent.email,
+        role: newStudent.role,
+        profileComplete: newStudent.profileComplete,
+        profileStatus: resolvedProfileStatus,
+      },
     });
 
   } catch (error) {

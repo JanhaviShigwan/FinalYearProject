@@ -46,6 +46,18 @@ const getClientDevice = (req) => {
   return req.headers["user-agent"] || "Unknown device";
 };
 
+const getAgeInYears = (dobDate) => {
+  const today = new Date();
+  let age = today.getFullYear() - dobDate.getFullYear();
+  const monthDiff = today.getMonth() - dobDate.getMonth();
+
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobDate.getDate())) {
+    age -= 1;
+  }
+
+  return age;
+};
+
 
 /* ============================= */
 /* ADMIN - LIST USERS */
@@ -116,7 +128,7 @@ exports.getAdminUsers = async (req, res) => {
     const [users, total] = await Promise.all([
       Student.find(query)
         .select("-password -resetOTP -resetOTPExpire")
-        .sort({ createdAt: -1 })
+        .sort({ updatedAt: -1, createdAt: -1 })
         .skip((pageNum - 1) * limitNum)
         .limit(limitNum),
       Student.countDocuments(query),
@@ -359,6 +371,31 @@ exports.completeProfile = async (req, res) => {
       dob,
     } = req.body;
 
+    const dobDate = dob ? new Date(dob) : null;
+
+    if (!dobDate || Number.isNaN(dobDate.getTime())) {
+      return res.status(400).json({
+        message: "Please provide a valid date of birth",
+      });
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (dobDate >= today) {
+      return res.status(400).json({
+        message: "You are not of age to attend events",
+      });
+    }
+
+    const age = getAgeInYears(dobDate);
+
+    if (age < 15) {
+      return res.status(400).json({
+        message: "You are not of age to attend events",
+      });
+    }
+
 
     const existing = await Student.findOne({
       studentId: studentIdNumber,
@@ -389,7 +426,7 @@ exports.completeProfile = async (req, res) => {
     student.course = course;
     student.division = division;
     student.gender = gender;
-    student.dob = dob;
+    student.dob = dobDate;
 
     student.profileComplete = true;
     student.profileStatus = student.role === "admin" ? "approved" : "pending";
@@ -397,7 +434,10 @@ exports.completeProfile = async (req, res) => {
     await student.save();
 
     res.status(200).json({
-      message: "Profile completed successfully",
+      message:
+        student.role === "admin"
+          ? "Profile completed successfully"
+          : "Profile details saved and sent for admin approval",
       student,
     });
 
@@ -428,7 +468,7 @@ exports.uploadImage = async (req, res) => {
       req.params.studentId,
       { profileImage: image },
       { returnDocument: "after" }
-    );
+    ).select("-password -resetOTP -resetOTPExpire");
 
     res.json(student);
 
