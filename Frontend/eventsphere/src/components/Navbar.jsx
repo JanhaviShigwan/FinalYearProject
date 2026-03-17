@@ -59,15 +59,10 @@ export default function Navbar({ className = "" }) {
             </div>
 
             <div className="min-w-0">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center">
                 <span className="brand-text truncate text-[1.55rem] font-extrabold tracking-[0.02em] text-[#2F2C44] sm:text-[1.7rem]">
                   Event<span className="text-[#9B96E5]">Sphere</span>
                 </span>
-                {student ? (
-                  <span className="hidden rounded-full bg-[#F08A6C]/12 px-2.5 py-1 text-[11px] font-semibold text-[#D06B4E] sm:inline-flex">
-                    {student.role === "admin" ? "Admin Access" : "Student Access"}
-                  </span>
-                ) : null}
               </div>
             </div>
           </Link>
