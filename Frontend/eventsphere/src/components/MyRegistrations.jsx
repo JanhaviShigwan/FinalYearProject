@@ -18,6 +18,7 @@ export default function MyRegistrations() {
   const [qrEvent, setQrEvent] = useState(null);
   const [cancelTarget, setCancelTarget] = useState(null);
   const [cancelError, setCancelError] = useState("");
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const student = JSON.parse(localStorage.getItem("eventSphereStudent"));
 
@@ -47,7 +48,8 @@ export default function MyRegistrations() {
   }, [student?._id]);
 
   const confirmCancel = async () => {
-    if (!cancelTarget) return;
+    if (!cancelTarget || isCancelling) return;
+    setIsCancelling(true);
     try {
       await axios.delete(
         `${API_URL}/events/cancel-registration/${student._id}/${cancelTarget}`
@@ -62,6 +64,8 @@ export default function MyRegistrations() {
           ? "Registration not found. It may have already been cancelled."
           : "Failed to cancel registration. Please try again."
       );
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -244,6 +248,8 @@ export default function MyRegistrations() {
         description="This action cannot be undone. Your spot will be released."
         confirmText="Yes, Cancel"
         cancelText="Keep It"
+        isLoading={isCancelling}
+        loadingText="Cancelling..."
       />
 
     </div>
