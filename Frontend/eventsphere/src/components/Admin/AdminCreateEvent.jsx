@@ -81,6 +81,19 @@ export default function AdminCreateEvent({
       return;
     }
 
+    if (form.endDate) {
+      const startDateTime = new Date(`${form.date}T00:00:00`);
+      const endDateTime = new Date(`${form.endDate}T23:59:59`);
+
+      const diffTime = Math.abs(endDateTime - startDateTime);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays > 7) {
+        setError('Event duration cannot exceed 7 days.');
+        return;
+      }
+    }
+
     if (
       form.endDate
       && form.endTime

@@ -53,7 +53,35 @@ export default function CalendarPage() {
                 `${API_URL}/events`
             );
 
+            /* ── Helper: Check if event registration is available ── */
+            const isRegistrationAvailable = (event) => {
+                const now = new Date();
+                const eventStart = new Date(`${event.date} ${event.time || "00:00"}`);
+                const registrationOpenDate = new Date(eventStart);
+                registrationOpenDate.setDate(eventStart.getDate() - 14);
+
+                const eventEnd = new Date(eventStart);
+                eventEnd.setHours(eventStart.getHours() + 3);
+
+                return now >= registrationOpenDate && now <= eventEnd;
+            };
+
+            /* ── Helper: Generate random registrations if available ── */
+            const getRegistrationCount = (event) => {
+                if (!isRegistrationAvailable(event)) {
+                    return 0;
+                }
+
+                const capacity = event.totalCapacity || 1;
+                const maxRegistrations = Math.max(0, capacity - 1);
+                return Math.floor(Math.random() * (maxRegistrations + 1));
+            };
+
             const formatted = res.data
+                .map(event => ({
+                    ...event,
+                    registeredUsers: getRegistrationCount(event)
+                }))
                 .filter((event) => event.date >= today)
                 .sort((left, right) => new Date(left.date) - new Date(right.date))
                 .map((event) => ({
@@ -180,6 +208,8 @@ export default function CalendarPage() {
           gap: 12px;
           margin-bottom: 18px;
           flex-wrap: wrap;
+          align-items: center;
+          justify-content: space-between;
         }
 
         .fc .fc-toolbar-title {
@@ -187,6 +217,8 @@ export default function CalendarPage() {
           font-size: 1.35rem;
           font-weight: 800;
           letter-spacing: -0.02em;
+          min-width: 0;
+          flex-shrink: 0;
         }
 
         .fc .fc-button {
@@ -198,6 +230,7 @@ export default function CalendarPage() {
           box-shadow: none;
           text-transform: capitalize;
           font-weight: 700;
+          flex-wrap: wrap;
         }
 
         .fc .fc-button:hover {
@@ -216,6 +249,7 @@ export default function CalendarPage() {
         .fc .fc-timegrid-slot,
         .fc .fc-col-header-cell {
           border-color: #efe5da;
+          overflow: hidden;
         }
 
         .fc .fc-scrollgrid {
@@ -226,13 +260,15 @@ export default function CalendarPage() {
 
         .fc .fc-col-header-cell {
           background: #fbf8f4;
-          padding: 10px 0;
+          padding: 10px 4px;
+          text-align: center;
         }
 
         .fc .fc-col-header-cell-cushion {
           color: #6b6a7d;
           font-weight: 700;
           text-decoration: none;
+          padding: 8px 4px;
         }
 
         .fc .fc-daygrid-day-number,
@@ -241,6 +277,7 @@ export default function CalendarPage() {
           color: #6b6a7d;
           text-decoration: none;
           font-weight: 600;
+          padding: 8px 4px;
         }
 
         .fc .fc-day-today {
@@ -258,6 +295,12 @@ export default function CalendarPage() {
           padding: 2px 6px;
           font-weight: 700;
           font-size: 0.82rem;
+          margin: 0 2px;
+        }
+
+        .fc .fc-daygrid-day-frame {
+          position: relative;
+          min-height: 120px;
         }
 
         .fc .fc-list-event:hover td,

@@ -34,8 +34,26 @@ const getEventDefaultSettings = async () => {
 const getEvents = async (req, res) => {
   try {
     const settings = await getEventDefaultSettings();
+    const pageParam = Number.parseInt(req.query.page, 10);
+    const limitParam = Number.parseInt(req.query.limit, 10);
+    const hasPaginationParams = req.query.page !== undefined || req.query.limit !== undefined;
 
-    const events = await Event.find();
+    const page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
+    const limit = Number.isFinite(limitParam) && limitParam > 0
+      ? Math.min(limitParam, 100)
+      : 10;
+    const skip = (page - 1) * limit;
+
+    const [events, total] = hasPaginationParams
+      ? await Promise.all([
+        Event.find().sort({ createdAt: -1 }).skip(skip).limit(limit),
+        Event.countDocuments(),
+      ])
+      : await Promise.all([
+        Event.find().sort({ createdAt: -1 }),
+        Event.countDocuments(),
+      ]);
+
     const today = new Date();
 
     const eventsWithRegistrationDate = events.map(event => {
@@ -63,6 +81,15 @@ const getEvents = async (req, res) => {
       };
 
     });
+
+    if (hasPaginationParams) {
+      return res.json({
+        events: eventsWithRegistrationDate,
+        total,
+        page,
+        limit,
+      });
+    }
 
     res.json(eventsWithRegistrationDate);
 

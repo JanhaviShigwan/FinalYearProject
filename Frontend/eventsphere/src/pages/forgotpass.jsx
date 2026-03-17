@@ -11,7 +11,7 @@ import {
   Clock3,
   CheckCircle2,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import Navbar from "../components/Navbar";
@@ -19,6 +19,7 @@ import Footer from "../components/Footer";
 import API_URL from "../api";
 
 export default function ForgotPassword() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
 
   const [email, setEmail] = useState("");
@@ -156,6 +157,25 @@ export default function ForgotPassword() {
       return;
     }
 
+    const passwordRules = {
+      minLength:   /.{8,}/,
+      upperCase:   /[A-Z]/,
+      lowerCase:   /[a-z]/,
+      number:      /[0-9]/,
+      specialChar: /[!@#$%^&*(),.?":{}|<>]/,
+    };
+
+    const passwordValidation = Object.fromEntries(
+      Object.entries(passwordRules).map(([k, r]) => [k, r.test(password)])
+    );
+
+    if (!Object.values(passwordValidation).every(Boolean)) {
+      setError(
+        "Password must contain uppercase, lowercase, number, and special character"
+      );
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
@@ -179,6 +199,10 @@ export default function ForgotPassword() {
       setOtp("");
       setPassword("");
       setConfirmPassword("");
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
 
     } catch (err) {
       setError(

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import FeaturedEventCard from "../components/FeatureEventsCard";
@@ -18,14 +18,42 @@ function Events() {
   const [searchParams] = useSearchParams();
   const categoryFromURL = searchParams.get("category");
 
+  /* ── Helper: Check if event registration is available ── */
+  const isRegistrationAvailable = useCallback((event) => {
+    const now = new Date();
+    const eventStart = new Date(`${event.date} ${event.time || "00:00"}`);
+    const registrationOpenDate = new Date(eventStart);
+    registrationOpenDate.setDate(eventStart.getDate() - 14);
+
+    const eventEnd = new Date(eventStart);
+    eventEnd.setHours(eventStart.getHours() + 3);
+
+    return now >= registrationOpenDate && now <= eventEnd;
+  }, []);
+
   /* ── Fetch events ── */
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
+    const getRegistrationCount = (event) => {
+      if (!isRegistrationAvailable(event)) {
+        return 0;
+      }
+
+      const capacity = event.totalCapacity || 1;
+      const maxRegistrations = Math.max(0, capacity - 1);
+      return Math.floor(Math.random() * (maxRegistrations + 1));
+    };
+
     const fetchEventsData = () => {
       fetch(`${API_URL}/events`)
         .then(res => res.json())
         .then(data => {
-          setEvents(data);
-          setFeaturedEvents(data.filter(e => e.isFeatured === true));
+          const eventsWithRegistrations = data.map(event => ({
+            ...event,
+            registeredUsers: getRegistrationCount(event)
+          }));
+          setEvents(eventsWithRegistrations);
+          setFeaturedEvents(eventsWithRegistrations.filter(e => e.isFeatured === true));
         })
         .catch(err => console.log(err));
     };
@@ -37,7 +65,7 @@ function Events() {
     }, 5000);
 
     return () => clearInterval(refreshInterval);
-  }, []);
+  }, [isRegistrationAvailable]);
 
   /* ── Category from URL ── */
   useEffect(() => {

@@ -16,7 +16,8 @@ export default function Security({
   getStrength,
   passwordMsg,
   passwordError,
-  changePassword
+  changePassword,
+  changingPassword = false
 }) {
   const strength = getStrength(newPassword);
 
@@ -181,9 +182,10 @@ export default function Security({
         <button
           type="button"
           onClick={changePassword}
-          className="inline-flex items-center justify-center rounded-xl bg-lavender px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-lavender/90"
+          disabled={changingPassword}
+          className="inline-flex items-center justify-center rounded-xl bg-lavender px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-lavender/90 disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          Change Password
+          {changingPassword ? "Changing..." : "Change Password"}
         </button>
 
       </div>

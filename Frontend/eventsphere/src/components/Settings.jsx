@@ -19,6 +19,7 @@ export default function Settings() {
   const [updatingNotif, setUpdatingNotif] = useState(false);
   const [notifError, setNotifError] = useState("");
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -122,6 +123,25 @@ export default function Settings() {
       return;
     }
 
+    const passwordRules = {
+      minLength:   /.{8,}/,
+      upperCase:   /[A-Z]/,
+      lowerCase:   /[a-z]/,
+      number:      /[0-9]/,
+      specialChar: /[!@#$%^&*(),.?":{}|<>]/,
+    };
+
+    const passwordValidation = Object.fromEntries(
+      Object.entries(passwordRules).map(([k, r]) => [k, r.test(newPassword)])
+    );
+
+    if (!Object.values(passwordValidation).every(Boolean)) {
+      setPasswordError(
+        "Password must contain uppercase, lowercase, number, and special character"
+      );
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
       setPasswordError(
         "Passwords do not match"
@@ -137,6 +157,7 @@ export default function Settings() {
     }
 
     try {
+      setChangingPassword(true);
 
       await axios.put(
         `${API_URL}/student/change-password/${activeStudentId}`,
@@ -159,6 +180,8 @@ export default function Settings() {
         "Error changing password"
       );
 
+    } finally {
+      setChangingPassword(false);
     }
 
   };
@@ -447,6 +470,7 @@ export default function Settings() {
               passwordMsg={passwordMsg}
               passwordError={passwordError}
               changePassword={handleChangePassword}
+              changingPassword={changingPassword}
             />
           </div>
 

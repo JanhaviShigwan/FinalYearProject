@@ -3,7 +3,17 @@ import { createPortal } from 'react-dom';
 import { Edit2, Trash2, Eye, Search, Calendar, X, Save, Filter } from 'lucide-react';
 import ConfirmPopup from '../popup';
 
-export default function AdminEvents({ events, onEdit, onDelete, onView }) {
+export default function AdminEvents({
+  events,
+  totalEvents = 0,
+  isLoading = false,
+  hasMoreEvents = false,
+  isLoadingMore = false,
+  onLoadMore,
+  onEdit,
+  onDelete,
+  onView,
+}) {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [venueFilter, setVenueFilter] = useState('all');
@@ -138,6 +148,24 @@ export default function AdminEvents({ events, onEdit, onDelete, onView }) {
       return;
     }
 
+    if (editForm.endDate) {
+      const startDateTime = new Date(`${editForm.date}T00:00:00`);
+      const endDateTime = new Date(`${editForm.endDate}T23:59:59`);
+
+      const diffTime = Math.abs(endDateTime - startDateTime);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays > 7) {
+        setError('Event duration cannot exceed 7 days.');
+        return;
+      }
+
+      if (editForm.endDate < editForm.date) {
+        setError('End date cannot be earlier than start date.');
+        return;
+      }
+    }
+
     const payload = {
       ...editForm,
       totalCapacity: Number(editForm.totalCapacity),
@@ -251,6 +279,13 @@ export default function AdminEvents({ events, onEdit, onDelete, onView }) {
 
       <div className="bg-white rounded-2xl border border-soft-blush shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
+          {isLoading ? (
+            <div className="flex items-center justify-center p-12 text-deep-slate/60">
+              <div className="text-center">
+                <p className="font-semibold">Loading events...</p>
+              </div>
+            </div>
+          ) : (
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-warm-cream/50 border-b border-soft-blush">
@@ -332,11 +367,25 @@ export default function AdminEvents({ events, onEdit, onDelete, onView }) {
               )}
             </tbody>
           </table>
+          )}
         </div>
         <div className="p-4 border-t border-soft-blush bg-warm-cream/20 flex items-center justify-between">
-          <p className="text-xs text-deep-slate/50 font-medium">Showing {filteredEvents.length} of {events.length} events</p>
+          <p className="text-xs text-deep-slate/50 font-medium">Showing {filteredEvents.length} of {totalEvents || events.length} events</p>
         </div>
       </div>
+
+      {hasMoreEvents ? (
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={onLoadMore}
+            disabled={isLoadingMore}
+            className="rounded-full bg-[#9B96E5] px-7 py-3 font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#8A85DC] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isLoadingMore ? 'Loading...' : 'Load More Events'}
+          </button>
+        </div>
+      ) : null}
 
       {selectedEvent ? renderInPortal(
         <div className="fixed inset-0 z-50 bg-deep-slate/45 backdrop-blur-[1px] flex items-center justify-center p-4">

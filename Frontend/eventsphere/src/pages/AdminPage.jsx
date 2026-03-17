@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +15,7 @@ import AdminReports from '../components/Admin/AdminReports';
 import { getAdminRequestConfig, getStoredStudent, isAdminStudent } from '../utils/adminAuth';
 
 const REPORT_REFRESH_MS = 5000;
+const EVENTS_PAGE_LIMIT = 15;
 
 const parseEventTime = (rawTime) => {
   if (!rawTime || typeof rawTime !== 'string') {
@@ -85,6 +86,12 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [announcements, setAnnouncements] = useState([]);
   const [events, setEvents] = useState([]);
+  const [eventsPage, setEventsPage] = useState(1);
+  const [eventsLimit] = useState(EVENTS_PAGE_LIMIT);
+  const [eventsTotalCount, setEventsTotalCount] = useState(0);
+  const [hasMoreEvents, setHasMoreEvents] = useState(true);
+  const [isEventsInitialLoading, setIsEventsInitialLoading] = useState(false);
+  const [isEventsLoadingMore, setIsEventsLoadingMore] = useState(false);
   const [adminOverview, setAdminOverview] = useState({
     stats: {
       totalEvents: 0,
@@ -102,6 +109,7 @@ export default function AdminPage() {
   const [isDashboardLoading, setIsDashboardLoading] = useState(false);
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
   const [reportRefreshToken, setReportRefreshToken] = useState(0);
+  const isEventsLoadingRef = useRef(false);
   const [adminSettings, setAdminSettings] = useState({
     eventDefaults: {
       defaultCapacity: 200,
@@ -146,15 +154,59 @@ export default function AdminPage() {
     }
   }, []);
 
-  // Fetch events (assuming there's an events endpoint)
-  const fetchEvents = useCallback(async () => {
+  const fetchEventsPage = useCallback(async ({ page = 1, append = false } = {}) => {
+    if (isEventsLoadingRef.current) {
+      return;
+    }
+
     try {
-      const res = await axios.get(`${API_URL}/events`);
-      setEvents(res.data);
+      isEventsLoadingRef.current = true;
+
+      if (!append && page === 1) {
+        setIsEventsInitialLoading(true);
+      }
+
+      if (append) {
+        setIsEventsLoadingMore(true);
+      }
+
+      const res = await axios.get(`${API_URL}/events`, {
+        params: {
+          page,
+          limit: eventsLimit,
+        },
+      });
+
+      const payload = res.data;
+      const nextEvents = Array.isArray(payload?.events)
+        ? payload.events
+        : Array.isArray(payload)
+          ? payload
+          : [];
+      const total = Number.isFinite(Number(payload?.total))
+        ? Number(payload.total)
+        : nextEvents.length;
+
+      setEventsTotalCount(total);
+      setEvents((prev) => {
+        if (!append) {
+          return nextEvents;
+        }
+
+        const existingIds = new Set(prev.map((event) => event._id || event.id));
+        const uniqueNext = nextEvents.filter((event) => !existingIds.has(event._id || event.id));
+        return [...prev, ...uniqueNext];
+      });
+      setEventsPage(page);
+      setHasMoreEvents(page * eventsLimit < total);
     } catch (err) {
       console.error('Error fetching events:', err);
+    } finally {
+      isEventsLoadingRef.current = false;
+      setIsEventsInitialLoading(false);
+      setIsEventsLoadingMore(false);
     }
-  }, []);
+  }, [eventsLimit]);
 
   const fetchAdminOverview = useCallback(async (options = {}) => {
     const isSilent = options.silent === true;
@@ -201,10 +253,10 @@ export default function AdminPage() {
 
   useEffect(() => {
     fetchAnnouncements();
-    fetchEvents();
+    fetchEventsPage({ page: 1, append: false });
     fetchAdminOverview();
     fetchAdminSettings();
-  }, [fetchAnnouncements, fetchEvents, fetchAdminOverview, fetchAdminSettings]);
+  }, [fetchAnnouncements, fetchEventsPage, fetchAdminOverview, fetchAdminSettings]);
 
   useEffect(() => {
     if (["dashboard", "analytics", "reports", "users"].includes(activeTab)) {
@@ -215,13 +267,12 @@ export default function AdminPage() {
   useEffect(() => {
     const intervalId = setInterval(() => {
       fetchAnnouncements();
-      fetchEvents();
       fetchAdminOverview({ silent: true });
       setReportRefreshToken((prev) => prev + 1);
     }, REPORT_REFRESH_MS);
 
     return () => clearInterval(intervalId);
-  }, [fetchAnnouncements, fetchEvents, fetchAdminOverview]);
+  }, [fetchAnnouncements, fetchAdminOverview]);
 
   useEffect(() => {
     if (!["dashboard", "reports"].includes(activeTab)) {
@@ -249,12 +300,20 @@ export default function AdminPage() {
 
     const timeoutId = setTimeout(() => {
       fetchAdminOverview();
-      fetchEvents();
+      fetchEventsPage({ page: 1, append: false });
       setReportRefreshToken((prev) => prev + 1);
     }, delay);
 
     return () => clearTimeout(timeoutId);
-  }, [activeTab, events, fetchAdminOverview, fetchEvents]);
+  }, [activeTab, events, fetchAdminOverview, fetchEventsPage]);
+
+  const handleLoadMoreEvents = useCallback(() => {
+    if (activeTab !== 'events' || !hasMoreEvents || isEventsLoadingRef.current) {
+      return;
+    }
+
+    fetchEventsPage({ page: eventsPage + 1, append: true });
+  }, [activeTab, eventsPage, hasMoreEvents, fetchEventsPage]);
 
   // Handle posting announcement
   const handlePostAnnouncement = async (announcement) => {
@@ -314,7 +373,7 @@ export default function AdminPage() {
         payload,
         getAdminRequestConfig()
       );
-      await fetchEvents();
+      await fetchEventsPage({ page: 1, append: false });
       await fetchAdminOverview();
       setActiveTab('events');
       return res.data;
@@ -371,6 +430,7 @@ export default function AdminPage() {
       setEvents((prev) =>
         prev.filter((event) => (event._id || event.id) !== id)
       );
+      setEventsTotalCount((prev) => Math.max(prev - 1, 0));
 
       await fetchAdminOverview();
     } catch (err) {
@@ -410,6 +470,11 @@ export default function AdminPage() {
         return (
           <AdminEvents
             events={events}
+            totalEvents={eventsTotalCount}
+            isLoading={isEventsInitialLoading && events.length === 0}
+            hasMoreEvents={hasMoreEvents}
+            isLoadingMore={isEventsLoadingMore}
+            onLoadMore={handleLoadMoreEvents}
             onEdit={handleEditEvent}
             onDelete={handleDeleteEvent}
             onView={handleViewEvent}
