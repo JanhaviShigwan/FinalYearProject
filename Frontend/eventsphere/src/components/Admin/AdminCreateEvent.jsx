@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Image, MapPin, Tag, X, Save } from 'lucide-react';
+import axios from 'axios';
 
 const buildInitialForm = (defaults) => ({
   eventName: '',
@@ -35,6 +36,7 @@ export default function AdminCreateEvent({
   const [form, setForm] = useState(() => buildInitialForm(defaults));
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
 
   useEffect(() => {
     setForm((prev) => ({
@@ -54,6 +56,50 @@ export default function AdminCreateEvent({
     setError('');
     setSuccess('');
     if (onCancel) onCancel();
+  };
+
+  const handleGenerateAI = async () => {
+    setError('');
+    setSuccess('');
+
+    if (isGeneratingDescription) {
+      return;
+    }
+
+    if (!form.eventName.trim()) {
+      setError('Please enter event name before generating.');
+      return;
+    }
+
+    if (!form.shortDescription.trim()) {
+      setError('Please enter short description before generating.');
+      return;
+    }
+
+    try {
+      setIsGeneratingDescription(true);
+
+      const res = await axios.post(
+        'http://localhost:5000/api/ai/generate-description',
+        {
+          eventName: form.eventName.trim(),
+          shortDescription: form.shortDescription.trim(),
+        }
+      );
+
+      if (res.data?.description) {
+        setForm((prev) => ({
+          ...prev,
+          longDescription: res.data.description,
+        }));
+      }
+    } catch (err) {
+      console.error('AI generation failed:', err);
+      const apiMessage = err?.response?.data?.message;
+      setError(apiMessage || 'Unable to generate description right now. Please try again.');
+    } finally {
+      setIsGeneratingDescription(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -220,7 +266,17 @@ export default function AdminCreateEvent({
             </div>
 
             <div className="mt-5">
-              <label className="block text-sm font-bold text-deep-slate mb-2">Long Description</label>
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <label className="block text-sm font-bold text-deep-slate">Long Description</label>
+                <button
+                  type="button"
+                  onClick={handleGenerateAI}
+                  disabled={isGeneratingDescription}
+                  className="rounded-xl bg-lavender px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-lavender/90 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isGeneratingDescription ? 'Generating...' : 'Generate with AI'}
+                </button>
+              </div>
               <textarea
                 rows={5}
                 value={form.longDescription}
