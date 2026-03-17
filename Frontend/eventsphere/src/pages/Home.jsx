@@ -312,9 +312,9 @@ export default function Home() {
 
   return (
     <>
-      <Navbar />
       {/* home-wrapper: pseudo-element grid/glow + keyframes live in index.css */}
       <div className="home-wrapper text-[#3F3D56]">
+        <Navbar />
 
         {/* ================= HERO ================= */}
         <section className="home-hero-section flex min-h-[calc(100vh-84px)] items-center py-10 lg:py-14">

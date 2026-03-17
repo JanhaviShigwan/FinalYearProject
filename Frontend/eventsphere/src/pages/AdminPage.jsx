@@ -509,7 +509,7 @@ export default function AdminPage() {
         </main>
 
         <footer className="px-6 py-4 text-center text-sm text-deep-slate/35 border-t border-soft-blush bg-warm-cream">
-          © 2026 College Event Management System • Admin Control Panel
+          © 2026 EventSphere. Crafted for connected campus communities.
         </footer>
       </div>
     </div>
