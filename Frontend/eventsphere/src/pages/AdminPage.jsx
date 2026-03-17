@@ -121,6 +121,7 @@ export default function AdminPage() {
   });
 
   const handleLogout = useCallback(() => {
+    sessionStorage.removeItem('eventSphereStudent');
     localStorage.removeItem('eventSphereStudent');
     window.location.href = '/login';
   }, []);
@@ -129,6 +130,7 @@ export default function AdminPage() {
     const student = getStoredStudent();
 
     if (!isAdminStudent(student)) {
+      sessionStorage.removeItem('eventSphereStudent');
       localStorage.removeItem('eventSphereStudent');
       navigate('/login', { replace: true });
     }

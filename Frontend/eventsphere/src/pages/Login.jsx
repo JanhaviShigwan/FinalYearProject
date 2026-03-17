@@ -59,15 +59,13 @@ export default function Login() {
         return;
       }
 
-      // Store student session
-      localStorage.setItem(
-        "eventSphereStudent",
-        JSON.stringify(studentData)
-      );
-
+      // Admin sessions use sessionStorage so they are cleared when the browser closes.
+      // Regular student sessions use localStorage for persistence.
       if (studentData.role === "admin") {
+        sessionStorage.setItem("eventSphereStudent", JSON.stringify(studentData));
         navigate("/admin");
       } else {
+        localStorage.setItem("eventSphereStudent", JSON.stringify(studentData));
         navigate("/dashboard");
       }
 

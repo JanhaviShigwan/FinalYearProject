@@ -1,6 +1,9 @@
 export function getStoredStudent() {
   try {
-    const rawStudent = localStorage.getItem("eventSphereStudent");
+    // Admin sessions are stored in sessionStorage; student sessions in localStorage.
+    const rawStudent =
+      sessionStorage.getItem("eventSphereStudent") ||
+      localStorage.getItem("eventSphereStudent");
 
     if (!rawStudent) {
       return null;
