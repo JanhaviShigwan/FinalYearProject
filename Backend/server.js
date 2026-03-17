@@ -6,6 +6,7 @@
   const express = require("express");
   const mongoose = require("mongoose");
   const cors = require("cors");
+  const aiRoutes = require("./routes/aiRoutes");
 
   const app = express();
 
@@ -37,6 +38,7 @@
 
   app.use("/api/auth", require("./routes/authRoutes"));
   app.use("/api/events", require("./routes/eventRoutes"));
+  app.use("/api/ai", aiRoutes);
   app.use("/api/dashboard", require("./routes/dashboardRoutes"));
   app.use("/api/student", require("./routes/studentRoutes"));
   app.use("/api/announcements", require("./routes/announcementRoutes"));
