@@ -396,39 +396,17 @@ function EventDetails() {
           </div>
         </section>
 
-        <section className="grid gap-6 xl:grid-cols-[1.55fr,1fr] lg:gap-8">
-          <div className="rounded-[24px] border border-white/85 bg-white/95 p-6 shadow-[0_10px_30px_rgba(60,45,95,0.1)] sm:p-8">
-            <h2 className="text-[28px] font-bold text-[#2E2B44]">
-              About This Event
-            </h2>
-
-            <p className="mt-4 leading-[1.9] text-[#4f4f60]">
-              {event.longDescription || "No description available."}
-            </p>
-          </div>
-
-          <aside className="space-y-6">
-            <div className="rounded-[24px] border border-white/85 bg-white/95 p-6 shadow-[0_10px_30px_rgba(60,45,95,0.1)] sm:p-7">
-              <h2 className="mb-5 text-2xl font-bold text-[#2E2B44]">
-                Event Details
+        <section className="grid gap-6 lg:gap-8">
+          <div className="grid items-start gap-6 xl:grid-cols-[1.3fr,1fr]">
+            <div className="rounded-[24px] border border-white/85 bg-white/95 p-5 shadow-[0_10px_30px_rgba(60,45,95,0.1)] sm:p-6">
+              <h2 className="text-2xl font-bold text-[#2E2B44]">
+                About This Event
               </h2>
 
-              <div className="space-y-3.5">
-                {detailCards.map(({ icon, label, value }) => (
-                  <div
-                    key={label}
-                    className="flex items-center gap-3 rounded-2xl border border-[#EEEAF8] bg-[#FBFAFF] p-3.5"
-                  >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#EEEAFE] text-[#7A76B2]">
-                      {icon}
-                    </div>
-
-                    <div className="min-w-0">
-                      <p className="text-xs uppercase tracking-wide text-[#8a8a8a]">{label}</p>
-                      <p className="text-sm font-semibold text-[#3F3D56]">{value}</p>
-                    </div>
-                  </div>
-                ))}
+              <div className="mt-3 max-h-[340px] overflow-y-auto pr-1">
+                <p className="leading-[1.75] text-[#4f4f60]">
+                  {event.longDescription || "No description available."}
+                </p>
               </div>
             </div>
 
@@ -450,7 +428,31 @@ function EventDetails() {
                 Open Settings
               </button>
             </div>
-          </aside>
+          </div>
+
+          <div className="rounded-[24px] border border-white/85 bg-white/95 p-6 shadow-[0_10px_30px_rgba(60,45,95,0.1)] sm:p-7">
+            <h2 className="mb-5 text-2xl font-bold text-[#2E2B44]">
+              Event Details
+            </h2>
+
+            <div className="details-grid gap-3.5">
+              {detailCards.map(({ icon, label, value }) => (
+                <div
+                  key={label}
+                  className="flex items-center gap-3 rounded-2xl border border-[#EEEAF8] bg-[#FBFAFF] p-3.5"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#EEEAFE] text-[#7A76B2]">
+                    {icon}
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="text-xs uppercase tracking-wide text-[#8a8a8a]">{label}</p>
+                    <p className="text-sm font-semibold text-[#3F3D56]">{value}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
 
       </div>
