@@ -38,6 +38,14 @@ const icons = {
   `),
 };
 
+const escapeHtml = (value = "") =>
+  String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
 
 
 const baseTemplate = (
@@ -251,6 +259,53 @@ border-radius:6px;
 exports.eventRegisterTemplate = (eventData) => {
   const event = typeof eventData === 'string' ? eventData : eventData.name;
   const details = typeof eventData === 'object' ? eventData : {};
+  const rules = Array.isArray(details.rules)
+    ? details.rules.filter((rule) => String(rule || "").trim().length > 0)
+    : [];
+
+  const qrImageSrc = details.qrCodeCid
+    ? `cid:${details.qrCodeCid}`
+    : details.qrCodeDataUrl;
+
+  const qrCodeSection = qrImageSrc
+    ? `
+<div style="
+background:#FFFFFF;
+border:1px solid #E5E7EB;
+padding:18px;
+margin:20px 0;
+border-radius:10px;
+text-align:center;
+">
+  <h4 style="margin:0 0 10px 0; color:#9B96E5; font-size:15px;">Your Entry QR Code</h4>
+  <img src="${qrImageSrc}" alt="Event Entry QR Code" style="width:180px; height:180px; border-radius:8px;" />
+  <p style="margin:10px 0 0 0; font-size:13px; color:#3F3D56;">
+    Show this QR code at the venue entrance for ${escapeHtml(event)}.
+  </p>
+</div>
+`
+    : "";
+
+  const rulesSection = rules.length
+    ? `
+<div style="
+background:#FFF7F3;
+border-left:4px solid #F08A6C;
+padding:15px;
+margin:20px 0;
+border-radius:6px;
+">
+  <h4 style="margin:0 0 10px 0; color:#9B96E5; font-size:15px;">
+    Rules & Regulations for ${escapeHtml(event)}
+  </h4>
+  <ol style="margin:0; padding-left:20px; color:#3F3D56; line-height:1.6;">
+    ${rules
+      .map((rule) => `<li style="margin:6px 0;">${escapeHtml(rule)}</li>`)
+      .join("")}
+  </ol>
+</div>
+`
+    : "";
 
   
   return baseTemplate(
@@ -273,6 +328,10 @@ border-radius:6px;
   ${details.location ? `<p style="margin:8px 0; color:#3F3D56; display:flex; align-items:center;"><svg style="width:14px; height:14px; margin-right:6px; color:#9B96E5; flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><strong>Location:</strong> ${details.location}</p>` : ''}
   ${details.capacity ? `<p style="margin:8px 0; color:#3F3D56; display:flex; align-items:center;"><svg style="width:14px; height:14px; margin-right:6px; color:#9B96E5; flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg><strong>Capacity:</strong> ${details.capacity}</p>` : ''}
 </div>
+
+${qrCodeSection}
+
+${rulesSection}
 
 Thank you for registering!
 `,

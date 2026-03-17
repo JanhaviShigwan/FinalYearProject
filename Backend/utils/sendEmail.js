@@ -108,7 +108,10 @@ const sendEmail = async (to, subject, html, options = {}) => {
       from: process.env.EMAIL_FROM || `"EventSphere" <${process.env.EMAIL_USER}>`,
       to: to,
       subject: subject,
-      html: html
+      html: html,
+      ...(Array.isArray(options.attachments) && options.attachments.length > 0
+        ? { attachments: options.attachments }
+        : {})
     };
 
     console.log(`[MAIL] Sending Email | Category: ${category} | to: ${to} | subject: ${subject}`);

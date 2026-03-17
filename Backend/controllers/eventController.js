@@ -10,6 +10,69 @@ const {
   eventCancelTemplate,
 } = require("../utils/template");
 
+const getEventSpecificRules = (eventName = "", category = "") => {
+  const normalizedText = `${eventName} ${category}`.toLowerCase();
+  const eventLabel = eventName || "this event";
+
+  const baseRules = [
+    "Carry your valid college ID card for verification at entry.",
+    `Report at least 15 minutes before the scheduled start time of ${eventLabel}.`,
+    "Follow instructions from event coordinators and volunteers at all times.",
+    "Misconduct, cheating, or harassment can lead to immediate disqualification.",
+  ];
+
+  const keywordRuleSets = [
+    {
+      keywords: ["hackathon", "coding", "code", "programming", "tech"],
+      rules: [
+        "Carry your own charged laptop, charger, and required software setup.",
+        "Plagiarism or using unauthorized code repositories is strictly prohibited.",
+      ],
+    },
+    {
+      keywords: ["workshop", "seminar", "webinar", "talk", "session"],
+      rules: [
+        "Keep your phone on silent mode during the session.",
+        "Bring a notebook or laptop if hands-on activities are included.",
+      ],
+    },
+    {
+      keywords: ["dance", "music", "cultural", "fashion", "performance"],
+      rules: [
+        "Participants must follow the assigned reporting and performance slots.",
+        "Props and costumes should comply with campus safety guidelines.",
+      ],
+    },
+    {
+      keywords: ["sports", "football", "cricket", "badminton", "tournament", "match"],
+      rules: [
+        "Wear appropriate sports attire and safety gear wherever applicable.",
+        "Fair-play rules and referee decisions are final and binding.",
+      ],
+    },
+    {
+      keywords: ["placement", "career", "interview", "resume", "recruit"],
+      rules: [
+        "Carry a printed copy of your resume and student ID.",
+        "Formal or smart-professional attire is recommended.",
+      ],
+    },
+  ];
+
+  const matched = keywordRuleSets.find((ruleSet) =>
+    ruleSet.keywords.some((keyword) => normalizedText.includes(keyword))
+  );
+
+  if (matched) {
+    return [...baseRules, ...matched.rules];
+  }
+
+  return [
+    ...baseRules,
+    `Please review all instructions provided on the ${eventLabel} event page before attending.`,
+  ];
+};
+
 const getEventDefaultSettings = async () => {
   const settings = await AdminSettings
     .findOne({ key: "global" })
@@ -339,13 +402,55 @@ const registerForEvent = async (req, res) => {
 
     // EMAIL
 
+    // Keep payload identical to frontend MyRegistrations QR value.
+    const qrPayload = {
+      studentId: String(student._id),
+      studentName: student.name,
+      eventId: String(event._id),
+      eventName: event.eventName,
+      date: event.date,
+      venue: event.venue,
+    };
+
+    const qrCodeValue = JSON.stringify(qrPayload);
+    const qrCodeCid = `event-registration-qr-${registration._id}@eventsphere`;
+
+    const qrCodeBuffer = await QRCode.toBuffer(
+      qrCodeValue,
+      {
+        width: 220,
+        margin: 1,
+        errorCorrectionLevel: "M",
+        color: {
+          dark: "#3F3D56",
+          light: "#FFFFFF",
+        },
+      }
+    );
+
+    const qrCodeDataUrl = await QRCode.toDataURL(
+      qrCodeValue,
+      {
+        width: 220,
+        margin: 1,
+        errorCorrectionLevel: "M",
+        color: {
+          dark: "#3F3D56",
+          light: "#FFFFFF",
+        },
+      }
+    );
+
     const emailHTML =
       eventRegisterTemplate({
         name: event.eventName,
         date: event.date,
         time: event.time,
         location: event.venue,
-        capacity: event.totalCapacity - event.registeredUsers
+        capacity: event.totalCapacity - event.registeredUsers,
+        qrCodeCid,
+        qrCodeDataUrl,
+        rules: getEventSpecificRules(event.eventName, event.category),
       });
 
 
@@ -355,7 +460,17 @@ const registerForEvent = async (req, res) => {
         student.email,
         "Event Registration Confirmed",
         emailHTML,
-        { topic: "EVENT_REGISTRATION" }
+        {
+          topic: "EVENT_REGISTRATION",
+          attachments: [
+            {
+              filename: `${String(event.eventName || "event").replace(/[^a-z0-9-_ ]/gi, "").trim() || "event"}-entry-qr.png`,
+              content: qrCodeBuffer,
+              contentType: "image/png",
+              cid: qrCodeCid,
+            },
+          ],
+        }
       );
 
     } else {
