@@ -7,114 +7,182 @@ import {
   ShieldCheck,
   Bell,
   LayoutDashboard,
+  Sparkles,
+  Code2,
+  Rocket,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import AnimatedSection from "../components/AnimatedSection";
 
 const AboutUs = () => {
   const [activeTab, setActiveTab] = useState("who");
+
+  const tabs = [
+    { id: "who", label: "Who We Are" },
+    { id: "mission", label: "Mission" },
+    { id: "offer", label: "What We Offer" },
+    { id: "dev", label: "Developer" },
+  ];
+
+  const whoHighlights = [
+    {
+      title: "Centralized Platform",
+      color: "text-[#9B96E5]",
+      glow: "hover:shadow-[0_0_25px_rgba(155,150,229,0.35)]",
+      body: "All event operations from creation to communication are managed in one structured system.",
+    },
+    {
+      title: "Seamless Experience",
+      color: "text-[#22B8CF]",
+      glow: "hover:shadow-[0_0_25px_rgba(34,184,207,0.35)]",
+      body: "A clean and responsive interface helps students and admins stay focused and productive.",
+    },
+    {
+      title: "Secure and Scalable",
+      color: "text-[#F08A6C]",
+      glow: "hover:shadow-[0_0_25px_rgba(240,138,108,0.35)]",
+      body: "Built on MERN with modular architecture and secure authentication for long-term reliability.",
+    },
+  ];
+
+  const missionCards = [
+    {
+      icon: Target,
+      title: "Simplify Management",
+      color: "text-[#9B96E5]",
+      glow: "hover:shadow-[0_0_0_1px_rgba(155,150,229,0.35),0_0_30px_rgba(155,150,229,0.45)]",
+      body: "Replace manual registration and scattered coordination with one smart platform.",
+    },
+    {
+      icon: Zap,
+      title: "Improve Efficiency",
+      color: "text-[#22B8CF]",
+      glow: "hover:shadow-[0_0_0_1px_rgba(34,184,207,0.35),0_0_30px_rgba(34,184,207,0.45)]",
+      body: "Enable quick event creation, fast registration flow, and timely communication.",
+    },
+    {
+      icon: Users,
+      title: "Empower Students",
+      color: "text-[#F08A6C]",
+      glow: "hover:shadow-[0_0_0_1px_rgba(240,138,108,0.35),0_0_30px_rgba(240,138,108,0.45)]",
+      body: "Encourage campus participation with an intuitive and transparent event experience.",
+    },
+  ];
+
+  const offerCards = [
+    {
+      icon: CalendarPlus,
+      title: "Smart Event Creation",
+      color: "text-[#9B96E5]",
+      glow: "hover:shadow-[0_0_0_1px_rgba(155,150,229,0.35),0_0_32px_rgba(155,150,229,0.45)]",
+      body: "Create, organize, and publish events quickly using guided and structured flows.",
+    },
+    {
+      icon: ShieldCheck,
+      title: "Secure Registration",
+      color: "text-[#22B8CF]",
+      glow: "hover:shadow-[0_0_0_1px_rgba(34,184,207,0.35),0_0_32px_rgba(34,184,207,0.45)]",
+      body: "Reliable and secure registration with authentication-aware eligibility checks.",
+    },
+    {
+      icon: Bell,
+      title: "Real-Time Notifications",
+      color: "text-[#F08A6C]",
+      glow: "hover:shadow-[0_0_0_1px_rgba(240,138,108,0.35),0_0_32px_rgba(240,138,108,0.45)]",
+      body: "Instant announcements and updates keep participants in sync with changes.",
+    },
+    {
+      icon: LayoutDashboard,
+      title: "Admin Dashboard",
+      color: "text-[#9B96E5]",
+      glow: "hover:shadow-[0_0_0_1px_rgba(155,150,229,0.35),0_0_32px_rgba(155,150,229,0.45)]",
+      body: "A unified panel for managing users, events, reports, and performance insights.",
+    },
+  ];
 
   return (
     <>
       <Navbar />
 
       {/* about-bg-glow: animated grid + radial glows via ::before — kept in index.css */}
-      <div className="relative bg-transparent text-[#3F3D56] overflow-hidden transition-colors duration-300">
+      <div className="relative overflow-hidden bg-transparent text-[#3F3D56] transition-colors duration-300">
         <div className="about-bg-glow" />
 
-        <div className="relative z-10 max-w-6xl mx-auto px-6 py-24">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 pb-16 pt-10 sm:px-6 lg:px-10 lg:pb-24 lg:pt-14">
 
-          {/* ── HERO ── */}
-          <section className="text-center mb-20">
-            <h1 className="text-5xl font-bold text-[#9B96E5]">About EventSphere</h1>
-            <p className="mt-6 max-w-2xl mx-auto text-lg font-semibold text-[#3F3D56] leading-[1.8] [text-shadow:0_1px_1px_rgba(0,0,0,0.05)]">
-              A modern platform built to transform how colleges manage and
-              experience events — designed with innovation, clarity, and simplicity.
-            </p>
-          </section>
+          <AnimatedSection>
+            <section className="rounded-[32px] border border-white/90 bg-white/75 px-6 py-10 shadow-[0_20px_60px_rgba(58,45,90,0.16)] backdrop-blur-md sm:px-10 sm:py-12 lg:px-14">
+              <div className="mx-auto max-w-4xl text-center">
+                <span className="inline-flex items-center gap-2 rounded-full bg-[#EEEAFE] px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#6C67A9]">
+                  <Sparkles size={14} />
+                  About EventSphere
+                </span>
 
-          {/* ── TABS ── */}
-          <section>
-            <div className="flex flex-wrap justify-center gap-4 mb-16">
-              {[
-                { id: "who",     label: "Who We Are" },
-                { id: "mission", label: "Mission"    },
-                { id: "offer",   label: "What We Offer" },
-                { id: "dev",     label: "Developer"  },
-              ].map((tab) => (
+                <h1 className="mt-5 text-4xl font-extrabold leading-tight text-[#2F2D46] sm:text-5xl lg:text-6xl">
+                  Reimagining Campus Event Management
+                </h1>
+
+                <p className="mx-auto mt-4 max-w-3xl text-base leading-[1.85] text-[#54526A] sm:text-lg">
+                  EventSphere is built to transform how colleges plan, organize, and experience events through a secure and intuitive digital platform.
+                </p>
+              </div>
+            </section>
+          </AnimatedSection>
+
+          <AnimatedSection delay={0.05}>
+            <section className="mt-9">
+              <div className="flex flex-wrap justify-center gap-2.5 rounded-2xl border border-white/80 bg-white/70 p-2 shadow-[0_8px_25px_rgba(54,42,88,0.12)] backdrop-blur-sm sm:gap-3">
+                {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-6 py-3 rounded-2xl font-medium transition-all duration-300 ${
+                  className={`rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-300 sm:text-base ${
                     activeTab === tab.id
-                      ? "bg-[#9B96E5] text-white shadow-lg"
-                      : "bg-white hover:bg-[#EED8D6]/40"
+                      ? "bg-[#9B96E5] text-white shadow-md"
+                      : "bg-white text-[#3F3D56] hover:bg-[#F5F0EA]"
                   }`}
                 >
                   {tab.label}
                 </button>
               ))}
-            </div>
+              </div>
+            </section>
+          </AnimatedSection>
 
-            <div className="bg-white rounded-3xl p-12 shadow-xl transition-all duration-500">
+          <AnimatedSection delay={0.1}>
+            <section className="mt-7 rounded-[30px] border border-white/90 bg-white/88 p-6 shadow-[0_18px_45px_rgba(53,40,85,0.14)] backdrop-blur-md transition-all duration-500 sm:p-8 lg:p-10">
 
               {/* ─── WHO WE ARE ─── */}
               {activeTab === "who" && (
-                <div className="grid md:grid-cols-2 gap-12">
+                <div className="grid gap-9 lg:grid-cols-2 lg:gap-12">
                   <div>
-                    <h2 className="text-3xl font-semibold mb-6 text-[#9B96E5]">Who We Are</h2>
+                    <h2 className="text-3xl font-semibold text-[#9B96E5]">Who We Are</h2>
 
-                    <p className="text-[#3F3D56] leading-relaxed mb-6">
+                    <p className="mb-5 mt-5 text-[#3F3D56] leading-relaxed">
                       EventSphere is a centralized college event management platform
                       designed to eliminate chaos from traditional event coordination.
                       It streamlines registrations, announcements, and participant
                       tracking into one seamless digital ecosystem.
                     </p>
 
-                    <p className="text-[#3F3D56]/90 leading-relaxed mb-6">
+                    <p className="text-[#3F3D56]/90 leading-relaxed">
                       Built with scalability and usability in mind, EventSphere empowers
                       organizers and students to manage and participate in events
                       efficiently through a modern, responsive interface.
                     </p>
-
-                    <div className="flex gap-6 mt-8">
-                      <div>
-                        <h3 className="text-2xl font-semibold text-[#9B96E5]">20+</h3>
-                        <p>Events Supported</p>
-                      </div>
-                      <div>
-                        <h3 className="text-2xl font-semibold text-[#D8E8D1]">1000+</h3>
-                        <p>Registrations Managed</p>
-                      </div>
-                      <div>
-                        <h3 className="text-2xl font-semibold text-[#F08A6C]">100%</h3>
-                        <p>Digital Process</p>
-                      </div>
-                    </div>
                   </div>
 
-                  <div className="feature-list">
-                    <div className="bg-white mb-4 border border-[#EED8D6]/60 p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(155,150,229,0.35)]">
-                      <h3 className="font-semibold text-lg pb-3 text-[#9B96E5]">Centralized Platform</h3>
-                      <p>
-                        All event operations — creation, registration, notifications —
-                        handled in one structured system.
-                      </p>
-                    </div>
-
-                    <div className="bg-white mb-4 border border-[#EED8D6]/60 p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(216,232,209,0.75)]">
-                      <h3 className="font-semibold text-lg pb-3 text-[#22B8CF]">Seamless Experience</h3>
-                      <p>
-                        Clean UI and responsive design ensure smooth interaction across devices.
-                      </p>
-                    </div>
-
-                    <div className="bg-white mb-4 border border-[#EED8D6]/60 p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(240,138,108,0.4)]">
-                      <h3 className="font-semibold text-lg pb-3 text-[#F08A6C]">Secure &amp; Scalable</h3>
-                      <p>
-                        Built using the MERN stack with structured architecture and secure authentication.
-                      </p>
-                    </div>
+                  <div className="feature-list space-y-4">
+                    {whoHighlights.map((item) => (
+                      <div
+                        key={item.title}
+                        className={`rounded-2xl border border-[#EED8D6]/60 bg-white p-6 transition-all duration-300 hover:-translate-y-1 ${item.glow}`}
+                      >
+                        <h3 className={`pb-2 text-lg font-semibold ${item.color}`}>{item.title}</h3>
+                        <p className="text-[#4B4863] leading-relaxed">{item.body}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -123,38 +191,21 @@ const AboutUs = () => {
               {activeTab === "mission" && (
                 <div className="text-center">
                   <h2 className="text-3xl font-semibold text-[#9B96E5]">Our Mission</h2>
-                  <p className="mt-4 max-w-2xl mx-auto text-[#3F3D56] leading-[1.8] [text-shadow:0_1px_1px_rgba(0,0,0,0.05)]">
+                  <p className="mx-auto mt-4 max-w-2xl text-[#3F3D56] leading-[1.8] [text-shadow:0_1px_1px_rgba(0,0,0,0.05)]">
                     Simplifying college event management through smart, secure, and scalable digital solutions.
                   </p>
 
-                  <div className="grid md:grid-cols-3 gap-8 mt-12">
-
-                    <div className="rounded-2xl p-8 text-left transition-all duration-300 hover:-translate-y-1 bg-white border border-[#EED8D6]/50 backdrop-blur-xl hover:shadow-[0_0_0_1px_rgba(155,150,229,0.35),0_0_30px_rgba(155,150,229,0.45)]">
-                      <Target size={28} className="text-[#9B96E5]" />
-                      <h3 className="text-lg font-semibold text-[#9B96E5] mt-4 mb-3">Simplify Management</h3>
-                      <p className="text-base text-[#3F3D56] leading-[1.7]">
-                        Eliminate manual registrations and scattered communication
-                        through a centralized digital platform.
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl p-8 text-left transition-all duration-300 hover:-translate-y-1 bg-white border border-[#EED8D6]/50 backdrop-blur-xl hover:shadow-[0_0_0_1px_rgba(71,217,240,0.35),0_0_30px_rgba(63,220,244,0.85)]">
-                      <Zap size={28} className="text-[#22B8CF]" />
-                      <h3 className="text-lg font-semibold text-[#22B8CF] mt-4 mb-3">Improve Efficiency</h3>
-                      <p className="text-base text-[#3F3D56] leading-[1.7]">
-                        Provide fast event creation, instant registrations, and
-                        real-time notifications.
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl p-8 text-left transition-all duration-300 hover:-translate-y-1 bg-white border border-[#EED8D6]/50 backdrop-blur-xl hover:shadow-[0_0_0_1px_rgba(240,138,108,0.35),0_0_30px_rgba(240,138,108,0.45)]">
-                      <Users size={28} className="text-[#F08A6C]" />
-                      <h3 className="text-lg font-semibold text-[#F08A6C] mt-4 mb-3">Empower Students</h3>
-                      <p className="text-base text-[#3F3D56] leading-[1.7]">
-                        Build a platform that encourages participation and enhances campus engagement.
-                      </p>
-                    </div>
-
+                  <div className="mt-10 grid gap-6 md:grid-cols-3">
+                    {missionCards.map(({ icon: Icon, title, color, body, glow }) => (
+                      <div
+                        key={title}
+                        className={`rounded-2xl border border-[#EED8D6]/50 bg-white p-7 text-left transition-all duration-300 hover:-translate-y-1 ${glow}`}
+                      >
+                        <Icon size={28} className={color} />
+                        <h3 className={`mb-3 mt-4 text-lg font-semibold ${color}`}>{title}</h3>
+                        <p className="text-base leading-[1.7] text-[#3F3D56]">{body}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -163,62 +214,39 @@ const AboutUs = () => {
               {activeTab === "offer" && (
                 <div className="text-center">
                   <h2 className="text-3xl font-semibold text-[#9B96E5]">What We Offer</h2>
-                  <p className="mt-4 max-w-2xl mx-auto text-[#3F3D56] leading-[1.8] [text-shadow:0_1px_1px_rgba(0,0,0,0.05)]">
+                  <p className="mx-auto mt-4 max-w-2xl text-[#3F3D56] leading-[1.8] [text-shadow:0_1px_1px_rgba(0,0,0,0.05)]">
                     Powerful features designed to enhance event organization and student engagement.
                   </p>
 
-                  <div className="grid md:grid-cols-2 gap-8 mt-12">
-
-                    <div className="rounded-2xl p-8 text-left transition-all duration-300 hover:-translate-y-1 bg-white border border-[#EED8D6]/50 backdrop-blur-xl hover:shadow-[0_0_0_1px_rgba(155,150,229,0.35),0_0_32px_rgba(155,150,229,0.45)]">
-                      <CalendarPlus size={28} className="text-[#9B96E5]" />
-                      <h3 className="text-lg font-semibold text-[#9B96E5] mt-4 mb-3">Smart Event Creation</h3>
-                      <p className="text-base text-[#3F3D56] leading-[1.7]">
-                        Create and manage events easily with structured forms and dashboards.
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl p-8 text-left transition-all duration-300 hover:-translate-y-1 bg-white border border-[#EED8D6]/50 backdrop-blur-xl hover:shadow-[0_0_0_1px_rgba(34,184,207,0.35),0_0_32px_rgba(34,184,207,0.45)]">
-                      <ShieldCheck size={28} className="text-[#22B8CF]" />
-                      <h3 className="text-lg font-semibold text-[#22B8CF] mt-4 mb-3">Secure Registration</h3>
-                      <p className="text-base text-[#3F3D56] leading-[1.7]">
-                        Safe and fast registration system with authentication support.
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl p-8 text-left transition-all duration-300 hover:-translate-y-1 bg-white border border-[#EED8D6]/50 backdrop-blur-xl hover:shadow-[0_0_0_1px_rgba(240,138,108,0.35),0_0_32px_rgba(240,138,108,0.45)]">
-                      <Bell size={28} className="text-[#F08A6C]" />
-                      <h3 className="text-lg font-semibold text-[#F08A6C] mt-4 mb-3">Real-Time Notifications</h3>
-                      <p className="text-base text-[#3F3D56] leading-[1.7]">
-                        Instant updates for participants about event schedules and changes.
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl p-8 text-left transition-all duration-300 hover:-translate-y-1 bg-white border border-[#EED8D6]/50 backdrop-blur-xl hover:shadow-[0_0_0_1px_rgba(155,150,229,0.35),0_0_32px_rgba(155,150,229,0.45)]">
-                      <LayoutDashboard size={28} className="text-[#9B96E5]" />
-                      <h3 className="text-lg font-semibold text-[#9B96E5] mt-4 mb-3">Admin Dashboard</h3>
-                      <p className="text-base text-[#3F3D56] leading-[1.7]">
-                        Organized control panel to manage users, events, and analytics.
-                      </p>
-                    </div>
-
+                  <div className="mt-10 grid gap-6 md:grid-cols-2">
+                    {offerCards.map(({ icon: Icon, title, color, body, glow }) => (
+                      <div
+                        key={title}
+                        className={`rounded-2xl border border-[#EED8D6]/50 bg-white p-7 text-left transition-all duration-300 hover:-translate-y-1 ${glow}`}
+                      >
+                        <Icon size={28} className={color} />
+                        <h3 className={`mb-3 mt-4 text-lg font-semibold ${color}`}>{title}</h3>
+                        <p className="text-base leading-[1.7] text-[#3F3D56]">{body}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
 
               {/* ─── DEVELOPER ─── */}
               {activeTab === "dev" && (
-                <div className="max-w-7xl mx-auto">
-                  <div className="grid md:grid-cols-2 gap-12">
+                <div className="mx-auto max-w-7xl">
+                  <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
 
                     {/* Left — Developer Profile */}
-                    <div className="rounded-3xl p-10 transition-all duration-300 bg-white border border-[#EED8D6]/50 backdrop-blur-xl">
-                      <div className="flex items-center gap-6 mb-6">
-                        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#9B96E5] to-[#F08A6C] flex items-center justify-center text-white text-4xl shadow-lg">
-                          👨‍💻
+                    <div className="rounded-3xl border border-[#EED8D6]/50 bg-white p-8 transition-all duration-300 backdrop-blur-xl">
+                      <div className="mb-6 flex items-center gap-5">
+                        <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-[#9B96E5] to-[#F08A6C] text-white shadow-lg">
+                          <Code2 size={32} />
                         </div>
                         <div>
-                          <h3 className="text-[22px] font-bold text-[#3F3D56] leading-[1.4]">Janhavi Shigwan</h3>
-                          <p className="font-medium mt-1 text-[#9B96E5]">MERN Stack Developer</p>
+                          <h3 className="text-[22px] font-bold leading-[1.4] text-[#3F3D56]">Janhavi Shigwan</h3>
+                          <p className="mt-1 font-medium text-[#9B96E5]">MERN Stack Developer</p>
                         </div>
                       </div>
 
@@ -229,15 +257,19 @@ const AboutUs = () => {
                         Express.js, React.js, and Node.js.
                       </p>
 
-                      <div className="flex mt-4 gap-4">
+                      <div className="mt-5 flex flex-wrap gap-3">
                         <a
-                          href="#www.linkedin.com/in/janhavi-shigwan"
+                          href="https://www.linkedin.com/in/janhavi-shigwan"
+                          target="_blank"
+                          rel="noreferrer"
                           className="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-300 bg-[#9B96E5]/15 text-[#9B96E5] hover:bg-[#9B96E5]/25"
                         >
                           LinkedIn
                         </a>
                         <a
                           href="https://github.com/JanhaviShigwan"
+                          target="_blank"
+                          rel="noreferrer"
                           className="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-300 bg-[#F08A6C]/15 text-[#F08A6C] hover:bg-[#F08A6C]/25"
                         >
                           GitHub
@@ -246,10 +278,10 @@ const AboutUs = () => {
                     </div>
 
                     {/* Right — Project Details */}
-                    <div className="rounded-3xl p-10 transition-all duration-300 bg-white border border-[#EED8D6]/50 backdrop-blur-xl">
-                      <div className="flex items-center gap-4 mb-6">
-                        <div className="w-14 h-14 rounded-2xl bg-[#9B96E5] flex items-center justify-center text-white text-xl shadow-md">
-                          {"</>"}
+                    <div className="rounded-3xl border border-[#EED8D6]/50 bg-white p-8 transition-all duration-300 backdrop-blur-xl">
+                      <div className="mb-6 flex items-center gap-4">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#9B96E5] text-white shadow-md">
+                          <Rocket size={22} />
                         </div>
                         <h3 className="text-[22px] font-bold text-[#3F3D56]">Academic Capstone Project</h3>
                       </div>
@@ -268,7 +300,7 @@ const AboutUs = () => {
                         performance across devices.
                       </p>
 
-                      <div className="flex flex-wrap gap-3 mt-6">
+                      <div className="mt-6 flex flex-wrap gap-3">
                         {[
                           "MongoDB",
                           "Express.js",
@@ -291,8 +323,8 @@ const AboutUs = () => {
                 </div>
               )}
 
-            </div>
-          </section>
+            </section>
+          </AnimatedSection>
         </div>
       </div>
 
