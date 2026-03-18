@@ -169,6 +169,8 @@ export default function AdminCreateEvent({
         venue: form.venue,
         date: form.date,
         time: form.time,
+        endDate: form.endDate,
+        endTime: form.endTime,
         eventImage: form.eventImage,
         totalCapacity: Number(form.totalCapacity),
       });

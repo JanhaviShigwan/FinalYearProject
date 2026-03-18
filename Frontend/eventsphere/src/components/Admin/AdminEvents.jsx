@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Edit2, Trash2, Eye, Search, Calendar, X, Save, Filter, Star, TrendingUp } from 'lucide-react';
 import ConfirmPopup from '../popup';
+import { getEventLifecycleStatus, getEventStartDateTime } from '../../utils/eventStatus';
 
 export default function AdminEvents({
   events,
@@ -55,30 +56,27 @@ export default function AdminEvents({
 
   const filteredEvents = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
 
     const resolveEventDate = (event) => {
-      const rawDate = event.eventDate || event.date || event.startDate;
-      const parsedDate = new Date(rawDate);
-      return Number.isNaN(parsedDate.getTime()) ? Number.MAX_SAFE_INTEGER : parsedDate.getTime();
+      const parsedDate = getEventStartDateTime(event);
+      return parsedDate ? parsedDate.getTime() : Number.MAX_SAFE_INTEGER;
     };
 
     const base = events.filter((event) => {
       const categoryMatch = categoryFilter === 'all' || event.category === categoryFilter;
       const venueMatch = venueFilter === 'all' || event.venue === venueFilter;
-
-      const eventDate = new Date(event.eventDate || event.date || event.startDate);
-      eventDate.setHours(0, 0, 0, 0);
+      const lifecycleStatus = getEventLifecycleStatus(event);
 
       let statusMatch = true;
 
       if (statusFilter === 'all') {
-        statusMatch = eventDate >= today;
+        statusMatch = true;
       } else if (statusFilter === 'upcoming') {
-        statusMatch = eventDate >= today;
-      } else if (statusFilter === 'past') {
-        statusMatch = eventDate < today;
+        statusMatch = lifecycleStatus === 'upcoming';
+      } else if (statusFilter === 'live') {
+        statusMatch = lifecycleStatus === 'live';
+      } else if (statusFilter === 'ended') {
+        statusMatch = lifecycleStatus === 'ended';
       }
 
       return categoryMatch && venueMatch && statusMatch;
@@ -338,7 +336,8 @@ export default function AdminEvents({
           >
             <option value="all">All Status</option>
             <option value="upcoming">Upcoming</option>
-            <option value="past">Past</option>
+            <option value="live">Live</option>
+            <option value="ended">Ended</option>
           </select>
 
           <button

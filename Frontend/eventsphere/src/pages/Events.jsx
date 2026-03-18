@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import FeaturedEventCard from "../components/FeatureEventsCard";
@@ -6,6 +6,12 @@ import EventCard from "../components/EventCard";
 import { Search, Sparkles } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import API_URL from "../api";
+import {
+  getEventLifecycleLabel,
+  getEventLifecycleStatus,
+  getEventStartDateTime,
+  isEventRegistrationOpen,
+} from "../utils/eventStatus";
 
 function Events() {
   const [events, setEvents] = useState([]);
@@ -18,24 +24,11 @@ function Events() {
   const [searchParams] = useSearchParams();
   const categoryFromURL = searchParams.get("category");
 
-  /* ── Helper: Check if event registration is available ── */
-  const isRegistrationAvailable = useCallback((event) => {
-    const now = new Date();
-    const eventStart = new Date(`${event.date} ${event.time || "00:00"}`);
-    const registrationOpenDate = new Date(eventStart);
-    registrationOpenDate.setDate(eventStart.getDate() - 14);
-
-    const eventEnd = new Date(eventStart);
-    eventEnd.setHours(eventStart.getHours() + 3);
-
-    return now >= registrationOpenDate && now <= eventEnd;
-  }, []);
-
   /* ── Fetch events ── */
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const getRegistrationCount = (event) => {
-      if (!isRegistrationAvailable(event)) {
+      if (!isEventRegistrationOpen(event)) {
         return 0;
       }
 
@@ -65,7 +58,7 @@ function Events() {
     }, 5000);
 
     return () => clearInterval(refreshInterval);
-  }, [isRegistrationAvailable]);
+  }, []);
 
   /* ── Category from URL ── */
   useEffect(() => {
@@ -82,19 +75,14 @@ function Events() {
   ];
 
   const getEventStatus = (event) => {
-    const now = new Date();
-    const eventDate = new Date(`${event.date} ${event.time}`);
-
-    if (eventDate > now) return "Upcoming";
-    if (eventDate.toDateString() === now.toDateString()) return "Ongoing";
-    return "Past";
+    return getEventLifecycleLabel(getEventLifecycleStatus(event));
   };
 
   /* Status priority for sorting */
   const statusPriority = {
-    Ongoing: 1,
+    Live: 1,
     Upcoming: 2,
-    Past: 3
+    Ended: 3
   };
 
   /* ── Category Filter ── */
@@ -126,18 +114,18 @@ function Events() {
   ).length;
 
   const ongoingCount = searchFiltered.filter(
-    e => getEventStatus(e) === "Ongoing"
+    e => getEventStatus(e) === "Live"
   ).length;
 
   const pastCount = searchFiltered.filter(
-    e => getEventStatus(e) === "Past"
+    e => getEventStatus(e) === "Ended"
   ).length;
 
   const statusTabs = [
     { label: "All", count: allCount },
     { label: "Upcoming", count: upcomingCount },
-    { label: "Ongoing", count: ongoingCount },
-    { label: "Past", count: pastCount }
+    { label: "Live", count: ongoingCount },
+    { label: "Ended", count: pastCount }
   ];
 
   /* ── Status Filter ── */
@@ -157,10 +145,13 @@ function Events() {
       return statusPriority[statusA] - statusPriority[statusB];
     }
 
-    const dateA = new Date(`${a.date} ${a.time || ""}`);
-    const dateB = new Date(`${b.date} ${b.time || ""}`);
+    const dateA = getEventStartDateTime(a);
+    const dateB = getEventStartDateTime(b);
 
-    return dateA - dateB;
+    const timeA = dateA ? dateA.getTime() : Number.MAX_SAFE_INTEGER;
+    const timeB = dateB ? dateB.getTime() : Number.MAX_SAFE_INTEGER;
+
+    return timeA - timeB;
   });
 
   useEffect(() => {

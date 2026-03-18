@@ -92,7 +92,7 @@ const parseEventTime = (rawTime) => {
   return null;
 };
 
-const parseEventEndDate = (event) => {
+const parseEventStartDate = (event) => {
   if (!event?.date) {
     return null;
   }
@@ -100,13 +100,12 @@ const parseEventEndDate = (event) => {
   const startDate = new Date(`${event.date}T00:00:00`);
 
   if (Number.isNaN(startDate.getTime())) {
-    const fallbackDate = new Date(event.date);
+    const fallbackDate = new Date(`${event.date} ${event.time || ""}`);
 
     if (Number.isNaN(fallbackDate.getTime())) {
       return null;
     }
 
-    fallbackDate.setHours(23, 59, 59, 999);
     return fallbackDate;
   }
 
@@ -115,12 +114,48 @@ const parseEventEndDate = (event) => {
   if (parsedTime) {
     startDate.setHours(parsedTime.hours, parsedTime.minutes, 0, 0);
   } else {
-    startDate.setHours(23, 59, 59, 999);
+    startDate.setHours(0, 0, 0, 0);
   }
 
-  // Keep the same event window logic used in registration checks.
-  startDate.setHours(startDate.getHours() + 3);
   return startDate;
+};
+
+const parseEventEndDate = (event) => {
+  if (!event?.date && !event?.endDate) {
+    return null;
+  }
+
+  const resolvedEndDate = event.endDate || event.date;
+  const resolvedEndTime = event.endTime || event.time;
+
+  const endDate = new Date(`${resolvedEndDate}T00:00:00`);
+
+  if (Number.isNaN(endDate.getTime())) {
+    const fallbackDate = new Date(`${resolvedEndDate} ${resolvedEndTime || ""}`);
+
+    if (Number.isNaN(fallbackDate.getTime())) {
+      return null;
+    }
+
+    return fallbackDate;
+  }
+
+  const parsedTime = parseEventTime(resolvedEndTime);
+
+  if (parsedTime) {
+    endDate.setHours(parsedTime.hours, parsedTime.minutes, 0, 0);
+  } else {
+    endDate.setHours(23, 59, 59, 999);
+  }
+
+  const parsedStart = parseEventStartDate(event);
+  if (parsedStart && endDate < parsedStart) {
+    const fallbackEnd = new Date(parsedStart);
+    fallbackEnd.setHours(fallbackEnd.getHours() + 3);
+    return fallbackEnd;
+  }
+
+  return endDate;
 };
 
 const getSortedBreakdown = (mapObj) => {
@@ -808,14 +843,20 @@ exports.getDashboardData = async (req, res) => {
 
     // convert string date -> real date
 
-    const upcomingEventsList = events.filter(e => {
-      const eventDate = new Date(e.date);
-      return eventDate > now;
+    const upcomingEventsList = events.filter((event) => {
+      const eventStart = parseEventStartDate(event);
+      return eventStart ? eventStart > now : false;
     });
 
-    const ongoingEventsList = events.filter(e => {
-      const eventDate = new Date(e.date);
-      return eventDate <= now;
+    const ongoingEventsList = events.filter((event) => {
+      const eventStart = parseEventStartDate(event);
+      const eventEnd = parseEventEndDate(event);
+
+      if (!eventStart || !eventEnd) {
+        return false;
+      }
+
+      return now >= eventStart && now <= eventEnd;
     });
 
 

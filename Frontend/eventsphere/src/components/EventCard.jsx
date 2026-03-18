@@ -1,27 +1,14 @@
 import React from "react";
 import { Calendar, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
+import { getEventLifecycleStatus } from "../utils/eventStatus";
 
 const EventCard = React.memo(({ event }) => {
 
   if (!event) return null;
 
-  // Safe date parsing
-  const now = new Date();
-
-  const eventDateTime = event?.time
-    ? new Date(`${event.date}T${event.time}`)
-    : new Date(event.date);
-
-  let status = "Upcoming";
-
-  if (eventDateTime.toDateString() === now.toDateString()) {
-    status = "Ongoing";
-  } else if (eventDateTime < now) {
-    status = "Past";
-  }
-
-  const isPast = status === "Past";
+  const status = getEventLifecycleStatus(event);
+  const isEnded = status === "ended";
 
   return (
     <div
@@ -32,12 +19,12 @@ const EventCard = React.memo(({ event }) => {
         flex flex-col justify-between
         hover:-translate-y-1.5
         hover:shadow-[0_16px_30px_rgba(0,0,0,0.12)]
-        ${isPast ? "opacity-60 grayscale-[30%]" : ""}
+        ${isEnded ? "opacity-60 grayscale-[30%]" : ""}
       `}
     >
 
       {/* LIVE badge */}
-      {status === "Ongoing" && (
+      {status === "live" && (
         <span className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full animate-[livePulse_1.5s_infinite]">
           LIVE
         </span>
@@ -90,18 +77,18 @@ const EventCard = React.memo(({ event }) => {
         <Link to={`/events/${event?._id}`}>
 
           <button
-            disabled={isPast}
+            disabled={isEnded}
             className={`
               mt-3.5 w-full py-3 rounded-full
               font-semibold text-[15px] text-white
               border-none transition-all duration-[250ms]
-              ${isPast
+              ${isEnded
                 ? "bg-[#b5b5b5] cursor-not-allowed"
                 : "bg-[#F08A6C] hover:bg-[#e6785a]"
               }
             `}
           >
-            {isPast ? "Event Ended" : "View Details"}
+            {isEnded ? "Event Ended" : "View Details"}
           </button>
 
         </Link>

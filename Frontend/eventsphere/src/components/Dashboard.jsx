@@ -12,12 +12,17 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import API_URL from "../api";
+import {
+  getEventLifecycleStatus,
+  isEventRegistrationOpen,
+} from "../utils/eventStatus";
 
 export default function Dashboard() {
 
   const navigate = useNavigate();
 
   const [myEvents, setMyEvents] = useState([]);
+  const [allEvents, setAllEvents] = useState([]);
 
   const [currentStudent, setCurrentStudent] = useState(() => {
     return JSON.parse(localStorage.getItem("eventSphereStudent")) || {};
@@ -27,12 +32,6 @@ export default function Dashboard() {
     () => currentStudent?._id || currentStudent?.id,
     [currentStudent]
   );
-
-  const [dashboardData, setDashboardData] = useState({
-    myRegistrations: [],
-    upcomingEventList: [],
-    ongoingEvents: [],
-  });
 
   const needsProfileCompletion =
     currentStudent?.role !== "admin" && !currentStudent?.profileComplete;
@@ -46,23 +45,21 @@ export default function Dashboard() {
 
   useEffect(() => {
 
-    const fetchDashboard = async () => {
-      try {
-        const res = await axios.get(
-          `${API_URL}/dashboard/${studentId}`
-        );
-        setDashboardData(res.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     const fetchMyEvents = async () => {
       try {
         const res = await axios.get(
           `${API_URL}/events/student-registrations/${studentId}`
         );
         setMyEvents(res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const fetchAllEvents = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/events`);
+        setAllEvents(res.data || []);
       } catch (error) {
         console.error(error);
       }
@@ -82,13 +79,13 @@ export default function Dashboard() {
 
     if (studentId) {
       fetchProfileStatus();
-      fetchDashboard();
       fetchMyEvents();
+      fetchAllEvents();
 
       refreshInterval = setInterval(() => {
         fetchProfileStatus();
-        fetchDashboard();
         fetchMyEvents();
+        fetchAllEvents();
       }, 5000);
     }
 
@@ -100,27 +97,24 @@ export default function Dashboard() {
 
   }, [studentId]);
 
-  const today = new Date();
-
-const upcomingEventsFiltered = dashboardData.upcomingEventList.filter(
+const upcomingEventsFiltered = allEvents.filter(
   (event) => {
-
-    const eventDate = new Date(event.date);
-
-    const isFuture = eventDate > today;
+    const status = getEventLifecycleStatus(event);
+    const isFuture = status === "upcoming";
 
     const isRegistered = myEvents.some(
       (e) => e._id === event._id
     );
 
-    const canRegister =
-      event.registrationOpen !== false;
+    const canRegister = isEventRegistrationOpen(event);
 
     return isFuture && !isRegistered && canRegister;
   }
 );
 
-  const ongoingCount = dashboardData.ongoingEvents?.length ?? 0;
+  const ongoingCount = allEvents.filter(
+    (event) => getEventLifecycleStatus(event) === "live"
+  ).length;
 
   const fade = {
     hidden: { opacity: 0, y: 18 },

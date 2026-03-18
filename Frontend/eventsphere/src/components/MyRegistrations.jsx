@@ -12,6 +12,7 @@ import {
   Ticket,
 } from "lucide-react";
 import API_URL from "../api";
+import { getEventLifecycleStatus } from "../utils/eventStatus";
 
 export default function MyRegistrations() {
   const [myEvents, setMyEvents] = useState([]);
@@ -80,58 +81,7 @@ export default function MyRegistrations() {
       })
     : "";
 
-  const parseEventStart = (event) => {
-    const eventDate = new Date(event.date);
-
-    if (Number.isNaN(eventDate.getTime())) {
-      return null;
-    }
-
-    const parsed = String(event.time || "").trim();
-    const twelveHourMatch = parsed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-
-    if (twelveHourMatch) {
-      const hour12 = Number(twelveHourMatch[1]);
-      const minute = Number(twelveHourMatch[2]);
-      const period = twelveHourMatch[3].toUpperCase();
-      const hour24 = ((hour12 % 12) + (period === "PM" ? 12 : 0));
-      eventDate.setHours(hour24, minute, 0, 0);
-      return eventDate;
-    }
-
-    const twentyFourHourMatch = parsed.match(/^(\d{1,2}):(\d{2})$/);
-
-    if (twentyFourHourMatch) {
-      eventDate.setHours(Number(twentyFourHourMatch[1]), Number(twentyFourHourMatch[2]), 0, 0);
-      return eventDate;
-    }
-
-    eventDate.setHours(23, 59, 59, 999);
-    return eventDate;
-  };
-
-  const getEventStatus = (event) => {
-    const eventStart = parseEventStart(event);
-
-    if (!eventStart) {
-      return "upcoming";
-    }
-
-    const eventEnd = new Date(eventStart);
-    eventEnd.setHours(eventEnd.getHours() + 3);
-
-    const now = new Date();
-
-    if (now < eventStart) {
-      return "upcoming";
-    }
-
-    if (now > eventEnd) {
-      return "past";
-    }
-
-    return "live";
-  };
+  const getEventStatus = (event) => getEventLifecycleStatus(event);
 
   const fade = {
     hidden: { opacity: 0, y: 16 },
@@ -189,7 +139,7 @@ export default function MyRegistrations() {
                         ? "bg-pastel-green/95 text-deep-slate"
                         : "bg-slate-400 text-white"
                   }`}>
-                    {eventStatus === "upcoming" ? "Upcoming" : eventStatus === "live" ? "Live" : "Past"}
+                    {eventStatus === "upcoming" ? "Upcoming" : eventStatus === "live" ? "Live" : "Ended"}
                   </span>
                 </div>
 
@@ -219,21 +169,27 @@ export default function MyRegistrations() {
                   </div>
 
                   {/* Actions */}
-                  <div className="mt-auto pt-5 flex gap-3">
-                    <button
-                      onClick={() => setQrEvent(event)}
-                      className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-lavender/30 bg-lavender/10 text-lavender text-base font-bold hover:bg-lavender hover:text-white transition-colors"
-                    >
-                      <QrCode className="w-4.5 h-4.5" />
-                      View QR
-                    </button>
-                    <button
-                      onClick={() => setCancelTarget(event._id)}
-                      className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-coral/30 bg-coral/10 text-coral text-base font-bold hover:bg-coral hover:text-white transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  </div>
+                  {eventStatus !== "ended" ? (
+                    <div className="mt-auto pt-5 flex gap-3">
+                      <button
+                        onClick={() => setQrEvent(event)}
+                        className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-lavender/30 bg-lavender/10 text-lavender text-base font-bold hover:bg-lavender hover:text-white transition-colors"
+                      >
+                        <QrCode className="w-4.5 h-4.5" />
+                        View QR
+                      </button>
+                      <button
+                        onClick={() => setCancelTarget(event._id)}
+                        className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-coral/30 bg-coral/10 text-coral text-base font-bold hover:bg-coral hover:text-white transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="mt-auto pt-5 text-sm font-semibold text-deep-slate/45">
+                      Event has ended.
+                    </div>
+                  )}
                 </div>
               </motion.div>
             );

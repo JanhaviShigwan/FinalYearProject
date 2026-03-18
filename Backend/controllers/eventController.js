@@ -125,11 +125,117 @@ const getEventDefaultSettings = async () => {
   };
 };
 
+const parseEventTime = (rawTime) => {
+  if (!rawTime || typeof rawTime !== "string") {
+    return null;
+  }
+
+  const value = rawTime.trim();
+
+  const twelveHourMatch = value.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (twelveHourMatch) {
+    const hour12 = Number(twelveHourMatch[1]);
+    const minute = Number(twelveHourMatch[2]);
+    const period = twelveHourMatch[3].toUpperCase();
+
+    if (hour12 < 1 || hour12 > 12 || minute < 0 || minute > 59) {
+      return null;
+    }
+
+    let hour24 = hour12 % 12;
+    if (period === "PM") {
+      hour24 += 12;
+    }
+
+    return { hours: hour24, minutes: minute };
+  }
+
+  const twentyFourHourMatch = value.match(/^(\d{1,2}):(\d{2})$/);
+  if (twentyFourHourMatch) {
+    const hour = Number(twentyFourHourMatch[1]);
+    const minute = Number(twentyFourHourMatch[2]);
+
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+      return null;
+    }
+
+    return { hours: hour, minutes: minute };
+  }
+
+  return null;
+};
+
+const buildEventDateTime = (dateValue, timeValue, useEndOfDayWhenNoTime = false) => {
+  if (!dateValue) {
+    return null;
+  }
+
+  const dateOnly = typeof dateValue === "string"
+    ? new Date(`${dateValue}T00:00:00`)
+    : new Date(dateValue);
+
+  const baseDate = Number.isNaN(dateOnly.getTime())
+    ? new Date(dateValue)
+    : dateOnly;
+
+  if (Number.isNaN(baseDate.getTime())) {
+    return null;
+  }
+
+  const parsedTime = parseEventTime(timeValue);
+
+  if (parsedTime) {
+    baseDate.setHours(parsedTime.hours, parsedTime.minutes, 0, 0);
+    return baseDate;
+  }
+
+  if (useEndOfDayWhenNoTime) {
+    baseDate.setHours(23, 59, 59, 999);
+  } else {
+    baseDate.setHours(0, 0, 0, 0);
+  }
+
+  return baseDate;
+};
+
+const getEventStartDateTime = (event) => {
+  return buildEventDateTime(event?.date, event?.time, false);
+};
+
+const getEventEndDateTime = (event) => {
+  const startDateTime = getEventStartDateTime(event);
+
+  const explicitEndDateTime = buildEventDateTime(
+    event?.endDate || event?.date,
+    event?.endTime || event?.time,
+    true
+  );
+
+  if (explicitEndDateTime && startDateTime && explicitEndDateTime < startDateTime) {
+    const fallbackEnd = new Date(startDateTime);
+    fallbackEnd.setHours(fallbackEnd.getHours() + 3);
+    return fallbackEnd;
+  }
+
+  if (explicitEndDateTime) {
+    return explicitEndDateTime;
+  }
+
+  if (!startDateTime) {
+    return null;
+  }
+
+  const fallbackEnd = new Date(startDateTime);
+  fallbackEnd.setHours(fallbackEnd.getHours() + 3);
+  return fallbackEnd;
+};
+
 const getRegistrationWindowState = (event, settings) => {
-  const eventDate = new Date(event.date);
+  const eventStart = getEventStartDateTime(event);
+  const eventEnd = getEventEndDateTime(event);
   const now = new Date();
 
-  if (Number.isNaN(eventDate.getTime())) {
+  if (!eventStart || !eventEnd) {
     return {
       registrationOpen: false,
       registrationOpenDate: null,
@@ -137,11 +243,8 @@ const getRegistrationWindowState = (event, settings) => {
     };
   }
 
-  const openDate = new Date(eventDate);
-  openDate.setDate(eventDate.getDate() - settings.registrationOpenDaysBefore);
-
-  const eventEnd = new Date(`${event.date} ${event.time}`);
-  eventEnd.setHours(eventEnd.getHours() + 3);
+  const openDate = new Date(eventStart);
+  openDate.setDate(eventStart.getDate() - settings.registrationOpenDaysBefore);
 
   const hasSlots = Number(event.registeredUsers || 0) < Number(event.totalCapacity || 0);
   const isWithinWindow = now >= openDate && now <= eventEnd;
@@ -180,25 +283,11 @@ const getEvents = async (req, res) => {
         Event.countDocuments(),
       ]);
 
-    const today = new Date();
-
     const eventsWithRegistrationDate = events.map(event => {
-
-      const eventDate = new Date(event.date);
-
-      const openDate = new Date(eventDate);
-      openDate.setDate(
-        eventDate.getDate() - settings.registrationOpenDaysBefore
-      );
-
-      const eventEnd = new Date(`${event.date} ${event.time}`);
-      eventEnd.setHours(eventEnd.getHours() + 3);
-
-      const isWithinWindow = today >= openDate && today <= eventEnd;
-      const hasSlots = event.registeredUsers < event.totalCapacity;
-      const registrationOpen = settings.autoCloseWhenFull
-        ? isWithinWindow && hasSlots
-        : isWithinWindow;
+      const {
+        registrationOpen,
+        registrationOpenDate: openDate,
+      } = getRegistrationWindowState(event, settings);
 
       return {
         ...event._doc,
@@ -261,6 +350,8 @@ const createEvent = async (req, res) => {
           : settings.defaultCapacity,
       category: req.body.category || settings.defaultCategory,
       venue: req.body.venue || settings.defaultVenue,
+      endDate: req.body.endDate || req.body.date || "",
+      endTime: req.body.endTime || req.body.time || "",
     };
 
     const event = new Event(payload);
@@ -298,6 +389,8 @@ const updateEvent = async (req, res) => {
       "venue",
       "date",
       "time",
+      "endDate",
+      "endTime",
       "eventImage",
       "totalCapacity",
       "isFeatured",
@@ -433,16 +526,22 @@ const registerForEvent = async (req, res) => {
 
     const settings = await getEventDefaultSettings();
 
-    const eventDate = new Date(event.date);
     const today = new Date();
 
-    const openDate = new Date(eventDate);
-    openDate.setDate(
-      eventDate.getDate() - settings.registrationOpenDaysBefore
-    );
+    const eventStart = getEventStartDateTime(event);
+    const eventEnd = getEventEndDateTime(event);
 
-    const eventEnd = new Date(`${event.date} ${event.time}`);
-    eventEnd.setHours(eventEnd.getHours() + 3);
+    if (!eventStart || !eventEnd) {
+      return res.status(400).json({
+        type: "EVENT_DATE_INVALID",
+        message: "Event date or time is invalid",
+      });
+    }
+
+    const openDate = new Date(eventStart);
+    openDate.setDate(
+      eventStart.getDate() - settings.registrationOpenDaysBefore
+    );
 
     if (today < openDate) {
       return res.status(400).json({

@@ -19,6 +19,11 @@ import {
 } from "lucide-react";
 
 import EventCard from "./EventCard";
+import {
+    getEventLifecycleStatus,
+    getEventStartDateTime,
+    isEventRegistrationOpen,
+} from "../utils/eventStatus";
 
 const formatLongDate = (dateValue) => {
     if (!dateValue) return "No date";
@@ -40,8 +45,6 @@ export default function CalendarPage() {
     const [modalEvent, setModalEvent] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const today = new Date().toISOString().split("T")[0];
-
     const fetchEvents = useCallback(async ({ silent = false } = {}) => {
 
         try {
@@ -53,22 +56,9 @@ export default function CalendarPage() {
                 `${API_URL}/events`
             );
 
-            /* ── Helper: Check if event registration is available ── */
-            const isRegistrationAvailable = (event) => {
-                const now = new Date();
-                const eventStart = new Date(`${event.date} ${event.time || "00:00"}`);
-                const registrationOpenDate = new Date(eventStart);
-                registrationOpenDate.setDate(eventStart.getDate() - 14);
-
-                const eventEnd = new Date(eventStart);
-                eventEnd.setHours(eventStart.getHours() + 3);
-
-                return now >= registrationOpenDate && now <= eventEnd;
-            };
-
             /* ── Helper: Generate random registrations if available ── */
             const getRegistrationCount = (event) => {
-                if (!isRegistrationAvailable(event)) {
+                if (!isEventRegistrationOpen(event)) {
                     return 0;
                 }
 
@@ -78,19 +68,44 @@ export default function CalendarPage() {
             };
 
             const formatted = res.data
-                .map(event => ({
-                    isPast: event.date < today,
-                    ...event,
-                    registeredUsers: getRegistrationCount(event)
-                }))
-                .sort((left, right) => new Date(left.date) - new Date(right.date))
+                .map(event => {
+                    const startDateTime = getEventStartDateTime(event);
+                    const lifecycleStatus = getEventLifecycleStatus(event);
+                    const eventDateKey = event.date || (startDateTime
+                        ? startDateTime.toLocaleDateString("en-CA")
+                        : "");
+
+                    return {
+                        ...event,
+                        date: eventDateKey,
+                        lifecycleStatus,
+                        isPast: lifecycleStatus === "ended",
+                        registeredUsers: getRegistrationCount(event),
+                    };
+                })
+                .sort((left, right) => {
+                    const leftStart = getEventStartDateTime(left);
+                    const rightStart = getEventStartDateTime(right);
+                    const leftTime = leftStart ? leftStart.getTime() : Number.MAX_SAFE_INTEGER;
+                    const rightTime = rightStart ? rightStart.getTime() : Number.MAX_SAFE_INTEGER;
+
+                    return leftTime - rightTime;
+                })
                 .map((event) => ({
 
                     id: event._id,
                     title: event.eventName,
                     start: event.date,
-                    backgroundColor: event.isPast ? "#9CA3AF" : "#9B96E5",
-                    borderColor: event.isPast ? "#9CA3AF" : "#9B96E5",
+                    backgroundColor: event.lifecycleStatus === "ended"
+                        ? "#9CA3AF"
+                        : event.lifecycleStatus === "live"
+                            ? "#F08A6C"
+                            : "#9B96E5",
+                    borderColor: event.lifecycleStatus === "ended"
+                        ? "#9CA3AF"
+                        : event.lifecycleStatus === "live"
+                            ? "#F08A6C"
+                            : "#9B96E5",
                     textColor: "#ffffff",
                     extendedProps: event,
 
@@ -98,7 +113,11 @@ export default function CalendarPage() {
 
             setEvents(formatted);
 
-            const firstUpcomingDate = formatted.find((item) => !item.extendedProps?.isPast)?.start;
+            const firstUpcomingDate = formatted.find(
+                (item) => item.extendedProps?.lifecycleStatus === "upcoming"
+            )?.start || formatted.find(
+                (item) => item.extendedProps?.lifecycleStatus === "live"
+            )?.start;
             const activeDate = selectedDate || firstUpcomingDate || formatted[0]?.start;
 
             if (activeDate) {
@@ -126,7 +145,7 @@ export default function CalendarPage() {
             }
         }
 
-    }, [selectedDate, today]);
+    }, [selectedDate]);
 
     useEffect(() => {
         fetchEvents();
@@ -175,7 +194,9 @@ export default function CalendarPage() {
 
     };
 
-    const upcomingCount = events.filter((event) => !event.extendedProps?.isPast).length;
+    const upcomingCount = events.filter(
+        (event) => event.extendedProps?.lifecycleStatus === "upcoming"
+    ).length;
 
     const thisMonthCount = useMemo(() => {
         const now = new Date();
@@ -190,7 +211,11 @@ export default function CalendarPage() {
         }).length;
     }, [events]);
 
-    const nextEvent = events.find((item) => !item.extendedProps?.isPast)?.extendedProps || null;
+    const nextEvent = events.find(
+        (item) => item.extendedProps?.lifecycleStatus === "upcoming"
+    )?.extendedProps || events.find(
+        (item) => item.extendedProps?.lifecycleStatus === "live"
+    )?.extendedProps || null;
 
     return (
 

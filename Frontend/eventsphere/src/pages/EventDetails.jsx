@@ -5,6 +5,11 @@ import PopupCard from "../components/PopUpCard";
 import { MapPin, Calendar, Clock, Users, ArrowLeft, Tag, Sparkles } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import API_URL from "../api";
+import {
+  getEventLifecycleStatus,
+  getEventRegistrationOpenDate,
+  getEventStartDateTime,
+} from "../utils/eventStatus";
 
 function EventDetails() {
   const { id } = useParams();
@@ -164,28 +169,15 @@ function EventDetails() {
   --------------------------*/
 
   const now = new Date();
-
-  const parsedEventStart = new Date(`${event.date} ${event.time}`);
-  const fallbackEventStart = new Date(event.date);
-  const eventStart = Number.isNaN(parsedEventStart.getTime())
-    ? fallbackEventStart
-    : parsedEventStart;
-  const hasValidEventStart = !Number.isNaN(eventStart.getTime());
-
-  const registrationOpenDate = new Date(eventStart);
-  if (hasValidEventStart) {
-    registrationOpenDate.setDate(eventStart.getDate() - 14);
-  }
-
-  const eventEnd = new Date(eventStart);
-  if (hasValidEventStart) {
-    eventEnd.setHours(eventStart.getHours() + 3);
-  }
+  const eventStart = getEventStartDateTime(event);
+  const hasValidEventStart = Boolean(eventStart);
+  const registrationOpenDate = getEventRegistrationOpenDate(event, 14);
+  const lifecycleStatus = getEventLifecycleStatus(event, now);
 
   let registrationStatus = "open";
   let registrationMessage = "";
 
-  if (hasValidEventStart && now < registrationOpenDate) {
+  if (registrationOpenDate && now < registrationOpenDate) {
 
     const diffDays = Math.ceil(
       (registrationOpenDate - now) / (1000 * 60 * 60 * 24)
@@ -195,7 +187,7 @@ function EventDetails() {
     registrationMessage = `Registration opens in ${diffDays} days`;
 
   }
-  else if (hasValidEventStart && now > eventEnd) {
+  else if (lifecycleStatus === "ended") {
 
     registrationStatus = "closed";
     registrationMessage = "Event has ended";
