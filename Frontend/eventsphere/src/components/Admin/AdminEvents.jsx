@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Edit2, Trash2, Eye, Search, Calendar, X, Save, Filter } from 'lucide-react';
+import { Edit2, Trash2, Eye, Search, Calendar, X, Save, Filter, Star, TrendingUp } from 'lucide-react';
 import ConfirmPopup from '../popup';
 
 export default function AdminEvents({
@@ -11,6 +11,7 @@ export default function AdminEvents({
   isLoadingMore = false,
   onLoadMore,
   onEdit,
+  onUpdatePlacement,
   onDelete,
   onView,
 }) {
@@ -32,6 +33,12 @@ export default function AdminEvents({
     totalCapacity: 0,
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [placementTarget, setPlacementTarget] = useState(null);
+  const [placementForm, setPlacementForm] = useState({
+    isFeatured: false,
+    isTrending: false,
+  });
+  const [updatingPlacementId, setUpdatingPlacementId] = useState('');
   const [deletingId, setDeletingId] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [error, setError] = useState('');
@@ -86,7 +93,21 @@ export default function AdminEvents({
       })
       : base;
 
-    return [...result].sort((a, b) => resolveEventDate(a) - resolveEventDate(b));
+    return [...result].sort((a, b) => {
+      const featuredPriority = Number(Boolean(b.isFeatured)) - Number(Boolean(a.isFeatured));
+
+      if (featuredPriority !== 0) {
+        return featuredPriority;
+      }
+
+      const trendingPriority = Number(Boolean(b.isTrending)) - Number(Boolean(a.isTrending));
+
+      if (trendingPriority !== 0) {
+        return trendingPriority;
+      }
+
+      return resolveEventDate(a) - resolveEventDate(b);
+    });
   }, [events, searchTerm, categoryFilter, venueFilter, statusFilter]);
 
   const resetFilters = () => {
@@ -112,6 +133,39 @@ export default function AdminEvents({
 
   const closeViewModal = () => {
     setSelectedEvent(null);
+  };
+
+  const openPlacementModal = (event) => {
+    setPlacementTarget(event);
+    setPlacementForm({
+      isFeatured: Boolean(event.isFeatured),
+      isTrending: Boolean(event.isTrending),
+    });
+    setError('');
+  };
+
+  const closePlacementModal = () => {
+    if (updatingPlacementId) return;
+
+    setPlacementTarget(null);
+  };
+
+  const togglePlacementField = (field) => {
+    if (!placementTarget) return;
+
+    const nextValue = !placementForm[field];
+    const canHighlight = placementTarget.registrationOpen || placementForm[field];
+
+    if (nextValue && !canHighlight) {
+      setError('Only events in the active registration window can be highlighted on the site.');
+      return;
+    }
+
+    setPlacementForm((prev) => ({
+      ...prev,
+      [field]: nextValue,
+    }));
+    setError('');
   };
 
   const openEditModal = (event) => {
@@ -207,6 +261,31 @@ export default function AdminEvents({
       setError(err.message || 'Failed to delete event.');
     } finally {
       setDeletingId('');
+    }
+  };
+
+  const savePlacement = async () => {
+    if (!placementTarget || !onUpdatePlacement) {
+      return;
+    }
+
+    const eventId = placementTarget._id || placementTarget.id;
+    const shouldHighlight = placementForm.isFeatured || placementForm.isTrending;
+
+    if (shouldHighlight && !placementTarget.registrationOpen) {
+      setError('Only events in the active registration window can be highlighted on the site.');
+      return;
+    }
+
+    try {
+      setUpdatingPlacementId(eventId);
+      setError('');
+      await onUpdatePlacement(placementTarget, placementForm);
+      setPlacementTarget(null);
+    } catch (err) {
+      setError(err.message || 'Failed to update event placement.');
+    } finally {
+      setUpdatingPlacementId('');
     }
   };
 
@@ -312,7 +391,21 @@ export default function AdminEvents({
                               <Calendar className="w-5 h-5 text-lavender" />
                             )}
                           </div>
-                          <span className="font-bold text-deep-slate">{event.eventName || event.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-deep-slate">{event.eventName || event.name}</span>
+                            {event.isFeatured ? (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-700">
+                                <Star className="h-3 w-3 fill-current" />
+                                Featured
+                              </span>
+                            ) : null}
+                            {event.isTrending ? (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-700">
+                                <TrendingUp className="h-3 w-3" />
+                                Trending
+                              </span>
+                            ) : null}
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-deep-slate/70">
@@ -328,6 +421,21 @@ export default function AdminEvents({
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => openPlacementModal(event)}
+                            disabled={
+                              updatingPlacementId === eventId
+                              || !onUpdatePlacement
+                            }
+                            className={`p-2 rounded-lg transition-all disabled:opacity-50 ${
+                              event.isFeatured || event.isTrending
+                                ? 'text-amber-500 bg-amber-50 hover:bg-amber-100'
+                                : 'text-deep-slate/40 hover:text-amber-500 hover:bg-amber-50'
+                            }`}
+                            title="Manage featured and trending placement"
+                          >
+                            <Star className={`w-4 h-4 ${event.isFeatured || event.isTrending ? 'fill-current' : ''}`} />
+                          </button>
                           <button
                             onClick={() => openViewModal(event)}
                             className="p-2 text-deep-slate/40 hover:text-lavender hover:bg-lavender/10 rounded-lg transition-all"
@@ -406,6 +514,96 @@ export default function AdminEvents({
               <p><span className="font-bold text-deep-slate">Registered:</span> {selectedEvent.registeredUsers || 0}</p>
               <p><span className="font-bold text-deep-slate">Short Description:</span> {selectedEvent.shortDescription}</p>
               <p><span className="font-bold text-deep-slate">Long Description:</span> {selectedEvent.longDescription || 'N/A'}</p>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {placementTarget ? renderInPortal(
+        <div className="fixed inset-0 z-50 bg-deep-slate/45 backdrop-blur-[1px] flex items-center justify-center p-4">
+          <div className="w-full max-w-2xl rounded-2xl bg-white border border-soft-blush shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-6 py-4 border-b border-soft-blush">
+              <div>
+                <h3 className="text-xl font-bold text-deep-slate">Event Placement</h3>
+                <p className="mt-1 text-sm text-deep-slate/60">Choose whether this event should appear on the Events page, the Home page, or both.</p>
+              </div>
+              <button onClick={closePlacementModal} className="p-2 rounded-lg hover:bg-warm-cream text-deep-slate/60" disabled={Boolean(updatingPlacementId)}>
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="rounded-2xl bg-warm-cream/40 px-4 py-3 text-sm text-deep-slate/70">
+                <p className="font-semibold text-deep-slate">{placementTarget.eventName || placementTarget.name}</p>
+                <p className="mt-1">Enable one or both placements. Highlighted events must be inside the active registration window.</p>
+              </div>
+
+              {!placementTarget.registrationOpen ? (
+                <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
+                  This event is outside the active registration window. You can remove existing placement, but you cannot turn new placement on right now.
+                </div>
+              ) : null}
+
+              {[
+                {
+                  key: 'isFeatured',
+                  title: 'Featured on Events page',
+                  description: 'Shows in the Featured Events section on the main events listing.',
+                  icon: Star,
+                  activeClass: 'border-amber-300 bg-amber-50 text-amber-700',
+                  inactiveClass: 'border-soft-blush bg-white text-deep-slate/70 hover:border-amber-200 hover:bg-amber-50/50',
+                },
+                {
+                  key: 'isTrending',
+                  title: 'Trending on Home page',
+                  description: 'Shows in the Home page spotlight and trending cards.',
+                  icon: TrendingUp,
+                  activeClass: 'border-emerald-300 bg-emerald-50 text-emerald-700',
+                  inactiveClass: 'border-soft-blush bg-white text-deep-slate/70 hover:border-emerald-200 hover:bg-emerald-50/50',
+                },
+              ].map(({ key, title, description, icon: Icon, activeClass, inactiveClass }) => {
+                const isActive = placementForm[key];
+                const isDisabled = !placementTarget.registrationOpen && !isActive;
+                const activeTrackClass = key === 'isFeatured' ? 'bg-amber-600' : 'bg-emerald-600';
+
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => togglePlacementField(key)}
+                    disabled={isDisabled}
+                    className={`flex w-full items-start justify-between gap-4 rounded-2xl border px-5 py-4 text-left transition-all disabled:cursor-not-allowed disabled:opacity-60 ${isActive ? activeClass : inactiveClass}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="mt-0.5 rounded-xl bg-white/90 p-2 shadow-sm">
+                        <Icon className="h-4 w-4" />
+                      </span>
+                      <div>
+                        <p className="font-bold">{title}</p>
+                        <p className="mt-1 text-sm leading-relaxed opacity-80">{description}</p>
+                      </div>
+                    </div>
+
+                    <span className={`mt-1 inline-flex h-6 w-11 items-center rounded-full px-1 transition-colors ${isActive ? activeTrackClass : 'bg-deep-slate/35'}`}>
+                      <span className={`h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${isActive ? 'translate-x-5' : 'translate-x-0'}`} />
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="px-6 py-4 border-t border-soft-blush flex justify-end gap-3">
+              <button onClick={closePlacementModal} className="px-4 py-2 rounded-xl font-semibold text-deep-slate hover:bg-warm-cream" disabled={Boolean(updatingPlacementId)}>
+                Cancel
+              </button>
+              <button
+                onClick={savePlacement}
+                disabled={Boolean(updatingPlacementId)}
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-coral text-white font-bold hover:bg-coral/90 disabled:opacity-60"
+              >
+                <Save className="w-4 h-4" />
+                {updatingPlacementId ? 'Saving...' : 'Save Placement'}
+              </button>
             </div>
           </div>
         </div>

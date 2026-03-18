@@ -37,7 +37,7 @@ const FALLBACK_HERO_EVENTS = [
     registeredUsers: 180,
     totalCapacity: 250,
     eventImage: hackathon,
-    isFeatured: true,
+    isTrending: true,
   },
   {
     _id: "fallback-cultural",
@@ -225,18 +225,14 @@ const normalizeHeroEvent = (event, fallback) => ({
 });
 
 const buildHeroEvents = (events) => {
-  const prioritized = [...events].sort((left, right) => {
-    const featuredDiff = Number(Boolean(right.isFeatured)) - Number(Boolean(left.isFeatured));
-    if (featuredDiff !== 0) return featuredDiff;
+  const prioritized = [...events]
+    .filter((event) => Boolean(event.isTrending))
+    .sort((left, right) => {
+      const leftTime = getEventDateObject(left)?.getTime() ?? Number.MAX_SAFE_INTEGER;
+      const rightTime = getEventDateObject(right)?.getTime() ?? Number.MAX_SAFE_INTEGER;
 
-    const trendingDiff = Number(Boolean(right.isTrending)) - Number(Boolean(left.isTrending));
-    if (trendingDiff !== 0) return trendingDiff;
-
-    const leftTime = getEventDateObject(left)?.getTime() ?? Number.MAX_SAFE_INTEGER;
-    const rightTime = getEventDateObject(right)?.getTime() ?? Number.MAX_SAFE_INTEGER;
-
-    return leftTime - rightTime;
-  });
+      return leftTime - rightTime;
+    });
 
   const selected = prioritized
     .slice(0, 4)

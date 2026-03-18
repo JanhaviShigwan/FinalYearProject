@@ -406,7 +406,7 @@ export default function AdminPage() {
 
       setEvents((prev) =>
         prev.map((event) =>
-          (event._id || event.id) === eventId ? res.data : event
+          (event._id || event.id) === eventId ? { ...event, ...res.data } : event
         )
       );
 
@@ -449,6 +449,11 @@ export default function AdminPage() {
     return event;
   };
 
+  const handleUpdatePlacement = async (event, placement) => {
+    const eventId = event._id || event.id;
+    await handleEditEvent(eventId, placement);
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
@@ -478,6 +483,7 @@ export default function AdminPage() {
             isLoadingMore={isEventsLoadingMore}
             onLoadMore={handleLoadMoreEvents}
             onEdit={handleEditEvent}
+            onUpdatePlacement={handleUpdatePlacement}
             onDelete={handleDeleteEvent}
             onView={handleViewEvent}
           />

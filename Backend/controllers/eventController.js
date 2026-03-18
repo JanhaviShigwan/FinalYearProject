@@ -92,6 +92,36 @@ const getEventDefaultSettings = async () => {
   };
 };
 
+const getRegistrationWindowState = (event, settings) => {
+  const eventDate = new Date(event.date);
+  const now = new Date();
+
+  if (Number.isNaN(eventDate.getTime())) {
+    return {
+      registrationOpen: false,
+      registrationOpenDate: null,
+      eventEnd: null,
+    };
+  }
+
+  const openDate = new Date(eventDate);
+  openDate.setDate(eventDate.getDate() - settings.registrationOpenDaysBefore);
+
+  const eventEnd = new Date(`${event.date} ${event.time}`);
+  eventEnd.setHours(eventEnd.getHours() + 3);
+
+  const hasSlots = Number(event.registeredUsers || 0) < Number(event.totalCapacity || 0);
+  const isWithinWindow = now >= openDate && now <= eventEnd;
+
+  return {
+    registrationOpenDate: openDate,
+    eventEnd,
+    registrationOpen: settings.autoCloseWhenFull
+      ? isWithinWindow && hasSlots
+      : isWithinWindow,
+  };
+};
+
 
 // GET all events
 const getEvents = async (req, res) => {
@@ -216,6 +246,7 @@ const updateEvent = async (req, res) => {
   try {
 
     const { id } = req.params;
+    const settings = await getEventDefaultSettings();
 
     const event = await Event.findById(id);
 
@@ -244,6 +275,20 @@ const updateEvent = async (req, res) => {
         event[field] = req.body[field];
       }
     });
+
+    const shouldBeFeatured = event.isFeatured === true;
+    const shouldBeTrending = event.isTrending === true;
+
+    if (shouldBeFeatured || shouldBeTrending) {
+      const { registrationOpen } = getRegistrationWindowState(event, settings);
+
+      if (!registrationOpen) {
+        return res.status(400).json({
+          message: "Only events in the active registration window can be marked as featured or trending",
+          type: "PLACEMENT_NOT_ALLOWED",
+        });
+      }
+    }
 
     if (event.totalCapacity < event.registeredUsers) {
       return res.status(400).json({
