@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import PopupCard from "../components/PopUpCard";
-import { MapPin, Calendar, Clock, Users, ArrowLeft, Tag, Sparkles } from "lucide-react";
+import { MapPin, Calendar, Clock, Users, ArrowLeft, Tag, Sparkles, CheckCircle2, Star } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import API_URL from "../api";
 import {
@@ -20,6 +20,7 @@ function EventDetails() {
   const [popup, setPopup] = useState(null);
   const [isRegistered, setIsRegistered] = useState(false);
   const [registering, setRegistering] = useState(false);
+  const [feedbackSummary, setFeedbackSummary] = useState(null); // { summary, avgRating }
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -48,6 +49,18 @@ function EventDetails() {
 
     fetchEvent();
   }, [id]);
+
+  // Fetch feedback summary once event data is ready and event has ended
+  useEffect(() => {
+    if (!event) return;
+    const status = getEventLifecycleStatus(event);
+    if (status !== "ended") return;
+
+    fetch(`${API_URL}/feedback/summary/${event._id}`)
+      .then((r) => r.json())
+      .then((data) => setFeedbackSummary(data))
+      .catch(() => {}); // silently ignore
+  }, [event]);
 
   const handleRegister = async () => {
 
@@ -265,6 +278,36 @@ function EventDetails() {
           Back to Events
         </Link>
 
+        {/* Feedback summary card — shown only when event has ended */}
+        {lifecycleStatus === "ended" && feedbackSummary && (
+          <div className="mb-8 rounded-[24px] border border-white/85 bg-white/95 p-6 shadow-[0_10px_30px_rgba(60,45,95,0.1)] sm:p-7">
+            <div className="flex flex-wrap items-center gap-3 mb-4">
+              <h2 className="text-xl font-bold text-[#2E2B44]">Event Feedback</h2>
+              {feedbackSummary.avgRating !== null && feedbackSummary.avgRating !== undefined && (
+                <div className="flex items-center gap-1.5">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <Star
+                      key={n}
+                      size={18}
+                      className={`${
+                        n <= Math.round(feedbackSummary.avgRating)
+                          ? "text-amber-400 fill-amber-400"
+                          : "text-[#D1CFF0]"
+                      }`}
+                    />
+                  ))}
+                  <span className="ml-1 text-sm font-semibold text-[#3F3D56]">
+                    {feedbackSummary.avgRating.toFixed(1)}
+                  </span>
+                </div>
+              )}
+            </div>
+            {feedbackSummary.summary && (
+              <p className="leading-relaxed text-[#4f4f60] text-sm">{feedbackSummary.summary}</p>
+            )}
+          </div>
+        )}
+
         <section className="event-hero-grid mb-10 items-stretch gap-6 lg:mb-12 lg:gap-8">
 
           <div className="relative min-h-[320px] overflow-hidden rounded-[28px] shadow-[0_26px_70px_rgba(40,30,70,0.22)] lg:min-h-[460px]">
@@ -391,7 +434,7 @@ function EventDetails() {
                   Registering...
                 </>
               ) : isRegistered
-                ? "Registered ✓"
+                ? <><CheckCircle2 size={16} />Registered</>
                 : isFull
                   ? "Event Full"
                   : registrationStatus === "not-open"

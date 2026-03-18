@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const AdminSettings = require("../Models/AdminSettings");
 const Student = require("../Models/Student");
+const Feedback = require("../Models/Feedback");
+const Event = require("../Models/Event");
 const sendEmail = require("../utils/sendEmail");
 const { passwordChangedTemplate } = require("../utils/template");
 
@@ -199,5 +201,24 @@ exports.updateAdminPassword = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Failed to update password" });
+  }
+};
+
+exports.getEventsWithFeedback = async (req, res) => {
+  try {
+    const distinctEventIds = await Feedback.distinct("eventId");
+
+    if (!distinctEventIds.length) {
+      return res.json([]);
+    }
+
+    const events = await Event.find({ _id: { $in: distinctEventIds } })
+      .select("eventName date time venue category eventImage")
+      .sort({ date: -1 });
+
+    return res.json(events);
+  } catch (err) {
+    console.error("getEventsWithFeedback error:", err);
+    return res.status(500).json({ message: "Failed to fetch events with feedback." });
   }
 };

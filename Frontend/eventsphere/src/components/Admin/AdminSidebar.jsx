@@ -6,6 +6,7 @@ import {
   FileCheck2,
   LayoutDashboard,
   LogOut,
+  MessageSquare,
   PlusCircle,
   TrendingUp,
   Users,
@@ -21,6 +22,7 @@ export default function AdminSidebar({ activeTab, setActiveTab, onLogout }) {
     { id: 'analytics', label: 'Analytics', icon: TrendingUp },
     { id: 'reports', label: 'Reports', icon: FileCheck2 },
     { id: 'users', label: 'Users', icon: Users },
+    { id: 'feedbacks', label: 'Student Feedbacks', icon: MessageSquare },
   ];
 
   return (

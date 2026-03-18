@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Users, ClipboardList, TrendingUp, ArrowUpRight, PlusCircle } from 'lucide-react';
+import { Calendar, Users, ClipboardList, TrendingUp, ArrowUpRight, PlusCircle, User } from 'lucide-react';
 
 export default function AdminDashboard({
   onNavigate,
@@ -116,8 +116,16 @@ export default function AdminDashboard({
                   transition={{ delay: index * 0.04, duration: 0.25 }}
                   className="flex items-center gap-4 p-4 rounded-xl hover:bg-warm-cream transition-all duration-250 border border-transparent hover:border-soft-blush"
                 >
-                  <div className="w-12 h-12 rounded-lg bg-lavender/10 flex items-center justify-center text-lavender font-bold">
-                    {index + 1}
+                  <div className="w-12 h-12 rounded-full overflow-hidden border border-soft-blush shrink-0 bg-lavender/10 flex items-center justify-center">
+                    {item.studentPhoto ? (
+                      <img
+                        src={item.studentPhoto}
+                        alt={item.studentName}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <User className="w-5 h-5 text-lavender" />
+                    )}
                   </div>
                   <div className="flex-1">
                     <h4 className="font-bold text-deep-slate">{item.eventName}</h4>
