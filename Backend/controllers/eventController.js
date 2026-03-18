@@ -8,7 +8,40 @@ const AdminSettings = require("../Models/AdminSettings");
 const {
   eventRegisterTemplate,
   eventCancelTemplate,
+  newEventTemplate,
 } = require("../utils/template");
+
+const sendEventMailAsync = (event) => {
+  setTimeout(async () => {
+    try {
+      const users = await Student.find({
+        email: { $exists: true, $ne: null },
+      }).select("email");
+
+      const subject = "New Event Organised: " + event.eventName;
+      const html = newEventTemplate({
+        name: event.eventName,
+        date: event.date,
+        time: event.time,
+        location: event.venue,
+        description: event.shortDescription,
+      });
+
+      await Promise.allSettled(
+        users
+          .map((user) => user.email)
+          .filter(Boolean)
+          .map((email) =>
+            sendEmail(email, subject, html, {
+              topic: "GENERAL",
+            })
+          )
+      );
+    } catch (mailError) {
+      console.error("Event created email broadcast error:", mailError.message);
+    }
+  }, 0);
+};
 
 const getEventSpecificRules = (eventName = "", category = "") => {
   const normalizedText = `${eventName} ${category}`.toLowerCase();
@@ -234,6 +267,7 @@ const createEvent = async (req, res) => {
     const savedEvent = await event.save();
 
     res.status(201).json(savedEvent);
+    sendEventMailAsync(savedEvent);
 
   } catch (error) {
     res.status(500).json({ message: error.message });

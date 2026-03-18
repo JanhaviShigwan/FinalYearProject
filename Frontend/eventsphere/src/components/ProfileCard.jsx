@@ -1,12 +1,25 @@
-import { CheckCircle2, Trash2, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Check, CheckCircle2, Pencil, Trash2, User } from "lucide-react";
+import axios from "axios";
+import API_URL from "../api";
 
 export default function ProfileCard({
     currentStudent,
     uploadImage,
     uploading,
     removeImage,
-    removingImage
+    removingImage,
+    onPhoneUpdated
 }) {
+
+    const [isEditingPhone, setIsEditingPhone] = useState(false);
+    const [phoneNumber, setPhoneNumber] = useState(currentStudent?.phone || "");
+    const [savingPhone, setSavingPhone] = useState(false);
+    const [phoneError, setPhoneError] = useState("");
+
+    useEffect(() => {
+        setPhoneNumber(currentStudent?.phone || "");
+    }, [currentStudent?.phone]);
 
     const hasImage =
         currentStudent?.profileImage &&
@@ -24,6 +37,46 @@ export default function ProfileCard({
         const year = d.getFullYear();
 
         return `${day}-${month}-${year}`;
+    };
+
+    const handleSavePhone = async () => {
+        const activeStudentId = currentStudent?._id || currentStudent?.id;
+        const nextPhone = String(phoneNumber || "").trim();
+
+        if (!activeStudentId) {
+            setPhoneError("Session expired. Please login again.");
+            return;
+        }
+
+        if (!/^\d{10}$/.test(nextPhone)) {
+            setPhoneError("Phone number must be 10 digits");
+            return;
+        }
+
+        try {
+            setSavingPhone(true);
+            setPhoneError("");
+
+            const res = await axios.put(`${API_URL}/student/update-phone`, {
+                userId: activeStudentId,
+                phoneNumber: nextPhone,
+            });
+
+            const updatedStudent = res.data?.student;
+
+            if (updatedStudent) {
+                localStorage.setItem("eventSphereStudent", JSON.stringify(updatedStudent));
+                if (typeof onPhoneUpdated === "function") {
+                    onPhoneUpdated(updatedStudent);
+                }
+            }
+
+            setIsEditingPhone(false);
+        } catch (error) {
+            setPhoneError(error.response?.data?.message || "Unable to update phone number");
+        } finally {
+            setSavingPhone(false);
+        }
     };
 
 
@@ -128,10 +181,8 @@ export default function ProfileCard({
                             ["College", currentStudent?.college],
                             ["Course", currentStudent?.course],
                             ["Year", currentStudent?.year],
-                            ["Phone", currentStudent?.phone],
                             ["Gender", currentStudent?.gender],
                             ["DOB", formatDate(currentStudent?.dob)],
-                            ["Division", currentStudent?.division],
                         ].map(([label, value]) => (
                             <div
                                 key={label}
@@ -145,6 +196,54 @@ export default function ProfileCard({
                                 </p>
                             </div>
                         ))}
+
+                        <div className="rounded-2xl border border-soft-blush bg-warm-cream/60 px-4 py-3">
+                            <p className="text-[11px] font-bold uppercase tracking-[0.11em] text-deep-slate/45">
+                                Phone
+                            </p>
+
+                            {isEditingPhone ? (
+                                <div className="mt-1 flex items-center gap-2">
+                                    <input
+                                        type="text"
+                                        value={phoneNumber}
+                                        onChange={(e) => setPhoneNumber(e.target.value)}
+                                        maxLength={10}
+                                        className="w-full rounded-lg border border-soft-blush bg-white px-2.5 py-1.5 text-sm font-semibold text-deep-slate outline-none focus:border-lavender"
+                                    />
+
+                                    <button
+                                        type="button"
+                                        onClick={handleSavePhone}
+                                        disabled={savingPhone}
+                                        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-lavender/30 bg-lavender/10 text-lavender transition-colors hover:bg-lavender hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                                    >
+                                        <Check size={14} />
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="mt-1 flex items-center justify-between gap-2">
+                                    <p className="text-sm font-semibold text-deep-slate">
+                                        {currentStudent?.phone || "-"}
+                                    </p>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setIsEditingPhone(true);
+                                            setPhoneError("");
+                                        }}
+                                        className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-lavender/30 bg-lavender/10 text-lavender transition-colors hover:bg-lavender hover:text-white"
+                                    >
+                                        <Pencil size={13} />
+                                    </button>
+                                </div>
+                            )}
+
+                            {phoneError ? (
+                                <p className="mt-1 text-xs font-medium text-coral">{phoneError}</p>
+                            ) : null}
+                        </div>
 
                     </div>
 

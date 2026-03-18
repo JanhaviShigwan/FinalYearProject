@@ -106,7 +106,6 @@ exports.getAdminUsers = async (req, res) => {
           { email: regex },
           { studentId: regex },
           { course: regex },
-          { division: regex },
         ],
       });
     }
@@ -197,7 +196,6 @@ exports.updateAdminUser = async (req, res) => {
       "department",
       "year",
       "course",
-      "division",
       "notificationsEnabled",
       "profileComplete",
       "profileStatus",
@@ -361,15 +359,17 @@ exports.completeProfile = async (req, res) => {
 
     const {
       studentIdNumber,
-      phone,
+      phone: requestPhone,
+      phoneNumber,
       department,
       college,
       year,
       course,
-      division,
       gender,
       dob,
     } = req.body;
+
+    const phone = typeof requestPhone === "string" ? requestPhone : phoneNumber;
 
     const dobDate = dob ? new Date(dob) : null;
 
@@ -424,12 +424,19 @@ exports.completeProfile = async (req, res) => {
     student.college = college;
     student.year = year;
     student.course = course;
-    student.division = division;
     student.gender = gender;
     student.dob = dobDate;
 
     student.profileComplete = true;
-    student.profileStatus = student.role === "admin" ? "approved" : "pending";
+    const existingProfileStatus =
+      student.role === "admin"
+        ? "approved"
+        : (student.profileStatus || (student.profileComplete ? "approved" : "pending"));
+
+    student.profileStatus =
+      student.role === "admin" || existingProfileStatus === "approved"
+        ? "approved"
+        : "pending";
 
     await student.save();
 
@@ -449,6 +456,56 @@ exports.completeProfile = async (req, res) => {
       message: "Server error",
     });
 
+  }
+};
+
+
+
+/* ============================= */
+/* UPDATE PHONE NUMBER ONLY */
+/* ============================= */
+
+exports.updatePhoneNumber = async (req, res) => {
+  try {
+    const { userId, phoneNumber } = req.body;
+
+    if (!userId || !phoneNumber) {
+      return res.status(400).json({
+        message: "userId and phoneNumber are required",
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        message: "Invalid userId",
+      });
+    }
+
+    if (!/^\d{10}$/.test(String(phoneNumber))) {
+      return res.status(400).json({
+        message: "Phone number must be 10 digits",
+      });
+    }
+
+    const student = await Student.findById(userId)
+      .select("-password -resetOTP -resetOTPExpire");
+
+    if (!student) {
+      return res.status(404).json({
+        message: "Student not found",
+      });
+    }
+
+    student.phone = String(phoneNumber);
+    await student.save();
+
+    res.status(200).json({
+      message: "Phone number updated successfully",
+      student,
+    });
+  } catch (error) {
+    console.log("Update phone number error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 

@@ -383,9 +383,13 @@ exports.newEventTemplate = (eventData) => {
   const details = typeof eventData === 'object' ? eventData : {};
 
   return baseTemplate(
-    "New Event Available",
+    "New Event Created",
     `
-A new exciting event has been added:
+<p style="margin-bottom:15px;"><strong>Hello,</strong></p>
+
+<p style="margin:15px 0; line-height:1.6;">
+  A new event has been created.
+</p>
 
 <div style="
 background:#F6F1EB;
@@ -395,16 +399,16 @@ margin:20px 0;
 border-radius:6px;
 ">
   <h3 style="margin:0 0 10px 0; color:#9B96E5; font-size:16px;">
-    ${event}
+    Event Name: ${event}
   </h3>
-  ${details.date ? `<p style="margin:8px 0; color:#3F3D56; display:flex; align-items:center;"><svg style="width:14px; height:14px; margin-right:6px; color:#9B96E5; flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><strong>Date:</strong> ${details.date}</p>` : ''}
-  ${details.time ? `<p style="margin:8px 0; color:#3F3D56; display:flex; align-items:center;"><svg style="width:14px; height:14px; margin-right:6px; color:#9B96E5; flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><strong>Time:</strong> ${details.time}</p>` : ''}
-  ${details.location ? `<p style="margin:8px 0; color:#3F3D56; display:flex; align-items:center;"><svg style="width:14px; height:14px; margin-right:6px; color:#9B96E5; flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><strong>Location:</strong> ${details.location}</p>` : ''}
-  ${details.description ? `<p style="margin:8px 0; color:#3F3D56; display:flex; align-items:flex-start;"><svg style="width:14px; height:14px; margin-right:6px; margin-top:2px; color:#9B96E5; flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg><strong>Description:</strong> ${details.description}</p>` : ''}
+  <p style="margin:8px 0; color:#3F3D56;"><strong>Date:</strong> ${details.date || "TBA"}</p>
+  <p style="margin:8px 0; color:#3F3D56;"><strong>Time:</strong> ${details.time || "TBA"}</p>
+  <p style="margin:8px 0; color:#3F3D56;"><strong>Venue:</strong> ${details.location || "TBA"}</p>
+  <p style="margin:8px 0; color:#3F3D56;"><strong>Description:</strong> ${details.description || "No short description available."}</p>
 </div>
 
 <p style="margin:15px 0; line-height:1.6; color:#3F3D56;">
-  Seats may be limited for this event. Please review the schedule and venue details in your dashboard and complete your registration at the earliest.
+  Visit website to register.
 </p>
 `,
     icons.calendar

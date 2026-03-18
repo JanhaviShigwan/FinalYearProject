@@ -21,6 +21,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
 
   const isResubmission =
     Boolean(student?.profileComplete) || profileStatus === "rejected";
+  const phoneEditableOnly = profileStatus === "approved";
 
   const draftKey = useMemo(
     () => `studentProfileDraft_${student?._id || "unknown"}`,
@@ -61,7 +62,6 @@ export default function StudentVerificationForm({ student, onSuccess }) {
     college: "",
     year: "",
     course: "",
-    division: "",
     gender: "",
     dob: "",
   });
@@ -112,7 +112,6 @@ export default function StudentVerificationForm({ student, onSuccess }) {
       college: student.college || "",
       year: student.year || "",
       course: student.course || "",
-      division: student.division || "",
       gender: student.gender || "",
       dob: formatDob(student.dob),
     }));
@@ -122,6 +121,9 @@ export default function StudentVerificationForm({ student, onSuccess }) {
   const handleChange = (e) => {
 
     const { name, value } = e.target;
+    if (phoneEditableOnly && name !== "phone") {
+      return;
+    }
 
     let nextState;
 
@@ -303,6 +305,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
                 onChange={handleChange}
                 className={inputStyle}
                 required
+                disabled={phoneEditableOnly}
               />
 
             </div>
@@ -328,6 +331,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
                 onChange={handleChange}
                 className={inputStyle}
                 required
+                disabled={phoneEditableOnly}
               >
                 <option value="">Select Department</option>
                 <option>IT & CS</option>
@@ -360,6 +364,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
                 onChange={handleChange}
                 className={inputStyle}
                 required
+                disabled={phoneEditableOnly}
               >
                 <option value="">Select College</option>
                 {collegeOptions.map((collegeName) => (
@@ -395,6 +400,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
                 onChange={handleChange}
                 className={inputStyle}
                 required
+                disabled={phoneEditableOnly}
               >
 
                 <option value="">Select Course</option>
@@ -433,6 +439,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
                 onChange={handleChange}
                 className={inputStyle}
                 required
+                disabled={phoneEditableOnly}
               >
                 <option value="">Select Year</option>
                 <option>FY</option>
@@ -476,22 +483,6 @@ export default function StudentVerificationForm({ student, onSuccess }) {
           </div>
 
 
-          {/* Division */}
-
-          <div>
-            <label className="text-sm mb-1 block text-gray-600">
-              Division
-            </label>
-
-            <input
-              name="division"
-              value={formData.division}
-              onChange={handleChange}
-              className="w-full bg-white border border-gray-200 rounded-xl py-3 px-3 outline-none focus:border-[#9B96E5]"
-            />
-          </div>
-
-
           {/* Gender */}
 
           <div>
@@ -504,6 +495,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
               value={formData.gender}
               onChange={handleChange}
               className="w-full bg-white border border-gray-200 rounded-xl py-3 px-3 outline-none focus:border-[#9B96E5]"
+              disabled={phoneEditableOnly}
             >
               <option value="">Select Gender</option>
               <option>Male</option>
@@ -535,6 +527,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
                 onChange={handleChange}
                 max={maxDobDate}
                 className={inputStyle}
+                disabled={phoneEditableOnly}
               />
 
             </div>

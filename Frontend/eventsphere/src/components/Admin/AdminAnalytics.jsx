@@ -7,7 +7,6 @@ import {
   BarChart3,
   Calendar,
   ClipboardList,
-  Megaphone,
   Users,
 } from 'lucide-react';
 import API_URL from '../../api';
@@ -16,7 +15,6 @@ import { getAdminRequestConfig } from '../../utils/adminAuth';
 export default function AdminAnalytics({
   statsData = {},
   events = [],
-  announcements = [],
   recentRegistrations = [],
   isLoading = false,
 }) {
@@ -34,7 +32,6 @@ export default function AdminAnalytics({
       events: [],
       students: [],
       registrations: [],
-      announcements: [],
     },
     recentRegistrations,
     filterMeta: {
@@ -120,14 +117,6 @@ export default function AdminAnalytics({
       value: activeStats.totalRegistrations ?? 0,
       icon: ClipboardList,
       iconClass: 'bg-pastel-green/20 text-[#74A66A]',
-    },
-    {
-      key: 'totalAnnouncements',
-      chartKey: 'announcements',
-      label: 'Announcements',
-      value: activeStats.totalAnnouncements ?? announcements.length,
-      icon: Megaphone,
-      iconClass: 'bg-soft-blush text-[#B9786B]',
     },
   ];
 
@@ -227,7 +216,7 @@ export default function AdminAnalytics({
           <p className="mb-4 text-sm text-coral font-semibold">{fetchError}</p>
         ) : null}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {summaryCards.map((card) => {
             const Icon = card.icon;
             const trend = activeTrends[card.key];

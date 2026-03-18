@@ -19,7 +19,6 @@ function EventDetails() {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-
         const res = await fetch(`${API_URL}/events/${id}`);
         const data = await res.json();
         setEvent(data);

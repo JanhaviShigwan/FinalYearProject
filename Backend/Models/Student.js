@@ -61,6 +61,10 @@ const studentSchema = new mongoose.Schema(
 
     phone: {
       type: String,
+      alias: "phoneNumber",
+      required: function () {
+        return this.role !== "admin" && Boolean(this.profileComplete);
+      },
       match: [/^\d{10}$/, "Phone number must be 10 digits"],
     },
 
@@ -73,7 +77,6 @@ const studentSchema = new mongoose.Schema(
     },
 
     course: String,
-    division: String,
 
     gender: {
       type: String,

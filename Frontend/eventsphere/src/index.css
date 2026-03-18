@@ -368,16 +368,6 @@ body {
   .dashboard-bottom-grid { grid-template-columns: 1fr; }
 }
 
-/* Announcements 2-col grid */
-.announcement-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-
-@media (max-width: 1024px) {
-  .announcement-grid { grid-template-columns: 1fr; }
-}
-
 /* Calendar event-dot indicator — ::after pseudo on .cal-dot */
 .cal-dot::after {
   content: "";

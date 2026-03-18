@@ -10,6 +10,7 @@ const {
 
   getStudentProfile,
   completeProfile,
+  updatePhoneNumber,
   uploadImage,
   updateNotifications,
   changePassword,
@@ -68,6 +69,16 @@ router.get(
 router.put(
   "/complete-profile/:studentId",
   completeProfile
+);
+
+
+/* ========================= */
+/* UPDATE PHONE NUMBER ONLY */
+/* ========================= */
+
+router.put(
+  "/update-phone",
+  updatePhoneNumber
 );
 
 

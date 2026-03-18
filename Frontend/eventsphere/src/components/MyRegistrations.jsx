@@ -80,7 +80,58 @@ export default function MyRegistrations() {
       })
     : "";
 
-  const isUpcoming = (dateStr) => new Date(dateStr) >= new Date();
+  const parseEventStart = (event) => {
+    const eventDate = new Date(event.date);
+
+    if (Number.isNaN(eventDate.getTime())) {
+      return null;
+    }
+
+    const parsed = String(event.time || "").trim();
+    const twelveHourMatch = parsed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+
+    if (twelveHourMatch) {
+      const hour12 = Number(twelveHourMatch[1]);
+      const minute = Number(twelveHourMatch[2]);
+      const period = twelveHourMatch[3].toUpperCase();
+      const hour24 = ((hour12 % 12) + (period === "PM" ? 12 : 0));
+      eventDate.setHours(hour24, minute, 0, 0);
+      return eventDate;
+    }
+
+    const twentyFourHourMatch = parsed.match(/^(\d{1,2}):(\d{2})$/);
+
+    if (twentyFourHourMatch) {
+      eventDate.setHours(Number(twentyFourHourMatch[1]), Number(twentyFourHourMatch[2]), 0, 0);
+      return eventDate;
+    }
+
+    eventDate.setHours(23, 59, 59, 999);
+    return eventDate;
+  };
+
+  const getEventStatus = (event) => {
+    const eventStart = parseEventStart(event);
+
+    if (!eventStart) {
+      return "upcoming";
+    }
+
+    const eventEnd = new Date(eventStart);
+    eventEnd.setHours(eventEnd.getHours() + 3);
+
+    const now = new Date();
+
+    if (now < eventStart) {
+      return "upcoming";
+    }
+
+    if (now > eventEnd) {
+      return "past";
+    }
+
+    return "live";
+  };
 
   const fade = {
     hidden: { opacity: 0, y: 16 },
@@ -110,7 +161,7 @@ export default function MyRegistrations() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
           {myEvents.map((event, i) => {
-            const upcoming = isUpcoming(event.date);
+            const eventStatus = getEventStatus(event);
             return (
               <motion.div
                 key={event._id}
@@ -132,11 +183,13 @@ export default function MyRegistrations() {
                   )}
                   {/* Status badge */}
                   <span className={`absolute top-3 right-3 px-3 py-1 rounded-full text-sm font-bold shadow-sm ${
-                    upcoming
-                      ? "bg-pastel-green/90 text-deep-slate"
-                      : "bg-deep-slate/70 text-white"
+                    eventStatus === "upcoming"
+                      ? "bg-lavender/90 text-white"
+                      : eventStatus === "live"
+                        ? "bg-pastel-green/95 text-deep-slate"
+                        : "bg-slate-400 text-white"
                   }`}>
-                    {upcoming ? "Upcoming" : "Ended"}
+                    {eventStatus === "upcoming" ? "Upcoming" : eventStatus === "live" ? "Live" : "Past"}
                   </span>
                 </div>
 

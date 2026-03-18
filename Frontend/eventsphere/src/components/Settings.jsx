@@ -348,8 +348,7 @@ export default function Settings() {
       : (currentStudent?.profileStatus || (currentStudent?.profileComplete ? "approved" : "pending"));
 
   const canEditVerification =
-    currentStudent?.role !== "admin"
-    && profileStatus !== "approved";
+    currentStudent?.role !== "admin";
 
   const statusLabel =
     profileStatus === "approved"
@@ -406,7 +405,9 @@ export default function Settings() {
 
           <section className="rounded-[28px] border border-soft-blush bg-white p-6 shadow-sm md:p-8">
             <div className="mb-6 rounded-2xl border border-lavender/20 bg-lavender/10 px-4 py-3 text-sm font-medium text-deep-slate/75">
-              {profileStatus === "rejected"
+              {profileStatus === "approved"
+                ? "Your profile is approved. You can update your phone number here anytime."
+                : profileStatus === "rejected"
                 ? "Your last submission was rejected. Update your details here and the new version will go back to admin for approval."
                 : "Your profile is not approved yet. You can still edit your details here, and each save will update the database for admin review."}
             </div>
@@ -440,6 +441,9 @@ export default function Settings() {
               uploading={uploading}
               removeImage={removeImage}
               removingImage={removingImage}
+              onPhoneUpdated={(updatedStudent) => {
+                setCurrentStudent(updatedStudent);
+              }}
             />
           </div>
 

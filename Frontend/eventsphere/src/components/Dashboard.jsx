@@ -6,7 +6,6 @@ import {
   AlarmClock,
   AlertCircle,
   MapPin,
-  Bell,
   ChevronRight,
   Zap,
   BookOpen,
@@ -19,7 +18,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const [myEvents, setMyEvents] = useState([]);
-  const [announcements, setAnnouncements] = useState([]);
 
   const [currentStudent, setCurrentStudent] = useState(() => {
     return JSON.parse(localStorage.getItem("eventSphereStudent")) || {};
@@ -80,30 +78,17 @@ export default function Dashboard() {
       }
     };
 
-    const fetchAnnouncements = async () => {
-      try {
-        const res = await axios.get(
-          `${API_URL}/announcements`
-        );
-        setAnnouncements(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
     let refreshInterval;
 
     if (studentId) {
       fetchProfileStatus();
       fetchDashboard();
       fetchMyEvents();
-      fetchAnnouncements();
 
       refreshInterval = setInterval(() => {
         fetchProfileStatus();
         fetchDashboard();
         fetchMyEvents();
-        fetchAnnouncements();
       }, 5000);
     }
 
@@ -230,13 +215,13 @@ const upcomingEventsFiltered = dashboardData.upcomingEventList.filter(
         ))}
       </motion.div>
 
-      {/* ── MAIN TWO-COLUMN CONTENT ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      {/* ── MAIN CONTENT ── */}
+      <div className="flex flex-col gap-6">
 
         {/* LEFT — Upcoming Events (wider) */}
         <motion.section
           variants={fade} initial="hidden" animate="visible" custom={2}
-          className="lg:col-span-3 flex flex-col gap-4"
+          className="flex flex-col gap-4"
         >
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-extrabold text-deep-slate flex items-center gap-2">
@@ -294,44 +279,6 @@ const upcomingEventsFiltered = dashboardData.upcomingEventList.filter(
                   <span className="shrink-0 text-sm font-bold px-4 py-2 rounded-lg bg-lavender/10 text-lavender border border-lavender/20 group-hover:bg-lavender group-hover:text-white transition-colors">
                     View
                   </span>
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </motion.section>
-
-        {/* RIGHT — Announcements (narrower) */}
-        <motion.section
-          variants={fade} initial="hidden" animate="visible" custom={3}
-          className="lg:col-span-2 flex flex-col gap-4"
-        >
-          <h2 className="text-lg font-extrabold text-deep-slate flex items-center gap-2">
-            <Bell className="w-5 h-5 text-coral" />
-            Announcements
-          </h2>
-
-          {announcements.length === 0 ? (
-            <div className="rounded-2xl border border-soft-blush bg-warm-cream px-6 py-10 text-center text-deep-slate/50 text-sm font-medium">
-              No announcements yet.
-            </div>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {announcements.slice(0, 5).map((a, i) => (
-                <motion.div
-                  key={a._id}
-                  variants={fade} initial="hidden" animate="visible" custom={4 + i * 0.4}
-                  className="rounded-2xl border border-soft-blush bg-warm-cream p-5 hover:shadow-sm transition-shadow"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-2.5 h-2.5 mt-1.5 rounded-full bg-coral shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-base font-bold text-deep-slate leading-snug truncate">{a.title}</p>
-                      <p className="text-sm text-deep-slate/65 mt-1 line-clamp-2">{a.message}</p>
-                      <p className="text-xs text-deep-slate/40 mt-2 font-medium">
-                        {new Date(a.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                      </p>
-                    </div>
-                  </div>
                 </motion.div>
               ))}
             </div>

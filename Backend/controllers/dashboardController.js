@@ -1,6 +1,5 @@
 const Event = require("../Models/Event");
 const Registration = require("../Models/Registration");
-const Announcement = require("../Models/Announcement");
 const Student = require("../Models/Student");
 const EventReport = require("../Models/EventReport");
 const mongoose = require("mongoose");
@@ -552,17 +551,17 @@ exports.getAdminDashboardData = async (req, res) => {
     const [
       totalEvents,
       totalRegistrations,
-      totalAnnouncements,
       totalStudents,
     ] = await Promise.all([
       Event.countDocuments(rangeMatch),
       Registration.countDocuments(rangeMatch),
-      Announcement.countDocuments(rangeMatch),
       Student.countDocuments({
         ...STUDENT_ROLE_FILTER,
         ...rangeMatch,
       }),
     ]);
+
+    const totalAnnouncements = 0;
 
     const trendDays = hasRangeFilter ? rangeDays : 30;
     const trendCurrentWindow = getDateWindow(trendDays);
@@ -573,8 +572,6 @@ exports.getAdminDashboardData = async (req, res) => {
       eventsPrevious,
       registrationsCurrent,
       registrationsPrevious,
-      announcementsCurrent,
-      announcementsPrevious,
       studentsCurrent,
       studentsPrevious,
     ] = await Promise.all([
@@ -602,18 +599,6 @@ exports.getAdminDashboardData = async (req, res) => {
           $lte: trendPreviousWindow.previousEnd,
         },
       }),
-      Announcement.countDocuments({
-        createdAt: {
-          $gte: trendCurrentWindow.start,
-          $lte: trendCurrentWindow.end,
-        },
-      }),
-      Announcement.countDocuments({
-        createdAt: {
-          $gte: trendPreviousWindow.previousStart,
-          $lte: trendPreviousWindow.previousEnd,
-        },
-      }),
       Student.countDocuments({
         ...STUDENT_ROLE_FILTER,
         createdAt: {
@@ -629,20 +614,23 @@ exports.getAdminDashboardData = async (req, res) => {
         },
       }),
     ]);
+
+    const announcementsCurrent = 0;
+    const announcementsPrevious = 0;
 
     const chartDays = hasRangeFilter ? rangeDays : 30;
 
     const [
       eventSeries,
       registrationSeries,
-      announcementSeries,
       studentSeries,
     ] = await Promise.all([
       buildDailySeries(Event, {}, chartDays),
       buildDailySeries(Registration, {}, chartDays),
-      buildDailySeries(Announcement, {}, chartDays),
       buildDailySeries(Student, STUDENT_ROLE_FILTER, chartDays),
     ]);
+
+    const announcementSeries = [];
 
     const recentRegistrations = await Registration.aggregate([
       { $sort: { createdAt: -1 } },

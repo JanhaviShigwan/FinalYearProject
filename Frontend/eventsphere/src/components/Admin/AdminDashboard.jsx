@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Users, ClipboardList, Megaphone, TrendingUp, ArrowUpRight, PlusCircle } from 'lucide-react';
+import { Calendar, Users, ClipboardList, TrendingUp, ArrowUpRight, PlusCircle } from 'lucide-react';
 
 export default function AdminDashboard({
   onNavigate,
@@ -28,7 +28,6 @@ export default function AdminDashboard({
     { label: 'Total Events', value: statsData.totalEvents ?? 0, icon: Calendar, color: 'bg-lavender', trend: '+12%' },
     { label: 'Total Students', value: statsData.totalStudents ?? 0, icon: Users, color: 'bg-coral', trend: '+5%' },
     { label: 'Total Registrations', value: statsData.totalRegistrations ?? 0, icon: ClipboardList, color: 'bg-pastel-green', trend: '+18%' },
-    { label: 'Announcements', value: statsData.totalAnnouncements ?? 0, icon: Megaphone, color: 'bg-soft-blush', trend: '0%' },
   ];
 
   const containerVariants = {
@@ -61,7 +60,7 @@ export default function AdminDashboard({
       initial="hidden"
       animate="visible"
     >
-      <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" variants={containerVariants}>
+      <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" variants={containerVariants}>
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
@@ -147,15 +146,6 @@ export default function AdminDashboard({
             >
               <PlusCircle className="w-5 h-5" />
               Create New Event
-            </motion.button>
-            <motion.button
-              onClick={() => onNavigate?.('announcements')}
-              whileHover={{ y: -2, scale: 1.01 }}
-              whileTap={{ scale: 0.985 }}
-              className="w-full py-3 px-4 bg-white border-2 border-soft-blush text-deep-slate rounded-xl font-bold hover:bg-warm-cream transition-all duration-200 flex items-center justify-center gap-2"
-            >
-              <Megaphone className="w-5 h-5 text-coral" />
-              Post Announcement
             </motion.button>
             <motion.button
               onClick={() => onNavigate?.('analytics')}

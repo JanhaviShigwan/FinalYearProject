@@ -43,7 +43,6 @@
   app.use("/api/ai", aiRoutes);
   app.use("/api/dashboard", require("./routes/dashboardRoutes"));
   app.use("/api/student", require("./routes/studentRoutes"));
-  app.use("/api/announcements", require("./routes/announcementRoutes"));
   app.use("/api/admin", require("./routes/adminSettingsRoutes"));
 
 

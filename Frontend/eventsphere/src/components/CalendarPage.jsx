@@ -79,18 +79,18 @@ export default function CalendarPage() {
 
             const formatted = res.data
                 .map(event => ({
+                    isPast: event.date < today,
                     ...event,
                     registeredUsers: getRegistrationCount(event)
                 }))
-                .filter((event) => event.date >= today)
                 .sort((left, right) => new Date(left.date) - new Date(right.date))
                 .map((event) => ({
 
                     id: event._id,
                     title: event.eventName,
                     start: event.date,
-                    backgroundColor: "#9B96E5",
-                    borderColor: "#9B96E5",
+                    backgroundColor: event.isPast ? "#9CA3AF" : "#9B96E5",
+                    borderColor: event.isPast ? "#9CA3AF" : "#9B96E5",
                     textColor: "#ffffff",
                     extendedProps: event,
 
@@ -98,9 +98,8 @@ export default function CalendarPage() {
 
             setEvents(formatted);
 
-            const activeDate = selectedDate && selectedDate >= today
-                ? selectedDate
-                : formatted[0]?.start;
+            const firstUpcomingDate = formatted.find((item) => !item.extendedProps?.isPast)?.start;
+            const activeDate = selectedDate || firstUpcomingDate || formatted[0]?.start;
 
             if (activeDate) {
                 const sameDayEvents = formatted
@@ -113,7 +112,7 @@ export default function CalendarPage() {
             } else {
                 setSelectedEvents([]);
                 setSelectedDate(null);
-                setSelectedDateLabel("No upcoming events");
+                setSelectedDateLabel("No events available");
             }
         } catch (error) {
             console.error("Error fetching calendar events:", error);
@@ -156,8 +155,6 @@ export default function CalendarPage() {
 
     const handleDateClick = (info) => {
 
-        if (info.dateStr < today) return;
-
         const list = events.filter(
             (event) => event.start === info.dateStr
         );
@@ -178,7 +175,7 @@ export default function CalendarPage() {
 
     };
 
-    const upcomingCount = events.length;
+    const upcomingCount = events.filter((event) => !event.extendedProps?.isPast).length;
 
     const thisMonthCount = useMemo(() => {
         const now = new Date();
@@ -193,7 +190,7 @@ export default function CalendarPage() {
         }).length;
     }, [events]);
 
-    const nextEvent = events[0]?.extendedProps || null;
+    const nextEvent = events.find((item) => !item.extendedProps?.isPast)?.extendedProps || null;
 
     return (
 
@@ -287,7 +284,6 @@ export default function CalendarPage() {
         .fc .fc-day-past {
           background: #f7f4ef !important;
           opacity: 0.65;
-          pointer-events: none;
         }
 
         .fc .fc-event {

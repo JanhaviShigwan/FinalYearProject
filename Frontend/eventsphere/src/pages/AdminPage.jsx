@@ -6,7 +6,6 @@ import API_URL from '../api';
 import AdminNavbar from '../components/Admin/AdminNavbar';
 import AdminSidebar from '../components/Admin/AdminSidebar';
 import AdminDashboard from '../components/Admin/AdminDashboard';
-import AdminAnnouncements from '../components/Admin/AdminAnnouncments';
 import AdminEvents from '../components/Admin/AdminEvents';
 import AdminCreateEvent from '../components/Admin/AdminCreateEvent';
 import AdminAnalytics from '../components/Admin/AdminAnalytics';
@@ -84,7 +83,6 @@ const getEventEndTimestamp = (event) => {
 export default function AdminPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [announcements, setAnnouncements] = useState([]);
   const [events, setEvents] = useState([]);
   const [eventsPage, setEventsPage] = useState(1);
   const [eventsLimit] = useState(EVENTS_PAGE_LIMIT);
@@ -97,7 +95,6 @@ export default function AdminPage() {
       totalEvents: 0,
       totalStudents: 0,
       totalRegistrations: 0,
-      totalAnnouncements: 0,
     },
     recentRegistrations: [],
     eventReports: [],
@@ -138,23 +135,12 @@ export default function AdminPage() {
 
   const tabTitles = {
     dashboard: 'Dashboard',
-    announcements: 'Announcements',
     events: 'Manage Events',
     'create-event': 'Create Event',
     analytics: 'Analytics',
     reports: 'Reports',
     users: 'Users',
   };
-
-  // Fetch announcements
-  const fetchAnnouncements = useCallback(async () => {
-    try {
-      const res = await axios.get(`${API_URL}/announcements`);
-      setAnnouncements(res.data);
-    } catch (err) {
-      console.error('Error fetching announcements:', err);
-    }
-  }, []);
 
   const fetchEventsPage = useCallback(async ({ page = 1, append = false } = {}) => {
     if (isEventsLoadingRef.current) {
@@ -254,11 +240,10 @@ export default function AdminPage() {
   }, [handleLogout]);
 
   useEffect(() => {
-    fetchAnnouncements();
     fetchEventsPage({ page: 1, append: false });
     fetchAdminOverview();
     fetchAdminSettings();
-  }, [fetchAnnouncements, fetchEventsPage, fetchAdminOverview, fetchAdminSettings]);
+  }, [fetchEventsPage, fetchAdminOverview, fetchAdminSettings]);
 
   useEffect(() => {
     if (["dashboard", "analytics", "reports", "users"].includes(activeTab)) {
@@ -268,13 +253,12 @@ export default function AdminPage() {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      fetchAnnouncements();
       fetchAdminOverview({ silent: true });
       setReportRefreshToken((prev) => prev + 1);
     }, REPORT_REFRESH_MS);
 
     return () => clearInterval(intervalId);
-  }, [fetchAnnouncements, fetchAdminOverview]);
+  }, [fetchAdminOverview]);
 
   useEffect(() => {
     if (!["dashboard", "reports"].includes(activeTab)) {
@@ -317,46 +301,6 @@ export default function AdminPage() {
     fetchEventsPage({ page: eventsPage + 1, append: true });
   }, [activeTab, eventsPage, hasMoreEvents, fetchEventsPage]);
 
-  // Handle posting announcement
-  const handlePostAnnouncement = async (announcement) => {
-    try {
-      const res = await axios.post(
-        `${API_URL}/announcements`,
-        {
-          title: announcement.title,
-          message: announcement.message,
-        },
-        getAdminRequestConfig()
-      );
-      setAnnouncements((prev) => [res.data, ...prev]);
-      await fetchAdminOverview();
-    } catch (err) {
-      console.error('Error posting announcement:', err);
-
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        handleLogout();
-      }
-    }
-  };
-
-  // Handle deleting announcement
-  const handleDeleteAnnouncement = async (id) => {
-    try {
-      await axios.delete(
-        `${API_URL}/announcements/${id}`,
-        getAdminRequestConfig()
-      );
-      setAnnouncements((prev) => prev.filter((ann) => ann._id !== id));
-      await fetchAdminOverview();
-    } catch (err) {
-      console.error('Error deleting announcement:', err);
-
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        handleLogout();
-      }
-    }
-  };
-
   const handleCreateEvent = async (eventData) => {
     try {
       setIsCreatingEvent(true);
@@ -395,7 +339,6 @@ export default function AdminPage() {
     }
   };
 
-  // Handle events
   const handleEditEvent = async (eventId, updates) => {
     try {
       const res = await axios.patch(
@@ -465,14 +408,6 @@ export default function AdminPage() {
             isLoading={isDashboardLoading}
           />
         );
-      case 'announcements':
-        return (
-          <AdminAnnouncements
-            announcements={announcements}
-            onPost={handlePostAnnouncement}
-            onDelete={handleDeleteAnnouncement}
-          />
-        );
       case 'events':
         return (
           <AdminEvents
@@ -504,7 +439,6 @@ export default function AdminPage() {
           <AdminAnalytics
             statsData={adminOverview.stats}
             events={events}
-            announcements={announcements}
             recentRegistrations={adminOverview.recentRegistrations}
             isLoading={isDashboardLoading}
           />
