@@ -701,6 +701,12 @@ exports.getAdminDashboardData = async (req, res) => {
               "Student",
             ],
           },
+          studentPhoto: {
+            $ifNull: [
+              { $arrayElemAt: ["$studentData.profileImage", 0] },
+              "",
+            ],
+          },
           registeredAt: { $ifNull: ["$createdAt", "$registeredAt"] },
         },
       },

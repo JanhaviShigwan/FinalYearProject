@@ -500,3 +500,43 @@ You can now register for events. Check your dashboard for upcoming events, avail
 `,
     icons.user
   );
+
+// ================= FEEDBACK REQUEST
+
+exports.feedbackRequestTemplate = (eventData) => {
+  const event = typeof eventData === "object" ? eventData.name : eventData;
+  const details = typeof eventData === "object" ? eventData : {};
+
+  return baseTemplate(
+    "Share Your Feedback",
+    `
+<p style="margin-bottom:15px; line-height:1.6;">
+Hello <b style="color:#9B96E5;">${details.studentName ? escapeHtml(details.studentName) : "there"}</b>,
+</p>
+
+<p style="margin:15px 0; line-height:1.6; color:#3F3D56;">
+Thank you for attending <b style="color:#9B96E5;">${escapeHtml(event)}</b>!
+We would love to hear about your experience.
+</p>
+
+<div style="
+background:#F6F1EB;
+border-left:4px solid #9B96E5;
+padding:15px;
+margin:20px 0;
+border-radius:6px;
+">
+  <h3 style="margin:0 0 8px 0; color:#9B96E5; font-size:16px;">
+    ${escapeHtml(event)}
+  </h3>
+  ${details.date ? `<p style="margin:8px 0; color:#3F3D56;"><strong>Date:</strong> ${escapeHtml(details.date)}</p>` : ""}
+  ${details.venue ? `<p style="margin:8px 0; color:#3F3D56;"><strong>Venue:</strong> ${escapeHtml(details.venue)}</p>` : ""}
+</div>
+
+<p style="margin:15px 0; line-height:1.6; color:#3F3D56;">
+Your feedback helps us improve future events. Please visit EventSphere and go to <b>My Registrations</b> to rate the event and leave a comment.
+</p>
+`,
+    icons.calendar
+  );
+};

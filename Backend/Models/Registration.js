@@ -21,6 +21,11 @@ const registrationSchema = new mongoose.Schema(
   reminderDaysSent: {
     type: [Number],
     default: []
+  },
+
+  feedbackEmailSent: {
+    type: Boolean,
+    default: false
   }
 },
 { timestamps: true }

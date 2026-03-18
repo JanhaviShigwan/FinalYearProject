@@ -9,6 +9,7 @@ import {
   ChevronRight,
   Zap,
   BookOpen,
+  Hand,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import API_URL from "../api";
@@ -163,7 +164,7 @@ const upcomingEventsFiltered = allEvents.filter(
           <div className="flex-1 min-w-0">
             <p className="text-white/70 text-sm font-medium">{todayLabel}</p>
             <h1 className="text-2xl md:text-3xl font-extrabold leading-tight truncate">
-              Hey, {currentStudent?.name?.split(" ")[0] || "there"} 👋
+              Hey, {currentStudent?.name?.split(" ")[0] || "there"} <Hand size={20} className="inline" />
             </h1>
             <p className="text-white/80 text-sm mt-0.5">
               {ongoingCount > 0

@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import ConfirmPopup from "./popup";
+import FeedbackModal from "./FeedbackModal";
+import ViewFeedbackModal from "./ViewFeedbackModal";
 import {
   CalendarDays,
   Clock,
@@ -10,6 +12,8 @@ import {
   QrCode,
   X,
   Ticket,
+  MessageSquare,
+  Eye,
 } from "lucide-react";
 import API_URL from "../api";
 import { getEventLifecycleStatus } from "../utils/eventStatus";
@@ -20,8 +24,38 @@ export default function MyRegistrations() {
   const [cancelTarget, setCancelTarget] = useState(null);
   const [cancelError, setCancelError] = useState("");
   const [isCancelling, setIsCancelling] = useState(false);
+  const [feedbackEvent, setFeedbackEvent] = useState(null);
+  const [viewFeedbackEvent, setViewFeedbackEvent] = useState(null);
+  // Map of eventId → true if feedback already submitted
+  const [submittedFeedbacks, setSubmittedFeedbacks] = useState({});
 
   const student = JSON.parse(localStorage.getItem("eventSphereStudent"));
+
+  const fetchFeedbackStatus = useCallback(
+    async (events) => {
+      if (!student?._id || !events?.length) return;
+      const endedEvents = events.filter(
+        (e) => getEventLifecycleStatus(e) === "ended"
+      );
+      if (!endedEvents.length) return;
+
+      const results = await Promise.allSettled(
+        endedEvents.map((e) =>
+          axios
+            .get(`${API_URL}/feedback/${e._id}/${student._id}`)
+            .then((r) => ({ eventId: e._id, submitted: Boolean(r.data?.feedback) }))
+            .catch(() => ({ eventId: e._id, submitted: false }))
+        )
+      );
+
+      const map = {};
+      results.forEach((r) => {
+        if (r.status === "fulfilled") map[r.value.eventId] = r.value.submitted;
+      });
+      setSubmittedFeedbacks((prev) => ({ ...prev, ...map }));
+    },
+    [student?._id]
+  );
 
   useEffect(() => {
     const fetchMyEvents = async () => {
@@ -30,6 +64,7 @@ export default function MyRegistrations() {
           `${API_URL}/events/student-registrations/${student._id}`
         );
         setMyEvents(res.data);
+        fetchFeedbackStatus(res.data);
       } catch (error) {
         console.error("Error fetching registrations:", error);
       }
@@ -46,7 +81,7 @@ export default function MyRegistrations() {
     }, 5000);
 
     return () => clearInterval(refreshInterval);
-  }, [student?._id]);
+  }, [student?._id, fetchFeedbackStatus]);
 
   const confirmCancel = async () => {
     if (!cancelTarget || isCancelling) return;
@@ -186,8 +221,25 @@ export default function MyRegistrations() {
                       </button>
                     </div>
                   ) : (
-                    <div className="mt-auto pt-5 text-sm font-semibold text-deep-slate/45">
-                      Event has ended.
+                    <div className="mt-auto pt-5 flex flex-col gap-3">
+                      <p className="text-sm font-semibold text-deep-slate/45">Event has ended.</p>
+                      {submittedFeedbacks[event._id] ? (
+                        <button
+                          onClick={() => setViewFeedbackEvent(event)}
+                          className="flex items-center justify-center gap-2 py-3 rounded-xl border border-lavender/30 bg-lavender/10 text-lavender text-base font-bold hover:bg-lavender hover:text-white transition-colors"
+                        >
+                          <Eye className="w-4.5 h-4.5" />
+                          View Feedback
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => setFeedbackEvent(event)}
+                          className="flex items-center justify-center gap-2 py-3 rounded-xl border border-lavender/30 bg-lavender/10 text-lavender text-base font-bold hover:bg-lavender hover:text-white transition-colors"
+                        >
+                          <MessageSquare className="w-4.5 h-4.5" />
+                          Feedback
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -245,6 +297,27 @@ export default function MyRegistrations() {
           {cancelError}
         </div>
       ) : null}
+
+      {/* Submit Feedback Modal */}
+      {feedbackEvent && student && (
+        <FeedbackModal
+          event={feedbackEvent}
+          student={student}
+          onClose={() => setFeedbackEvent(null)}
+          onSuccess={() =>
+            setSubmittedFeedbacks((prev) => ({ ...prev, [feedbackEvent._id]: true }))
+          }
+        />
+      )}
+
+      {/* View Feedback Modal */}
+      {viewFeedbackEvent && student && (
+        <ViewFeedbackModal
+          event={viewFeedbackEvent}
+          student={student}
+          onClose={() => setViewFeedbackEvent(null)}
+        />
+      )}
 
       <ConfirmPopup
         open={Boolean(cancelTarget)}

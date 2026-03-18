@@ -8,6 +8,7 @@
   const cors = require("cors");
   const aiRoutes = require("./routes/aiRoutes");
   const { startEventReminderScheduler } = require("./services/eventReminderScheduler");
+  const { startFeedbackMailScheduler } = require("./services/feedbackMailScheduler");
 
   const app = express();
 
@@ -27,6 +28,7 @@
     .then(() => {
       console.log("Connected to DB:", mongoose.connection.name);
       startEventReminderScheduler();
+      startFeedbackMailScheduler();
     })
     .catch((err) => {
       console.log("DB Error:", err);
@@ -44,6 +46,7 @@
   app.use("/api/dashboard", require("./routes/dashboardRoutes"));
   app.use("/api/student", require("./routes/studentRoutes"));
   app.use("/api/admin", require("./routes/adminSettingsRoutes"));
+  app.use("/api/feedback", require("./routes/feedbackRoutes"));
 
 
   app.listen(process.env.PORT || 5000, () =>

@@ -11,6 +11,7 @@ import AdminCreateEvent from '../components/Admin/AdminCreateEvent';
 import AdminAnalytics from '../components/Admin/AdminAnalytics';
 import AdminUsers from '../components/Admin/AdminUsers';
 import AdminReports from '../components/Admin/AdminReports';
+import AdminFeedbacks from '../components/Admin/AdminFeedbacks';
 import { getAdminRequestConfig, getStoredStudent, isAdminStudent } from '../utils/adminAuth';
 
 const REPORT_REFRESH_MS = 5000;
@@ -140,6 +141,7 @@ export default function AdminPage() {
     analytics: 'Analytics',
     reports: 'Reports',
     users: 'Users',
+    feedbacks: 'Student Feedbacks',
   };
 
   const fetchEventsPage = useCallback(async ({ page = 1, append = false } = {}) => {
@@ -456,6 +458,8 @@ export default function AdminPage() {
             refreshToken={reportRefreshToken}
           />
         );
+      case 'feedbacks':
+        return <AdminFeedbacks />;
       default:
         return (
           <AdminDashboard
