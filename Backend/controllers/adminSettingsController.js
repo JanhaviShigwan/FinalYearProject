@@ -5,7 +5,7 @@ const Student = require("../Models/Student");
 const Feedback = require("../Models/Feedback");
 const Event = require("../Models/Event");
 const sendEmail = require("../utils/sendEmail");
-const { passwordChangedTemplate } = require("../utils/template");
+const { passwordChangedTemplate, blockedTemplate } = require("../utils/template");
 const { generateEventReport } = require("../utils/generateReport");
 const { generateExecutionText } = require("../utils/aiSummary");
 
@@ -311,21 +311,10 @@ exports.blockUser = async (req, res) => {
     await user.save();
 
     if (user.email) {
-      const safeReason = escapeHtml(normalizedReason);
-
-      const html = `
-        <div style="font-family: Arial, sans-serif; color: #3F3D56; line-height: 1.6;">
-          <h2 style="margin: 0 0 12px;">Account Blocked</h2>
-          <p>Your account has been blocked.</p>
-          <p><strong>Reason:</strong> ${safeReason}</p>
-          <p>Contact admin for more details.</p>
-        </div>
-      `;
-
       await sendEmail(
         user.email,
         "Account Blocked",
-        html,
+        blockedTemplate(user.name, normalizedReason),
         {
           topic: "GENERAL",
           bypassPreferenceCheck: true,

@@ -501,6 +501,49 @@ You can now register for events. Check your dashboard for upcoming events, avail
     icons.user
   );
 
+// ================= ACCOUNT BLOCKED
+
+exports.blockedTemplate = (name = "Student", reason = "") =>
+  baseTemplate(
+    "Account Blocked",
+    `
+<p style="margin-bottom:15px; line-height:1.6;">
+Hello <b style="color:#9B96E5;">${escapeHtml(name)}</b>,
+</p>
+
+<p style="margin:15px 0; line-height:1.6; color:#3F3D56;">
+We regret to inform you that your <b>EventSphere</b> account has been blocked by an administrator.
+</p>
+
+<div style="
+background:#FFF7F3;
+border-left:4px solid #F08A6C;
+padding:15px;
+margin:20px 0;
+border-radius:6px;
+">
+  <h4 style="margin:0 0 8px 0; color:#F08A6C; font-size:15px;">
+    <svg style="width:14px; height:14px; margin-right:6px; display:inline; color:#F08A6C;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3.05h16.94a2 2 0 0 0 1.71-3.05L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+      <line x1="12" y1="9" x2="12" y2="13"></line>
+      <line x1="12" y1="17" x2="12.01" y2="17"></line>
+    </svg>
+    Reason for Blocking
+  </h4>
+  <p style="margin:0; color:#3F3D56; line-height:1.6;">${escapeHtml(reason)}</p>
+</div>
+
+<p style="margin:15px 0; line-height:1.6; color:#3F3D56;">
+While your account is blocked you will not be able to log in, register for events, or access any EventSphere features.
+</p>
+
+<p style="margin:15px 0; line-height:1.6; color:#3F3D56;">
+If you believe this is a mistake or would like to appeal, please contact the system administrator directly.
+</p>
+`,
+    icons.lock
+  );
+
 // ================= FEEDBACK REQUEST
 
 exports.feedbackRequestTemplate = (eventData) => {
