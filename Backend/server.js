@@ -47,6 +47,7 @@
   app.use("/api/student", require("./routes/studentRoutes"));
   app.use("/api/admin", require("./routes/adminSettingsRoutes"));
   app.use("/api/feedback", require("./routes/feedbackRoutes"));
+  app.use("/api/certificate", require("./routes/certificateRoutes"));
 
 
   app.listen(process.env.PORT || 5000, () =>

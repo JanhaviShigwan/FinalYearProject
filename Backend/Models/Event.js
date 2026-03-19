@@ -79,6 +79,11 @@ const EventSchema = new mongoose.Schema({
   isTrending: {
     type: Boolean,
     default: false
+  },
+
+  isCompleted: {
+    type: Boolean,
+    default: false
   }
 
 }, { timestamps: true });

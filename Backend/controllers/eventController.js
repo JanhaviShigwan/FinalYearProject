@@ -442,6 +442,33 @@ const updateEvent = async (req, res) => {
 };
 
 
+// MARK EVENT COMPLETED
+const completeEvent = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+
+    const event = await Event.findById(id);
+
+    if (!event) {
+      return res.status(404).json({
+        message: "Event not found"
+      });
+    }
+
+    if (!event.isCompleted) {
+      event.isCompleted = true;
+      await event.save();
+    }
+
+    res.status(200).json(event);
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 // DELETE event
 const deleteEvent = async (req, res) => {
   try {
@@ -843,6 +870,7 @@ module.exports = {
   getEventById,
   createEvent,
   updateEvent,
+  completeEvent,
   deleteEvent,
   registerForEvent,
   checkRegistration,
