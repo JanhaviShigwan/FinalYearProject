@@ -7,6 +7,7 @@ const {
   getEventById,
   createEvent,
   updateEvent,
+  completeEvent,
   deleteEvent,
   registerForEvent,
   checkRegistration,
@@ -27,6 +28,8 @@ router.get("/check-registration/:eventId/:studentId", checkRegistration);
 router.get("/student-registrations/:studentId", getStudentRegistrations);
 
 router.delete("/cancel-registration/:studentId/:eventId", cancelRegistration);
+
+router.put("/complete/:id", adminAuth, completeEvent);
 
 // generic /:id routes come last so they don't shadow the routes above
 router.patch("/:id", adminAuth, updateEvent);

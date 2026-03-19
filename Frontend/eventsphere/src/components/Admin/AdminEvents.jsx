@@ -16,6 +16,7 @@ export default function AdminEvents({
   onDelete,
   onView,
   onDownloadReport,
+  onMarkCompleted,
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -43,6 +44,7 @@ export default function AdminEvents({
   const [updatingPlacementId, setUpdatingPlacementId] = useState('');
   const [deletingId, setDeletingId] = useState('');
   const [downloadingId, setDownloadingId] = useState('');
+  const [completingId, setCompletingId] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [error, setError] = useState('');
 
@@ -287,6 +289,29 @@ export default function AdminEvents({
     }
   };
 
+  const handleMarkCompleted = async (event) => {
+    if (!onMarkCompleted) {
+      return;
+    }
+
+    const eventId = event?._id || event?.id;
+
+    if (!eventId) {
+      setError('Invalid event selected.');
+      return;
+    }
+
+    try {
+      setCompletingId(eventId);
+      setError('');
+      await onMarkCompleted(event);
+    } catch (err) {
+      setError(err.message || 'Failed to mark event as completed.');
+    } finally {
+      setCompletingId('');
+    }
+  };
+
   const savePlacement = async () => {
     if (!placementTarget || !onUpdatePlacement) {
       return;
@@ -403,6 +428,8 @@ export default function AdminEvents({
               {filteredEvents.length > 0 ? (
                 filteredEvents.map((event) => {
                   const eventId = event._id || event.id;
+                  const lifecycleStatus = getEventLifecycleStatus(event);
+                  const canMarkCompleted = lifecycleStatus === 'ended' && !event.isCompleted;
 
                   return (
                     <tr key={eventId} className="hover:bg-warm-cream/30 transition-colors group">
@@ -445,6 +472,14 @@ export default function AdminEvents({
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handleMarkCompleted(event)}
+                            disabled={completingId === eventId || !canMarkCompleted || !onMarkCompleted}
+                            className="px-3 py-2 bg-lavender/10 text-lavender rounded-xl text-xs font-bold hover:bg-lavender/20 transition-colors disabled:opacity-50"
+                            title={event.isCompleted ? 'Event already completed' : 'Mark event as completed'}
+                          >
+                            {completingId === eventId ? 'Updating...' : event.isCompleted ? 'Completed' : 'Mark Completed'}
+                          </button>
                           <button
                             onClick={() => openPlacementModal(event)}
                             disabled={

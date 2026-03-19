@@ -14,9 +14,11 @@ import {
   Ticket,
   MessageSquare,
   Eye,
+  Download,
 } from "lucide-react";
 import API_URL from "../api";
 import { getEventLifecycleStatus } from "../utils/eventStatus";
+import { isBlockedPayload, triggerBlockedLogout } from "../utils/blockedUser";
 
 export default function MyRegistrations() {
   const [myEvents, setMyEvents] = useState([]);
@@ -26,6 +28,8 @@ export default function MyRegistrations() {
   const [isCancelling, setIsCancelling] = useState(false);
   const [feedbackEvent, setFeedbackEvent] = useState(null);
   const [viewFeedbackEvent, setViewFeedbackEvent] = useState(null);
+  const [downloadingCertificateId, setDownloadingCertificateId] = useState("");
+  const [certificateError, setCertificateError] = useState("");
   // Map of eventId → true if feedback already submitted
   const [submittedFeedbacks, setSubmittedFeedbacks] = useState({});
 
@@ -102,6 +106,66 @@ export default function MyRegistrations() {
       );
     } finally {
       setIsCancelling(false);
+    }
+  };
+
+  const handleCertificateDownload = async (event) => {
+    if (!student?._id) {
+      setCertificateError("Login required to download certificate.");
+      return;
+    }
+
+    const eventId = event?._id;
+
+    if (!eventId) {
+      setCertificateError("Invalid event selected.");
+      return;
+    }
+
+    try {
+      setDownloadingCertificateId(eventId);
+      setCertificateError("");
+
+      const response = await fetch(`${API_URL}/certificate/${eventId}`, {
+        method: "GET",
+        headers: {
+          "x-student-id": student._id,
+        },
+      });
+
+      if (!response.ok) {
+        let payload = null;
+
+        try {
+          payload = await response.json();
+        } catch (error) {
+          payload = null;
+        }
+
+        if (isBlockedPayload(payload)) {
+          triggerBlockedLogout();
+          return;
+        }
+
+        throw new Error(payload?.message || "Unable to download certificate.");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      const contentDisposition = response.headers.get("content-disposition") || "";
+      const fileNameMatch = contentDisposition.match(/filename="([^"]+)"/i);
+
+      anchor.href = url;
+      anchor.download = fileNameMatch?.[1] || `certificate-${event.eventName || "event"}.pdf`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      setCertificateError(error.message || "Unable to download certificate.");
+    } finally {
+      setDownloadingCertificateId("");
     }
   };
 
@@ -223,6 +287,16 @@ export default function MyRegistrations() {
                   ) : (
                     <div className="mt-auto pt-5 flex flex-col gap-3">
                       <p className="text-sm font-semibold text-deep-slate/45">Event has ended.</p>
+                      {event.isCompleted === true ? (
+                        <button
+                          onClick={() => handleCertificateDownload(event)}
+                          disabled={downloadingCertificateId === event._id}
+                          className="flex items-center justify-center gap-2 py-3 rounded-xl border border-lavender/30 bg-lavender/10 text-lavender text-base font-bold hover:bg-lavender hover:text-white transition-colors disabled:opacity-60"
+                        >
+                          <Download className="w-4.5 h-4.5" />
+                          {downloadingCertificateId === event._id ? "Downloading..." : "Download Certificate"}
+                        </button>
+                      ) : null}
                       {submittedFeedbacks[event._id] ? (
                         <button
                           onClick={() => setViewFeedbackEvent(event)}
@@ -295,6 +369,12 @@ export default function MyRegistrations() {
       {cancelError ? (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
           {cancelError}
+        </div>
+      ) : null}
+
+      {certificateError ? (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+          {certificateError}
         </div>
       ) : null}
 

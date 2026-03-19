@@ -399,6 +399,38 @@ export default function AdminPage() {
     await handleEditEvent(eventId, placement);
   };
 
+  const handleMarkEventCompleted = async (event) => {
+    const eventId = event?._id || event?.id;
+
+    if (!eventId) {
+      throw new Error('Invalid event selected.');
+    }
+
+    try {
+      const res = await axios.put(
+        `${API_URL}/events/complete/${eventId}`,
+        {},
+        getAdminRequestConfig()
+      );
+
+      setEvents((prev) =>
+        prev.map((item) =>
+          (item._id || item.id) === eventId ? { ...item, ...res.data } : item
+        )
+      );
+
+      await fetchAdminOverview();
+      return res.data;
+    } catch (err) {
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        handleLogout();
+      }
+
+      const message = err.response?.data?.message || 'Failed to mark event as completed.';
+      throw new Error(message);
+    }
+  };
+
   const handleDownloadEventReport = async (event) => {
     const eventId = event?._id || event?.id;
 
@@ -472,6 +504,7 @@ export default function AdminPage() {
             onDelete={handleDeleteEvent}
             onView={handleViewEvent}
             onDownloadReport={handleDownloadEventReport}
+            onMarkCompleted={handleMarkEventCompleted}
           />
         );
       case 'create-event':
