@@ -583,3 +583,46 @@ Your feedback helps us improve future events. Please visit EventSphere and go to
     icons.calendar
   );
 };
+
+
+
+// ================= CERTIFICATE AVAILABLE
+
+exports.certificateTemplate = (eventData) => {
+  const event = typeof eventData === "object" ? eventData.name : eventData;
+  const details = typeof eventData === "object" ? eventData : {};
+
+  return baseTemplate(
+    "Certificate Available",
+    `
+<p style="margin-bottom:15px; line-height:1.6;">
+Hello <b style="color:#9B96E5;">${details.studentName ? escapeHtml(details.studentName) : "there"}</b>,
+</p>
+
+<p style="margin:15px 0; line-height:1.6; color:#3F3D56;">
+Congratulations! The event <b style="color:#9B96E5;">${escapeHtml(event)}</b> has been marked as completed.
+Your certificate of participation is now ready to download.
+</p>
+
+<div style="
+background:#F6F1EB;
+border-left:4px solid #9B96E5;
+padding:15px;
+margin:20px 0;
+border-radius:6px;
+">
+  <h3 style="margin:0 0 10px 0; color:#9B96E5; font-size:16px;">
+    ${escapeHtml(event)}
+  </h3>
+  ${details.date ? `<p style="margin:8px 0; color:#3F3D56; display:flex; align-items:center;"><svg style="width:14px; height:14px; margin-right:6px; color:#9B96E5; flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><strong>Date:</strong> ${escapeHtml(details.date)}</p>` : ""}
+  ${details.location ? `<p style="margin:8px 0; color:#3F3D56; display:flex; align-items:center;"><svg style="width:14px; height:14px; margin-right:6px; color:#9B96E5; flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><strong>Venue:</strong> ${escapeHtml(details.location)}</p>` : ""}
+</div>
+
+<p style="margin:15px 0; line-height:1.6; color:#3F3D56;">
+To download your certificate, visit <b>EventSphere</b> and navigate to <b>My Registrations</b>.
+Your certificate will be available for download there.
+</p>
+`,
+    icons.calendar
+  );
+};

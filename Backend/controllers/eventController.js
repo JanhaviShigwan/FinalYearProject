@@ -9,6 +9,7 @@ const {
   eventRegisterTemplate,
   eventCancelTemplate,
   newEventTemplate,
+  certificateTemplate,
 } = require("../utils/template");
 
 const respondIfBlocked = (student, res) => {
@@ -459,6 +460,36 @@ const completeEvent = async (req, res) => {
     if (!event.isCompleted) {
       event.isCompleted = true;
       await event.save();
+
+      // Fire-and-forget: notify all registered students that their certificate is ready
+      setImmediate(async () => {
+        try {
+          const registrations = await Registration.find({ eventId: id })
+            .select("studentId")
+            .populate("studentId", "name email");
+
+          const emailData = {
+            name: event.eventName,
+            date: event.date,
+            location: event.venue,
+          };
+
+          const sends = registrations
+            .filter((r) => r.studentId?.email)
+            .map((r) =>
+              sendEmail(
+                r.studentId.email,
+                `Your Certificate is Ready – ${event.eventName}`,
+                certificateTemplate({ ...emailData, studentName: r.studentId.name || "" }),
+                { topic: "GENERAL" }
+              )
+            );
+
+          await Promise.allSettled(sends);
+        } catch (err) {
+          console.error("[Certificate Email] Failed to send certificate notifications:", err.message);
+        }
+      });
     }
 
     res.status(200).json(event);
