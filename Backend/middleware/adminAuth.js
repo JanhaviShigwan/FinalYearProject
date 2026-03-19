@@ -10,7 +10,7 @@ module.exports = async function adminAuth(req, res, next) {
       });
     }
 
-    const adminUser = await Student.findById(adminId).select("_id role name email");
+    const adminUser = await Student.findById(adminId).select("_id role name email isBlocked");
 
     if (!adminUser) {
       return res.status(401).json({
@@ -21,6 +21,12 @@ module.exports = async function adminAuth(req, res, next) {
     if (adminUser.role !== "admin") {
       return res.status(403).json({
         message: "Admin access only",
+      });
+    }
+
+    if (adminUser.isBlocked) {
+      return res.status(403).json({
+        message: "BLOCKED",
       });
     }
 

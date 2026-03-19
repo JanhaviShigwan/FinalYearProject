@@ -831,6 +831,12 @@ exports.getDashboardData = async (req, res) => {
 
     const { studentId } = req.params;
 
+    const student = await Student.findById(studentId).select("isBlocked");
+
+    if (student?.isBlocked) {
+      return res.status(403).json({ message: "BLOCKED" });
+    }
+
     const now = new Date();
 
     // ================= MY EVENTS =================

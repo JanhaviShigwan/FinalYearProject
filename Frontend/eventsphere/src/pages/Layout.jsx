@@ -16,6 +16,7 @@ import {
 
 import logo from "../assets/EventSphereLogo.png";
 import API_URL from "../api";
+import { isBlockedPayload, triggerBlockedLogout } from "../utils/blockedUser";
 
 export default function MainLayout() {
 
@@ -40,6 +41,21 @@ export default function MainLayout() {
         const fetchLatestStudent = async () => {
             try {
                 const res = await fetch(`${API_URL}/student/${studentId}`);
+
+                if (res.status === 403) {
+                    let payload = null;
+
+                    try {
+                        payload = await res.json();
+                    } catch (error) {
+                        payload = null;
+                    }
+
+                    if (isBlockedPayload(payload)) {
+                        triggerBlockedLogout();
+                        return;
+                    }
+                }
 
                 if (!res.ok) {
                     return;

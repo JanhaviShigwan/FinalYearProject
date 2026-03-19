@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const Student = require("../Models/Student");
 
 const CATEGORY_LABELS = {
   REGISTRATION: "Register",
@@ -77,11 +78,56 @@ const inferTopic = (subject = "") => {
   return "GENERAL";
 };
 
+const normalizeRecipients = (to) => {
+  if (Array.isArray(to)) {
+    return to
+      .map((email) => String(email || "").trim().toLowerCase())
+      .filter(Boolean);
+  }
+
+  return String(to || "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+};
+
 const sendEmail = async (to, subject, html, options = {}) => {
   const topic = normalizeTopic(options.topic) || inferTopic(subject);
   const category = CATEGORY_LABELS[topic] || topic;
 
   try {
+    const requestedRecipients = normalizeRecipients(to);
+    const bypassPreferenceCheck = options?.bypassPreferenceCheck === true;
+
+    if (!requestedRecipients.length) {
+      console.log(`[MAIL][${category}] FAILED | reason: recipient missing | subject: ${subject}`);
+      return false;
+    }
+
+    let allowedRecipients = requestedRecipients;
+
+    if (!bypassPreferenceCheck) {
+      const matchingUsers = await Student.find({
+        email: { $in: requestedRecipients },
+      }).select("email role notificationPreferences");
+
+      const blockedRecipientSet = new Set(
+        matchingUsers
+          .filter((user) => user.role === "admin" || user.notificationPreferences?.enabled === false)
+          .map((user) => String(user.email || "").toLowerCase())
+      );
+
+      allowedRecipients = requestedRecipients.filter(
+        (email) => !blockedRecipientSet.has(email)
+      );
+
+      if (!allowedRecipients.length) {
+        console.log(
+          `[MAIL][${category}] SKIPPED | reason: blocked by role/preferences | requested: ${requestedRecipients.join(", ")} | subject: ${subject}`
+        );
+        return true;
+      }
+    }
 
     const smtpHost = process.env.SMTP_HOST || "smtp.gmail.com";
     const smtpPort = Number(process.env.SMTP_PORT || 587);
@@ -112,7 +158,7 @@ const sendEmail = async (to, subject, html, options = {}) => {
 
     const mailOptions = {
       from: process.env.EMAIL_FROM || `"EventSphere" <${process.env.EMAIL_USER}>`,
-      to: to,
+      to: allowedRecipients.join(", "),
       subject: subject,
       html: html,
       ...(Array.isArray(options.attachments) && options.attachments.length > 0
@@ -120,7 +166,7 @@ const sendEmail = async (to, subject, html, options = {}) => {
         : {})
     };
 
-    console.log(`[MAIL] Sending Email | Category: ${category} | to: ${to} | subject: ${subject}`);
+    console.log(`[MAIL] Sending Email | Category: ${category} | to: ${mailOptions.to} | subject: ${subject}`);
 
     const info = await transporter.sendMail(mailOptions);
     const deliveredTo = Array.isArray(info?.accepted) && info.accepted.length

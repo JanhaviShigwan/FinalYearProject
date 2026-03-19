@@ -11,6 +11,15 @@ const {
   newEventTemplate,
 } = require("../utils/template");
 
+const respondIfBlocked = (student, res) => {
+  if (student?.isBlocked) {
+    res.status(403).json({ message: "BLOCKED" });
+    return true;
+  }
+
+  return false;
+};
+
 const sendEventMailAsync = (event) => {
   setTimeout(async () => {
     try {
@@ -485,6 +494,10 @@ const registerForEvent = async (req, res) => {
       });
     }
 
+    if (respondIfBlocked(student, res)) {
+      return;
+    }
+
     if (student.role !== "admin" && !student.profileComplete) {
       return res.status(400).json({
         type: "PROFILE_INCOMPLETE",
@@ -683,6 +696,12 @@ const checkRegistration = async (req, res) => {
 
     const { eventId, studentId } = req.params;
 
+    const student = await Student.findById(studentId).select("isBlocked");
+
+    if (student && respondIfBlocked(student, res)) {
+      return;
+    }
+
     const registration = await Registration.findOne({
       eventId,
       studentId
@@ -713,6 +732,12 @@ const getStudentRegistrations = async (req, res) => {
   try {
 
     const { studentId } = req.params;
+
+    const student = await Student.findById(studentId).select("isBlocked");
+
+    if (student && respondIfBlocked(student, res)) {
+      return;
+    }
 
     const registrations = await Registration.find({
       studentId
@@ -745,6 +770,12 @@ const cancelRegistration = async (req, res) => {
   try {
 
     const { studentId, eventId } = req.params;
+
+    const blockedStudent = await Student.findById(studentId).select("isBlocked");
+
+    if (blockedStudent && respondIfBlocked(blockedStudent, res)) {
+      return;
+    }
 
     const registration =
       await Registration.findOneAndDelete({

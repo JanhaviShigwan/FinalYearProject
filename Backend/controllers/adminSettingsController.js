@@ -1,10 +1,20 @@
 const bcrypt = require("bcryptjs");
+const mongoose = require("mongoose");
 const AdminSettings = require("../Models/AdminSettings");
 const Student = require("../Models/Student");
 const Feedback = require("../Models/Feedback");
 const Event = require("../Models/Event");
 const sendEmail = require("../utils/sendEmail");
 const { passwordChangedTemplate } = require("../utils/template");
+const { generateEventReport } = require("../utils/generateReport");
+const { generateExecutionText } = require("../utils/aiSummary");
+
+const escapeHtml = (value = "") => String(value)
+  .replace(/&/g, "&amp;")
+  .replace(/</g, "&lt;")
+  .replace(/>/g, "&gt;")
+  .replace(/\"/g, "&quot;")
+  .replace(/'/g, "&#39;");
 
 const clampNumber = (value, min, max, fallback) => {
   const parsed = Number(value);
@@ -204,6 +214,171 @@ exports.updateAdminPassword = async (req, res) => {
   }
 };
 
+exports.updateNotificationPreferences = async (req, res) => {
+  try {
+    const updates = Array.isArray(req.body?.users) ? req.body.users : null;
+
+    if (!updates) {
+      return res.status(400).json({
+        message: "users must be an array",
+      });
+    }
+
+    const validUpdates = updates.filter(
+      (item) =>
+        item
+        && typeof item.userId === "string"
+        && mongoose.Types.ObjectId.isValid(item.userId)
+        && typeof item.enabled === "boolean"
+    );
+
+    if (!validUpdates.length) {
+      return res.status(400).json({
+        message: "No valid notification preference updates found",
+      });
+    }
+
+    const targetIds = validUpdates.map((item) => item.userId);
+
+    const targetUsers = await Student.find({ _id: { $in: targetIds } })
+      .select("_id role");
+
+    const userRoleMap = new Map(
+      targetUsers.map((user) => [String(user._id), user.role])
+    );
+
+    const bulkOperations = validUpdates
+      .filter((item) => userRoleMap.has(item.userId))
+      .map((item) => {
+        const role = userRoleMap.get(item.userId);
+        const enabled = role === "admin" ? false : item.enabled;
+
+        return {
+          updateOne: {
+            filter: { _id: item.userId },
+            update: {
+              $set: {
+                "notificationPreferences.enabled": enabled,
+                notificationsEnabled: enabled,
+              },
+            },
+          },
+        };
+      });
+
+    if (!bulkOperations.length) {
+      return res.status(404).json({
+        message: "No matching users found",
+      });
+    }
+
+    await Student.bulkWrite(bulkOperations, { ordered: false });
+
+    return res.status(200).json({
+      message: "Notification preferences updated successfully",
+      updatedCount: bulkOperations.length,
+    });
+  } catch (error) {
+    console.error("updateNotificationPreferences error:", error);
+    return res.status(500).json({
+      message: "Failed to update notification preferences",
+    });
+  }
+};
+
+exports.blockUser = async (req, res) => {
+  try {
+    const { userId, reason } = req.body;
+
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Valid userId is required" });
+    }
+
+    const normalizedReason = String(reason || "").trim();
+
+    if (!normalizedReason) {
+      return res.status(400).json({ message: "Blocking reason is required" });
+    }
+
+    const user = await Student.findById(userId).select("_id name email isBlocked blockReason");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.isBlocked = true;
+    user.blockReason = normalizedReason;
+    await user.save();
+
+    if (user.email) {
+      const safeReason = escapeHtml(normalizedReason);
+
+      const html = `
+        <div style="font-family: Arial, sans-serif; color: #3F3D56; line-height: 1.6;">
+          <h2 style="margin: 0 0 12px;">Account Blocked</h2>
+          <p>Your account has been blocked.</p>
+          <p><strong>Reason:</strong> ${safeReason}</p>
+          <p>Contact admin for more details.</p>
+        </div>
+      `;
+
+      await sendEmail(
+        user.email,
+        "Account Blocked",
+        html,
+        {
+          topic: "GENERAL",
+          bypassPreferenceCheck: true,
+        }
+      );
+    }
+
+    return res.status(200).json({
+      message: "User blocked successfully",
+      user: {
+        _id: user._id,
+        isBlocked: user.isBlocked,
+        blockReason: user.blockReason,
+      },
+    });
+  } catch (error) {
+    console.error("blockUser error:", error);
+    return res.status(500).json({ message: "Failed to block user" });
+  }
+};
+
+exports.unblockUser = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Valid userId is required" });
+    }
+
+    const user = await Student.findById(userId).select("_id isBlocked blockReason");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.isBlocked = false;
+    user.blockReason = "";
+    await user.save();
+
+    return res.status(200).json({
+      message: "User unblocked successfully",
+      user: {
+        _id: user._id,
+        isBlocked: user.isBlocked,
+        blockReason: user.blockReason,
+      },
+    });
+  } catch (error) {
+    console.error("unblockUser error:", error);
+    return res.status(500).json({ message: "Failed to unblock user" });
+  }
+};
+
 exports.getEventsWithFeedback = async (req, res) => {
   try {
     const distinctEventIds = await Feedback.distinct("eventId");
@@ -220,5 +395,38 @@ exports.getEventsWithFeedback = async (req, res) => {
   } catch (err) {
     console.error("getEventsWithFeedback error:", err);
     return res.status(500).json({ message: "Failed to fetch events with feedback." });
+  }
+};
+
+exports.getEventReport = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found." });
+    }
+
+    const feedbacks = await Feedback.find({ eventId: String(event._id) }).sort({ createdAt: -1 });
+    const executionText = await generateExecutionText(event);
+    const doc = await generateEventReport(event, feedbacks, executionText);
+
+    const safeName = (event.eventName || "event-report")
+      .replace(/[^a-zA-Z0-9-_ ]/g, "")
+      .trim()
+      .replace(/\s+/g, "-")
+      .toLowerCase();
+
+    const fileName = `${safeName || "event-report"}.pdf`;
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+
+    doc.pipe(res);
+    doc.end();
+  } catch (error) {
+    console.error("getEventReport error:", error);
+    res.status(500).json({ message: "Failed to generate event report." });
   }
 };

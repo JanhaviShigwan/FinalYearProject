@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
-import { Mail, Search, Trash2, Users } from 'lucide-react';
+import { Mail, Search, Trash2, Users, X } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import API_URL from '../../api';
 import { getAdminRequestConfig } from '../../utils/adminAuth';
 import ConfirmPopup from '../popup';
@@ -25,6 +26,17 @@ export default function AdminUsers({ onDataChanged }) {
 
   const [busyUserId, setBusyUserId] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [blockTarget, setBlockTarget] = useState(null);
+  const [blockReason, setBlockReason] = useState('');
+  const [blockError, setBlockError] = useState('');
+  const [isBlockingUser, setIsBlockingUser] = useState(false);
+  const [preferences, setPreferences] = useState({});
+  const [hasChanges, setHasChanges] = useState(false);
+  const [isSavingPreferences, setIsSavingPreferences] = useState(false);
+
+  const getNotificationEnabled = (user) => (
+    user?.notificationPreferences?.enabled ?? user?.notificationsEnabled ?? true
+  );
 
   const fetchUsers = useCallback(async (opts = {}) => {
     const targetPage = opts.page ?? 1;
@@ -49,8 +61,22 @@ export default function AdminUsers({ onDataChanged }) {
         },
       });
 
-      setUsers(res.data.users || []);
+      const fetchedUsers = res.data.users || [];
+
+      setUsers(fetchedUsers);
       setPagination(res.data.pagination || { page: 1, limit: 10, total: 0, totalPages: 1 });
+
+      setPreferences((prev) => {
+        const next = hasChanges ? { ...prev } : {};
+
+        fetchedUsers.forEach((user) => {
+          if (!hasChanges || !Object.prototype.hasOwnProperty.call(next, user._id)) {
+            next[user._id] = getNotificationEnabled(user);
+          }
+        });
+
+        return next;
+      });
     } catch (err) {
       console.error('Error fetching users:', err);
       setError(err.response?.data?.message || 'Failed to load users. Please try again.');
@@ -59,7 +85,7 @@ export default function AdminUsers({ onDataChanged }) {
         setLoading(false);
       }
     }
-  }, [departmentFilter, roleFilter, search, yearFilter]);
+  }, [departmentFilter, hasChanges, roleFilter, search, yearFilter]);
 
   useEffect(() => {
     fetchUsers({ page: 1 });
@@ -75,12 +101,16 @@ export default function AdminUsers({ onDataChanged }) {
   }, [fetchUsers, search]);
 
   useEffect(() => {
+    if (hasChanges) {
+      return undefined;
+    }
+
     const refreshInterval = setInterval(() => {
       fetchUsers({ page, silent: true });
     }, 5000);
 
     return () => clearInterval(refreshInterval);
-  }, [fetchUsers, page]);
+  }, [fetchUsers, hasChanges, page]);
 
   const departments = useMemo(() => {
     const set = new Set(users.map((u) => u.department).filter(Boolean));
@@ -107,13 +137,186 @@ export default function AdminUsers({ onDataChanged }) {
     }
   };
 
-  const handleNotificationToggle = async (user) => {
-    await patchUser(user._id, { notificationsEnabled: !user.notificationsEnabled });
+  const handleNotificationChange = (user, value) => {
+    const enabled = value === 'Enabled';
+
+    setPreferences((prev) => ({
+      ...prev,
+      [user._id]: enabled,
+    }));
+
+    setHasChanges(true);
+  };
+
+  const saveNotificationPreferences = async () => {
+    try {
+      setIsSavingPreferences(true);
+      setError('');
+
+      const usersPayload = users.map((user) => {
+        const isAdmin = (user.role || '').toLowerCase() === 'admin';
+        const enabled = isAdmin
+          ? false
+          : Boolean(
+            Object.prototype.hasOwnProperty.call(preferences, user._id)
+              ? preferences[user._id]
+              : getNotificationEnabled(user)
+          );
+
+        return {
+          userId: user._id,
+          enabled,
+        };
+      });
+
+      await axios.put(
+        `${API_URL}/admin/notification-preferences`,
+        { users: usersPayload },
+        getAdminRequestConfig()
+      );
+
+      setUsers((prev) => prev.map((user) => {
+        const isAdmin = (user.role || '').toLowerCase() === 'admin';
+        const enabled = isAdmin
+          ? false
+          : Boolean(
+            Object.prototype.hasOwnProperty.call(preferences, user._id)
+              ? preferences[user._id]
+              : getNotificationEnabled(user)
+          );
+
+        return {
+          ...user,
+          notificationsEnabled: enabled,
+          notificationPreferences: {
+            ...(user.notificationPreferences || {}),
+            enabled,
+          },
+        };
+      }));
+
+      setPreferences((prev) => {
+        const next = { ...prev };
+        users.forEach((user) => {
+          const isAdmin = (user.role || '').toLowerCase() === 'admin';
+          next[user._id] = isAdmin
+            ? false
+            : Boolean(
+              Object.prototype.hasOwnProperty.call(prev, user._id)
+                ? prev[user._id]
+                : getNotificationEnabled(user)
+            );
+        });
+        return next;
+      });
+
+      setHasChanges(false);
+
+      if (onDataChanged) {
+        await onDataChanged();
+      }
+    } catch (err) {
+      console.error('Error saving notification preferences:', err);
+      setError(err.response?.data?.message || 'Failed to save notification preferences');
+    } finally {
+      setIsSavingPreferences(false);
+    }
   };
 
   const requestDeleteUser = (user) => {
     setDeleteTarget(user);
     setError('');
+  };
+
+  const requestBlockUser = (user) => {
+    setBlockTarget(user);
+    setBlockReason('');
+    setBlockError('');
+    setError('');
+  };
+
+  const closeBlockModal = () => {
+    if (isBlockingUser) return;
+    setBlockTarget(null);
+    setBlockReason('');
+    setBlockError('');
+  };
+
+  const confirmBlockUser = async () => {
+    if (!blockTarget) return;
+
+    const reason = blockReason.trim();
+
+    if (!reason) {
+      setBlockError('Reason is required to block this user.');
+      return;
+    }
+
+    try {
+      setIsBlockingUser(true);
+      setBusyUserId(blockTarget._id);
+
+      await axios.put(
+        `${API_URL}/admin/block-user`,
+        {
+          userId: blockTarget._id,
+          reason,
+        },
+        getAdminRequestConfig()
+      );
+
+      setUsers((prev) => prev.map((user) => (
+        user._id === blockTarget._id
+          ? {
+            ...user,
+            isBlocked: true,
+            blockReason: reason,
+          }
+          : user
+      )));
+
+      setBlockTarget(null);
+      setBlockReason('');
+      setBlockError('');
+    } catch (err) {
+      console.error('Error blocking user:', err);
+      setBlockError(err.response?.data?.message || 'Failed to block user');
+    } finally {
+      setBusyUserId('');
+      setIsBlockingUser(false);
+    }
+  };
+
+  const unblockUser = async (user) => {
+    if (!user?._id) return;
+
+    try {
+      setBusyUserId(user._id);
+      setError('');
+
+      await axios.put(
+        `${API_URL}/admin/unblock-user`,
+        {
+          userId: user._id,
+        },
+        getAdminRequestConfig()
+      );
+
+      setUsers((prev) => prev.map((item) => (
+        item._id === user._id
+          ? {
+            ...item,
+            isBlocked: false,
+            blockReason: '',
+          }
+          : item
+      )));
+    } catch (err) {
+      console.error('Error unblocking user:', err);
+      setError(err.response?.data?.message || 'Failed to unblock user');
+    } finally {
+      setBusyUserId('');
+    }
   };
 
   const closeDeletePopup = () => {
@@ -224,6 +427,18 @@ export default function AdminUsers({ onDataChanged }) {
       ) : null}
 
       <div className="bg-white rounded-2xl border border-soft-blush shadow-sm overflow-hidden">
+        {hasChanges ? (
+          <div className="px-5 pt-4 pb-5 flex justify-end">
+            <button
+              disabled={isSavingPreferences || loading}
+              onClick={saveNotificationPreferences}
+              className="px-3 py-1.5 rounded-lg bg-lavender text-white text-sm font-semibold hover:bg-lavender/90 disabled:opacity-40"
+            >
+              {isSavingPreferences ? 'Saving...' : 'Save Preferences'}
+            </button>
+          </div>
+        ) : null}
+
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[980px]">
             <thead>
@@ -250,6 +465,7 @@ export default function AdminUsers({ onDataChanged }) {
                 users.map((user) => {
                   const isBusy = busyUserId === user._id;
                   const isAdmin = user.role === 'admin';
+                  const isBlocked = user.isBlocked === true;
                   const profileStatus = getProfileStatus(user);
                   const canShowApprove = Boolean(user.profileComplete);
 
@@ -275,19 +491,28 @@ export default function AdminUsers({ onDataChanged }) {
                       <td className="px-5 py-4 text-sm text-deep-slate/70">{user.year || '-'}</td>
 
                       <td className="px-5 py-4">
-                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${isAdmin ? 'bg-deep-slate/10 text-deep-slate' : profileStatus === 'approved' ? 'bg-[#5CA76A]/15 text-[#4E8C5A]' : profileStatus === 'rejected' ? 'bg-soft-blush text-[#A9756A]' : 'bg-lavender/10 text-lavender'}`}>
-                          {isAdmin ? 'Admin Account' : profileStatus === 'approved' ? 'Approved' : profileStatus === 'rejected' ? 'Rejected' : 'Pending'}
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${isAdmin ? 'bg-deep-slate/10 text-deep-slate' : isBlocked ? 'bg-soft-blush text-[#A9756A]' : profileStatus === 'approved' ? 'bg-[#5CA76A]/15 text-[#4E8C5A]' : profileStatus === 'rejected' ? 'bg-soft-blush text-[#A9756A]' : 'bg-lavender/10 text-lavender'}`}>
+                          {isAdmin ? 'Admin Account' : isBlocked ? 'Blocked' : profileStatus === 'approved' ? 'Approved' : profileStatus === 'rejected' ? 'Rejected' : 'Pending'}
                         </span>
+                        {isBlocked && user.blockReason ? (
+                          <p className="text-xs text-deep-slate/45 mt-2 max-w-[220px] truncate" title={user.blockReason}>
+                            Reason: {user.blockReason}
+                          </p>
+                        ) : null}
                       </td>
 
                       <td className="px-5 py-4">
-                        <button
-                          disabled={isBusy}
-                          onClick={() => handleNotificationToggle(user)}
-                          className={`text-xs font-semibold px-2.5 py-1 rounded-full transition ${user.notificationsEnabled ? 'bg-lavender/15 text-lavender hover:bg-lavender/25' : 'bg-deep-slate/10 text-deep-slate/70 hover:bg-deep-slate/20'}`}
+                        <select
+                          disabled={isBusy || isSavingPreferences || isAdmin}
+                          value={isAdmin
+                            ? 'Disabled'
+                            : (preferences[user._id] ?? getNotificationEnabled(user)) ? 'Enabled' : 'Disabled'}
+                          onChange={(e) => handleNotificationChange(user, e.target.value)}
+                          className="py-1.5 px-2.5 rounded-lg bg-warm-cream border border-transparent text-xs font-semibold text-deep-slate focus:outline-none focus:ring-2 focus:ring-lavender/45 disabled:opacity-60"
                         >
-                          {user.notificationsEnabled ? 'Enabled' : 'Disabled'}
-                        </button>
+                          <option value="Enabled">Enabled</option>
+                          <option value="Disabled">Disabled</option>
+                        </select>
                       </td>
 
                       <td className="px-5 py-4 text-sm text-deep-slate/60">
@@ -299,20 +524,30 @@ export default function AdminUsers({ onDataChanged }) {
                           <div className="inline-flex items-center gap-2">
                             {canShowApprove ? (
                               <button
-                                disabled={isBusy || profileStatus === 'approved'}
+                                disabled={isBusy || profileStatus === 'approved' || isBlocked}
                                 onClick={() => updateProfileStatus(user, 'approved')}
                                 className="text-xs font-semibold px-2.5 py-1 rounded-full bg-pastel-green/20 text-[#4E8C5A] disabled:opacity-40"
                               >
                                 Approve
                               </button>
                             ) : null}
-                            <button
-                              disabled={isBusy || profileStatus === 'rejected'}
-                              onClick={() => updateProfileStatus(user, 'rejected')}
-                              className="text-xs font-semibold px-2.5 py-1 rounded-full bg-soft-blush text-[#A9756A] disabled:opacity-40"
-                            >
-                              Reject
-                            </button>
+                            {isBlocked ? (
+                              <button
+                                disabled={isBusy || isBlockingUser}
+                                onClick={() => unblockUser(user)}
+                                className="text-xs font-semibold px-2.5 py-1 rounded-full bg-pastel-green/20 text-[#4E8C5A] disabled:opacity-40"
+                              >
+                                Unblock
+                              </button>
+                            ) : (
+                              <button
+                                disabled={isBusy || isBlockingUser}
+                                onClick={() => requestBlockUser(user)}
+                                className="text-xs font-semibold px-2.5 py-1 rounded-full bg-soft-blush text-[#A9756A] disabled:opacity-40"
+                              >
+                                Block
+                              </button>
+                            )}
                             <button
                               disabled={isBusy}
                               onClick={() => requestDeleteUser(user)}
@@ -374,6 +609,66 @@ export default function AdminUsers({ onDataChanged }) {
         cancelText="Cancel"
         icon={<Trash2 size={18} />}
       />
+
+      {blockTarget && typeof document !== 'undefined' ? createPortal(
+        <div
+          className="fixed top-0 left-0 w-full h-full bg-black/40 flex items-center justify-center z-[9999]"
+          onClick={(e) => {
+            if (!isBlockingUser && e.target === e.currentTarget) {
+              closeBlockModal();
+            }
+          }}
+        >
+          <div className="bg-white rounded-2xl p-6 w-[440px] shadow-lg" aria-busy={isBlockingUser}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-[#3F3D56]">Block User</h2>
+              <button
+                onClick={closeBlockModal}
+                disabled={isBlockingUser}
+                className="disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-600 mb-3">
+              Enter reason for blocking {blockTarget.name}.
+            </p>
+
+            <textarea
+              value={blockReason}
+              onChange={(e) => setBlockReason(e.target.value)}
+              placeholder="Reason for blocking"
+              rows={4}
+              disabled={isBlockingUser}
+              className="w-full px-3 py-2 rounded-xl border border-soft-blush bg-white text-sm text-deep-slate focus:outline-none focus:ring-2 focus:ring-lavender/45 disabled:opacity-60"
+            />
+
+            {blockError ? (
+              <p className="text-sm text-red-600 mt-3">{blockError}</p>
+            ) : null}
+
+            <div className="flex justify-end gap-3 mt-5">
+              <button
+                onClick={closeBlockModal}
+                disabled={isBlockingUser}
+                className="px-4 py-2 border rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={confirmBlockUser}
+                disabled={isBlockingUser}
+                className="px-4 py-2 bg-[#F08A6C] text-white rounded-xl disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isBlockingUser ? 'Blocking...' : 'Confirm Block'}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      ) : null}
     </div>
   );
 }

@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import axios from "axios";
 
 import Home from "./pages/Home";
 import Events from "./pages/Events";
@@ -19,8 +20,52 @@ import CalendarPage from "./components/CalendarPage";
 import MainLayout from "./pages/Layout";
 
 import AdminPage from "./pages/AdminPage";
+import ConfirmPopup from "./components/popup";
+import {
+  BLOCKED_EVENT,
+  BLOCKED_POPUP_MESSAGE,
+  consumeBlockedNotice,
+  isBlockedPayload,
+  triggerBlockedLogout,
+} from "./utils/blockedUser";
 
 function App() {
+  const [blockedPopupOpen, setBlockedPopupOpen] = useState(false);
+
+  useEffect(() => {
+    if (consumeBlockedNotice()) {
+      setBlockedPopupOpen(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleBlockedEvent = () => {
+      setBlockedPopupOpen(true);
+    };
+
+    window.addEventListener(BLOCKED_EVENT, handleBlockedEvent);
+
+    return () => {
+      window.removeEventListener(BLOCKED_EVENT, handleBlockedEvent);
+    };
+  }, []);
+
+  useEffect(() => {
+    const interceptorId = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (isBlockedPayload(error?.response?.data)) {
+          triggerBlockedLogout();
+        }
+
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.response.eject(interceptorId);
+    };
+  }, []);
 
   return (
 
@@ -77,6 +122,16 @@ function App() {
         <Route path="/admin" element={<AdminPage />} />
 
       </Routes>
+
+      <ConfirmPopup
+        open={blockedPopupOpen}
+        onClose={() => setBlockedPopupOpen(false)}
+        onConfirm={() => setBlockedPopupOpen(false)}
+        title="Account Blocked"
+        description={BLOCKED_POPUP_MESSAGE}
+        confirmText="OK"
+        cancelText="Close"
+      />
 
     </Router>
 

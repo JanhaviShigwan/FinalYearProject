@@ -10,6 +10,7 @@ import {
   getEventRegistrationOpenDate,
   getEventStartDateTime,
 } from "../utils/eventStatus";
+import { isBlockedPayload, triggerBlockedLogout } from "../utils/blockedUser";
 
 function EventDetails() {
   const { id } = useParams();
@@ -37,6 +38,12 @@ function EventDetails() {
           );
 
           const checkData = await check.json();
+
+          if (!check.ok && isBlockedPayload(checkData)) {
+            triggerBlockedLogout();
+            return;
+          }
+
           setIsRegistered(checkData.registered);
         }
 
@@ -94,6 +101,11 @@ function EventDetails() {
       const data = await res.json();
 
       if (!res.ok) {
+
+        if (isBlockedPayload(data)) {
+          triggerBlockedLogout();
+          return;
+        }
 
         if (data.type === "PROFILE_INCOMPLETE") {
 

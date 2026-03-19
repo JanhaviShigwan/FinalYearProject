@@ -399,6 +399,54 @@ export default function AdminPage() {
     await handleEditEvent(eventId, placement);
   };
 
+  const handleDownloadEventReport = async (event) => {
+    const eventId = event?._id || event?.id;
+
+    if (!eventId) {
+      throw new Error('Invalid event selected for report download.');
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/admin/event-report/${eventId}`, {
+        method: 'GET',
+        headers: {
+          ...(getAdminRequestConfig().headers || {}),
+        },
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        handleLogout();
+        throw new Error('Unauthorized access. Please log in again.');
+      }
+
+      if (!response.ok) {
+        let errorMessage = 'Failed to download event report.';
+
+        try {
+          const payload = await response.json();
+          errorMessage = payload?.message || errorMessage;
+        } catch (parseError) {
+          errorMessage = 'Failed to download event report.';
+        }
+
+        throw new Error(errorMessage);
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = 'event-report.pdf';
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      const message = err.message || 'Failed to download event report.';
+      throw new Error(message);
+    }
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
@@ -423,6 +471,7 @@ export default function AdminPage() {
             onUpdatePlacement={handleUpdatePlacement}
             onDelete={handleDeleteEvent}
             onView={handleViewEvent}
+            onDownloadReport={handleDownloadEventReport}
           />
         );
       case 'create-event':
