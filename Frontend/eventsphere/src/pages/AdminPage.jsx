@@ -10,7 +10,6 @@ import AdminEvents from '../components/Admin/AdminEvents';
 import AdminCreateEvent from '../components/Admin/AdminCreateEvent';
 import AdminAnalytics from '../components/Admin/AdminAnalytics';
 import AdminUsers from '../components/Admin/AdminUsers';
-import AdminReports from '../components/Admin/AdminReports';
 import AdminFeedbacks from '../components/Admin/AdminFeedbacks';
 import { getAdminRequestConfig, getStoredStudent, isAdminStudent } from '../utils/adminAuth';
 
@@ -106,7 +105,6 @@ export default function AdminPage() {
   });
   const [isDashboardLoading, setIsDashboardLoading] = useState(false);
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
-  const [reportRefreshToken, setReportRefreshToken] = useState(0);
   const isEventsLoadingRef = useRef(false);
   const [adminSettings, setAdminSettings] = useState({
     eventDefaults: {
@@ -139,7 +137,6 @@ export default function AdminPage() {
     events: 'Manage Events',
     'create-event': 'Create Event',
     analytics: 'Analytics',
-    reports: 'Reports',
     users: 'Users',
     feedbacks: 'Student Feedbacks',
   };
@@ -248,7 +245,7 @@ export default function AdminPage() {
   }, [fetchEventsPage, fetchAdminOverview, fetchAdminSettings]);
 
   useEffect(() => {
-    if (["dashboard", "analytics", "reports", "users"].includes(activeTab)) {
+    if (["dashboard", "analytics", "users"].includes(activeTab)) {
       fetchAdminOverview();
     }
   }, [activeTab, fetchAdminOverview]);
@@ -256,14 +253,13 @@ export default function AdminPage() {
   useEffect(() => {
     const intervalId = setInterval(() => {
       fetchAdminOverview({ silent: true });
-      setReportRefreshToken((prev) => prev + 1);
     }, REPORT_REFRESH_MS);
 
     return () => clearInterval(intervalId);
   }, [fetchAdminOverview]);
 
   useEffect(() => {
-    if (!["dashboard", "reports"].includes(activeTab)) {
+    if (!['dashboard'].includes(activeTab)) {
       return undefined;
     }
 
@@ -289,7 +285,6 @@ export default function AdminPage() {
     const timeoutId = setTimeout(() => {
       fetchAdminOverview();
       fetchEventsPage({ page: 1, append: false });
-      setReportRefreshToken((prev) => prev + 1);
     }, delay);
 
     return () => clearTimeout(timeoutId);
@@ -438,6 +433,11 @@ export default function AdminPage() {
       throw new Error('Invalid event selected for report download.');
     }
 
+    const eventEndTimestamp = getEventEndTimestamp(event);
+    if (!eventEndTimestamp || Date.now() <= eventEndTimestamp) {
+      throw new Error('Reports are only available after the event has ended.');
+    }
+
     try {
       const response = await fetch(`${API_URL}/admin/event-report/${eventId}`, {
         method: 'GET',
@@ -531,13 +531,6 @@ export default function AdminPage() {
         return (
           <AdminUsers
             onDataChanged={fetchAdminOverview}
-          />
-        );
-      case 'reports':
-        return (
-          <AdminReports
-            onUnauthorized={handleLogout}
-            refreshToken={reportRefreshToken}
           />
         );
       case 'feedbacks':

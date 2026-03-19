@@ -271,6 +271,11 @@ export default function AdminEvents({
       return;
     }
 
+    if (getEventLifecycleStatus(event) !== 'ended') {
+      setError('Reports are only available after the event has ended.');
+      return;
+    }
+
     const eventId = event?._id || event?.id;
 
     if (!eventId) {
@@ -430,6 +435,7 @@ export default function AdminEvents({
                   const eventId = event._id || event.id;
                   const lifecycleStatus = getEventLifecycleStatus(event);
                   const canMarkCompleted = lifecycleStatus === 'ended' && !event.isCompleted;
+                    const canDownloadReport = lifecycleStatus === 'ended';
 
                   return (
                     <tr key={eventId} className="hover:bg-warm-cream/30 transition-colors group">
@@ -502,14 +508,16 @@ export default function AdminEvents({
                           >
                             <Eye className="w-4 h-4" />
                           </button>
-                          <button
-                            onClick={() => handleDownloadReport(event)}
-                            disabled={downloadingId === eventId || !onDownloadReport}
-                            className="p-2 text-deep-slate/40 hover:text-lavender hover:bg-lavender/10 rounded-lg transition-all disabled:opacity-50"
-                            title="Download Report"
-                          >
-                            <Download className="w-4 h-4" />
-                          </button>
+                          {canDownloadReport ? (
+                            <button
+                              onClick={() => handleDownloadReport(event)}
+                              disabled={downloadingId === eventId || !onDownloadReport}
+                              className="p-2 text-deep-slate/40 hover:text-lavender hover:bg-lavender/10 rounded-lg transition-all disabled:opacity-50"
+                              title="Download Report"
+                            >
+                              <Download className="w-4 h-4" />
+                            </button>
+                          ) : null}
                           <button
                             onClick={() => openEditModal(event)}
                             className="p-2 text-deep-slate/40 hover:text-coral hover:bg-coral/10 rounded-lg transition-all"
@@ -568,14 +576,16 @@ export default function AdminEvents({
             <div className="flex items-center justify-between px-6 py-4 border-b border-soft-blush">
               <h3 className="text-xl font-bold text-deep-slate">Event Details</h3>
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleDownloadReport(selectedEvent)}
-                  disabled={downloadingId === (selectedEvent._id || selectedEvent.id) || !onDownloadReport}
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-soft-blush text-sm font-semibold text-deep-slate/70 hover:bg-warm-cream transition-colors disabled:opacity-50"
-                >
-                  <Download className="w-4 h-4" />
-                  {downloadingId === (selectedEvent._id || selectedEvent.id) ? 'Downloading...' : 'Download Report'}
-                </button>
+                {getEventLifecycleStatus(selectedEvent) === 'ended' ? (
+                  <button
+                    onClick={() => handleDownloadReport(selectedEvent)}
+                    disabled={downloadingId === (selectedEvent._id || selectedEvent.id) || !onDownloadReport}
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-soft-blush text-sm font-semibold text-deep-slate/70 hover:bg-warm-cream transition-colors disabled:opacity-50"
+                  >
+                    <Download className="w-4 h-4" />
+                    {downloadingId === (selectedEvent._id || selectedEvent.id) ? 'Downloading...' : 'Download Report'}
+                  </button>
+                ) : null}
                 <button onClick={closeViewModal} className="p-2 rounded-lg hover:bg-warm-cream text-deep-slate/60">
                   <X className="w-4 h-4" />
                 </button>

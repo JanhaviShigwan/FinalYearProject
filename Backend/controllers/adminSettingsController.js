@@ -81,6 +81,99 @@ const sanitizeSettingsPayload = (payload = {}) => {
   };
 };
 
+const parseEventTime = (rawTime) => {
+  if (!rawTime || typeof rawTime !== "string") {
+    return null;
+  }
+
+  const value = rawTime.trim();
+  const twelveHourMatch = value.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+
+  if (twelveHourMatch) {
+    const hour12 = Number(twelveHourMatch[1]);
+    const minute = Number(twelveHourMatch[2]);
+    const period = twelveHourMatch[3].toUpperCase();
+
+    if (hour12 < 1 || hour12 > 12 || minute < 0 || minute > 59) {
+      return null;
+    }
+
+    let hour24 = hour12 % 12;
+    if (period === "PM") {
+      hour24 += 12;
+    }
+
+    return { hours: hour24, minutes: minute };
+  }
+
+  const twentyFourHourMatch = value.match(/^(\d{1,2}):(\d{2})$/);
+  if (!twentyFourHourMatch) {
+    return null;
+  }
+
+  const hour = Number(twentyFourHourMatch[1]);
+  const minute = Number(twentyFourHourMatch[2]);
+
+  if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+    return null;
+  }
+
+  return { hours: hour, minutes: minute };
+};
+
+const buildEventDateTime = (dateValue, timeValue, useEndOfDayWhenNoTime = false) => {
+  if (!dateValue) {
+    return null;
+  }
+
+  const baseDate = new Date(`${dateValue}T00:00:00`);
+  if (Number.isNaN(baseDate.getTime())) {
+    return null;
+  }
+
+  const parsedTime = parseEventTime(timeValue);
+
+  if (parsedTime) {
+    baseDate.setHours(parsedTime.hours, parsedTime.minutes, 0, 0);
+    return baseDate;
+  }
+
+  if (useEndOfDayWhenNoTime) {
+    baseDate.setHours(23, 59, 59, 999);
+  } else {
+    baseDate.setHours(0, 0, 0, 0);
+  }
+
+  return baseDate;
+};
+
+const getEventEndDateTime = (event) => {
+  const startDateTime = buildEventDateTime(event?.date, event?.time, false);
+  const explicitEnd = buildEventDateTime(
+    event?.endDate || event?.date,
+    event?.endTime || event?.time,
+    true
+  );
+
+  if (explicitEnd && startDateTime && explicitEnd < startDateTime) {
+    const fallback = new Date(startDateTime);
+    fallback.setHours(fallback.getHours() + 3);
+    return fallback;
+  }
+
+  if (explicitEnd) {
+    return explicitEnd;
+  }
+
+  if (!startDateTime) {
+    return null;
+  }
+
+  const fallback = new Date(startDateTime);
+  fallback.setHours(fallback.getHours() + 3);
+  return fallback;
+};
+
 exports.getAdminSettings = async (req, res) => {
   try {
     const settings = await getOrCreateSettings();
@@ -395,6 +488,13 @@ exports.getEventReport = async (req, res) => {
 
     if (!event) {
       return res.status(404).json({ message: "Event not found." });
+    }
+
+    const eventEndDateTime = getEventEndDateTime(event);
+    const eventEnded = eventEndDateTime ? new Date() > eventEndDateTime : false;
+
+    if (!eventEnded) {
+      return res.status(400).json({ message: "Reports are only available after the event has ended." });
     }
 
     const feedbacks = await Feedback.find({ eventId: String(event._id) }).sort({ createdAt: -1 });

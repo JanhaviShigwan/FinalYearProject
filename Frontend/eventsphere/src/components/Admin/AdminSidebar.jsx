@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import {
   Calendar,
   ChevronRight,
-  FileCheck2,
   LayoutDashboard,
   LogOut,
   MessageSquare,
@@ -20,7 +19,6 @@ export default function AdminSidebar({ activeTab, setActiveTab, onLogout }) {
     { id: 'events', label: 'Manage Events', icon: Calendar },
     { id: 'create-event', label: 'Create Event', icon: PlusCircle },
     { id: 'analytics', label: 'Analytics', icon: TrendingUp },
-    { id: 'reports', label: 'Reports', icon: FileCheck2 },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'feedbacks', label: 'Student Feedbacks', icon: MessageSquare },
   ];
