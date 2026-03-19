@@ -58,6 +58,15 @@ const getAgeInYears = (dobDate) => {
   return age;
 };
 
+const respondIfBlocked = (student, res) => {
+  if (student?.isBlocked) {
+    res.status(403).json({ message: "BLOCKED" });
+    return true;
+  }
+
+  return false;
+};
+
 
 /* ============================= */
 /* ADMIN - LIST USERS */
@@ -324,6 +333,10 @@ exports.getStudentProfile = async (req, res) => {
       });
     }
 
+    if (respondIfBlocked(student, res)) {
+      return;
+    }
+
     await syncAdminProfileComplete(student);
 
     if (!student.profileStatus) {
@@ -417,6 +430,10 @@ exports.completeProfile = async (req, res) => {
       });
     }
 
+    if (respondIfBlocked(student, res)) {
+      return;
+    }
+
 
     student.studentId = studentIdNumber;
     student.phone = phone;
@@ -496,6 +513,10 @@ exports.updatePhoneNumber = async (req, res) => {
       });
     }
 
+    if (respondIfBlocked(student, res)) {
+      return;
+    }
+
     student.phone = String(phoneNumber);
     await student.save();
 
@@ -520,9 +541,20 @@ exports.uploadImage = async (req, res) => {
   try {
 
     const { image } = req.body;
+    const { studentId } = req.params;
+
+    const existingStudent = await Student.findById(studentId).select("isBlocked");
+
+    if (!existingStudent) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    if (respondIfBlocked(existingStudent, res)) {
+      return;
+    }
 
     const student = await Student.findByIdAndUpdate(
-      req.params.studentId,
+      studentId,
       { profileImage: image },
       { returnDocument: "after" }
     ).select("-password -resetOTP -resetOTPExpire");
@@ -561,15 +593,7 @@ exports.updateNotifications = async (req, res) => {
       });
     }
 
-    const student = await Student.findByIdAndUpdate(
-      studentId,
-      { $set: { notificationsEnabled } },
-      {
-        returnDocument: "after",
-        runValidators: false,
-        select: "notificationsEnabled",
-      }
-    );
+    const student = await Student.findById(studentId).select("isBlocked");
 
     if (!student) {
       return res.status(404).json({
@@ -577,9 +601,29 @@ exports.updateNotifications = async (req, res) => {
       });
     }
 
+    if (respondIfBlocked(student, res)) {
+      return;
+    }
+
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      {
+        $set: {
+          notificationsEnabled,
+          "notificationPreferences.enabled": notificationsEnabled,
+        },
+      },
+      {
+        returnDocument: "after",
+        runValidators: false,
+        select: "notificationsEnabled notificationPreferences",
+      }
+    );
+
     res.status(200).json({
       message: "Notification preference updated",
-      notificationsEnabled: student.notificationsEnabled,
+      notificationsEnabled: updatedStudent.notificationsEnabled,
+      notificationPreferences: updatedStudent.notificationPreferences,
     });
 
   } catch (error) {
@@ -636,6 +680,10 @@ exports.changePassword = async (req, res) => {
       return res.status(404).json({
         message: "Student not found",
       });
+    }
+
+    if (respondIfBlocked(student, res)) {
+      return;
     }
 
 
@@ -730,6 +778,10 @@ exports.deleteAccount = async (req, res) => {
       });
     }
 
+    if (respondIfBlocked(student, res)) {
+      return;
+    }
+
     await Student.findByIdAndDelete(studentId);
 
     res.status(200).json({
@@ -771,6 +823,10 @@ exports.getLoginActivity = async (req, res) => {
       return res.status(404).json({
         message: "Student not found",
       });
+    }
+
+    if (respondIfBlocked(student, res)) {
+      return;
     }
 
     if (!student.loginActivity?.length) {

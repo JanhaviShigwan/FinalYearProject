@@ -110,6 +110,23 @@ const studentSchema = new mongoose.Schema(
       default: true,
     },
 
+    notificationPreferences: {
+      type: Object,
+      default: {
+        enabled: true,
+      },
+    },
+
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
+
+    blockReason: {
+      type: String,
+      default: "",
+    },
+
     role: {
       type: String,
       enum: ["student", "admin"],

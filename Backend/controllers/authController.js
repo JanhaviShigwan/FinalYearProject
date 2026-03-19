@@ -143,6 +143,10 @@ exports.loginStudent = async (req, res) => {
       });
     }
 
+    if (student.isBlocked) {
+      return res.status(403).json({ message: "BLOCKED" });
+    }
+
     const isMatch = await bcrypt.compare(
       password,
       student.password
@@ -216,6 +220,10 @@ exports.forgotPassword = async (req, res) => {
       });
     }
 
+    if (user.isBlocked) {
+      return res.status(403).json({ message: "BLOCKED" });
+    }
+
     const otp =
       Math.floor(
         100000 + Math.random() * 900000
@@ -270,6 +278,10 @@ exports.verifyOTP = async (req, res) => {
       });
     }
 
+    if (user.isBlocked) {
+      return res.status(403).json({ message: "BLOCKED" });
+    }
+
     if (
       user.resetOTP !== otp ||
       user.resetOTPExpire < Date.now()
@@ -308,6 +320,10 @@ exports.resetPassword = async (req, res) => {
       return res.status(404).json({
         message: "User not found",
       });
+    }
+
+    if (user.isBlocked) {
+      return res.status(403).json({ message: "BLOCKED" });
     }
 
     if (

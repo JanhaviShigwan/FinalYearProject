@@ -70,7 +70,7 @@ const runReminderCycle = async () => {
 
   const registrations = await Registration.find({})
     .select("studentId eventId reminderDaysSent")
-    .populate("studentId", "name email notificationsEnabled emailPreferences")
+    .populate("studentId", "name email role notificationsEnabled notificationPreferences emailPreferences")
     .populate("eventId", "eventName date time venue");
 
   let sentCount = 0;
@@ -86,6 +86,8 @@ const runReminderCycle = async () => {
     }
 
     if (
+      student.role === "admin" ||
+      student.notificationPreferences?.enabled === false ||
       student.notificationsEnabled === false ||
       student.emailPreferences?.reminders === false ||
       student.emailPreferences?.promotions === false

@@ -1,7 +1,17 @@
 const Feedback = require("../Models/Feedback");
 const Registration = require("../Models/Registration");
 const Event = require("../Models/Event");
+const Student = require("../Models/Student");
 const { generateFeedbackSummary } = require("../utils/aiSummary");
+
+const respondIfBlocked = (student, res) => {
+  if (student?.isBlocked) {
+    res.status(403).json({ message: "BLOCKED" });
+    return true;
+  }
+
+  return false;
+};
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -88,6 +98,12 @@ const saveFeedback = async (req, res) => {
   try {
     const { userId, eventId, rating, comment } = req.body;
 
+    const student = await Student.findById(userId).select("isBlocked");
+
+    if (student && respondIfBlocked(student, res)) {
+      return;
+    }
+
     if (!userId || !eventId || !rating) {
       return res.status(400).json({ message: "userId, eventId, and rating are required." });
     }
@@ -142,6 +158,12 @@ const updateFeedback = async (req, res) => {
     const { eventId, userId } = req.params;
     const { rating, comment } = req.body;
 
+    const student = await Student.findById(userId).select("isBlocked");
+
+    if (student && respondIfBlocked(student, res)) {
+      return;
+    }
+
     const parsedRating = Number(rating);
     if (!Number.isInteger(parsedRating) || parsedRating < 1 || parsedRating > 5) {
       return res.status(400).json({ message: "Rating must be an integer between 1 and 5." });
@@ -168,6 +190,13 @@ const updateFeedback = async (req, res) => {
 const getFeedbackByUser = async (req, res) => {
   try {
     const { eventId, userId } = req.params;
+
+    const student = await Student.findById(userId).select("isBlocked");
+
+    if (student && respondIfBlocked(student, res)) {
+      return;
+    }
+
     const feedback = await Feedback.findOne({ userId, eventId });
     return res.json({ feedback: feedback || null });
   } catch (err) {

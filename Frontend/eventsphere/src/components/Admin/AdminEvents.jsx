@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Edit2, Trash2, Eye, Search, Calendar, X, Save, Filter, Star, TrendingUp } from 'lucide-react';
+import { Edit2, Trash2, Eye, Search, Calendar, X, Save, Filter, Star, TrendingUp, Download } from 'lucide-react';
 import ConfirmPopup from '../popup';
 import { getEventLifecycleStatus, getEventStartDateTime } from '../../utils/eventStatus';
 
@@ -15,6 +15,7 @@ export default function AdminEvents({
   onUpdatePlacement,
   onDelete,
   onView,
+  onDownloadReport,
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -41,6 +42,7 @@ export default function AdminEvents({
   });
   const [updatingPlacementId, setUpdatingPlacementId] = useState('');
   const [deletingId, setDeletingId] = useState('');
+  const [downloadingId, setDownloadingId] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [error, setError] = useState('');
 
@@ -262,6 +264,29 @@ export default function AdminEvents({
     }
   };
 
+  const handleDownloadReport = async (event) => {
+    if (!onDownloadReport) {
+      return;
+    }
+
+    const eventId = event?._id || event?.id;
+
+    if (!eventId) {
+      setError('Invalid event selected for report download.');
+      return;
+    }
+
+    try {
+      setDownloadingId(eventId);
+      setError('');
+      await onDownloadReport(event);
+    } catch (err) {
+      setError(err.message || 'Failed to download event report.');
+    } finally {
+      setDownloadingId('');
+    }
+  };
+
   const savePlacement = async () => {
     if (!placementTarget || !onUpdatePlacement) {
       return;
@@ -443,6 +468,14 @@ export default function AdminEvents({
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
+                            onClick={() => handleDownloadReport(event)}
+                            disabled={downloadingId === eventId || !onDownloadReport}
+                            className="p-2 text-deep-slate/40 hover:text-lavender hover:bg-lavender/10 rounded-lg transition-all disabled:opacity-50"
+                            title="Download Report"
+                          >
+                            <Download className="w-4 h-4" />
+                          </button>
+                          <button
                             onClick={() => openEditModal(event)}
                             className="p-2 text-deep-slate/40 hover:text-coral hover:bg-coral/10 rounded-lg transition-all"
                             title="Edit Event"
@@ -499,9 +532,19 @@ export default function AdminEvents({
           <div className="w-full max-w-2xl rounded-2xl bg-white border border-soft-blush shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between px-6 py-4 border-b border-soft-blush">
               <h3 className="text-xl font-bold text-deep-slate">Event Details</h3>
-              <button onClick={closeViewModal} className="p-2 rounded-lg hover:bg-warm-cream text-deep-slate/60">
-                <X className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleDownloadReport(selectedEvent)}
+                  disabled={downloadingId === (selectedEvent._id || selectedEvent.id) || !onDownloadReport}
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-soft-blush text-sm font-semibold text-deep-slate/70 hover:bg-warm-cream transition-colors disabled:opacity-50"
+                >
+                  <Download className="w-4 h-4" />
+                  {downloadingId === (selectedEvent._id || selectedEvent.id) ? 'Downloading...' : 'Download Report'}
+                </button>
+                <button onClick={closeViewModal} className="p-2 rounded-lg hover:bg-warm-cream text-deep-slate/60">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
             <div className="p-6 space-y-4 text-sm text-deep-slate/75">
               <p><span className="font-bold text-deep-slate">Name:</span> {selectedEvent.eventName}</p>

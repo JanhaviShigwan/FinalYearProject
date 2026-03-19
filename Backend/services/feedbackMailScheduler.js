@@ -3,7 +3,7 @@ const Event = require("../Models/Event");
 const sendEmail = require("../utils/sendEmail");
 const { feedbackRequestTemplate } = require("../utils/template");
 
-const INTERVAL_MS = 10 * 60 * 1000; // run every 10 minutes
+const INTERVAL_MS = 2 * 60 * 1000; // run every 2 minutes
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -92,7 +92,7 @@ const runFeedbackMailCycle = async () => {
     // Find registrations that have not had a feedback email sent yet
     const registrations = await Registration.find({ feedbackEmailSent: { $ne: true } })
       .select("_id studentId eventId feedbackEmailSent")
-      .populate("studentId", "name email notificationsEnabled emailPreferences")
+      .populate("studentId", "name email role notificationsEnabled notificationPreferences emailPreferences")
       .populate({
         path: "eventId",
         model: "Event",
@@ -110,6 +110,8 @@ const runFeedbackMailCycle = async () => {
 
       // Respect notification preferences
       if (
+        student.role === "admin" ||
+        student.notificationPreferences?.enabled === false ||
         student.notificationsEnabled === false ||
         student.emailPreferences?.reminders === false
       ) {
@@ -165,7 +167,7 @@ const runFeedbackMailCycle = async () => {
 // ── export ────────────────────────────────────────────────────────────────────
 
 const startFeedbackMailScheduler = () => {
-  console.log("[FeedbackMailer] Scheduler started — checking every 10 minutes.");
+  console.log("[FeedbackMailer] Scheduler started — checking every 2 minutes.");
   runFeedbackMailCycle(); // immediate first run
   setInterval(runFeedbackMailCycle, INTERVAL_MS);
 };
