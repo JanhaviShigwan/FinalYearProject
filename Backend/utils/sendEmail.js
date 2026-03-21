@@ -91,6 +91,14 @@ const normalizeRecipients = (to) => {
     .filter(Boolean);
 };
 
+const isPreferenceDisabled = (user) => {
+  if (user?.notificationPreferences && typeof user.notificationPreferences.enabled === "boolean") {
+    return user.notificationPreferences.enabled === false;
+  }
+
+  return user?.notificationsEnabled === false;
+};
+
 const sendEmail = async (to, subject, html, options = {}) => {
   const topic = normalizeTopic(options.topic) || inferTopic(subject);
   const category = CATEGORY_LABELS[topic] || topic;
@@ -98,6 +106,9 @@ const sendEmail = async (to, subject, html, options = {}) => {
   try {
     const requestedRecipients = normalizeRecipients(to);
     const bypassPreferenceCheck = options?.bypassPreferenceCheck === true;
+    const bypassRoleCheck = bypassPreferenceCheck || options?.bypassRoleCheck === true;
+    const bypassNotificationPreferenceCheck =
+      bypassPreferenceCheck || options?.bypassNotificationPreferenceCheck === true;
 
     if (!requestedRecipients.length) {
       console.log(`[MAIL][${category}] FAILED | reason: recipient missing | subject: ${subject}`);
@@ -106,14 +117,24 @@ const sendEmail = async (to, subject, html, options = {}) => {
 
     let allowedRecipients = requestedRecipients;
 
-    if (!bypassPreferenceCheck) {
+    if (!bypassRoleCheck || !bypassNotificationPreferenceCheck) {
       const matchingUsers = await Student.find({
         email: { $in: requestedRecipients },
-      }).select("email role notificationPreferences");
+      }).select("email role notificationPreferences notificationsEnabled");
 
       const blockedRecipientSet = new Set(
         matchingUsers
-          .filter((user) => user.role === "admin" || user.notificationPreferences?.enabled === false)
+          .filter((user) => {
+            if (!bypassRoleCheck && user.role === "admin") {
+              return true;
+            }
+
+            if (!bypassNotificationPreferenceCheck && isPreferenceDisabled(user)) {
+              return true;
+            }
+
+            return false;
+          })
           .map((user) => String(user.email || "").toLowerCase())
       );
 

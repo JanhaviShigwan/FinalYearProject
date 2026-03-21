@@ -3,10 +3,12 @@ import { motion } from 'framer-motion';
 import {
   Calendar,
   ChevronRight,
+  ClipboardList,
   LayoutDashboard,
   LogOut,
   MessageSquare,
   PlusCircle,
+  ScanLine,
   TrendingUp,
   Users,
   Shield,
@@ -21,6 +23,8 @@ export default function AdminSidebar({ activeTab, setActiveTab, onLogout }) {
     { id: 'analytics', label: 'Analytics', icon: TrendingUp },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'feedbacks', label: 'Student Feedbacks', icon: MessageSquare },
+    { id: 'registrations', label: 'Registrations', icon: ClipboardList },
+    { id: 'scan-attendance', label: 'Scan Attendance', icon: ScanLine },
   ];
 
   return (
