@@ -15,6 +15,8 @@ import {
   MessageSquare,
   Eye,
   Download,
+  CheckCircle2,
+  CircleDashed,
 } from "lucide-react";
 import API_URL from "../api";
 import { getEventLifecycleStatus } from "../utils/eventStatus";
@@ -172,11 +174,7 @@ export default function MyRegistrations() {
   const qrValue = qrEvent
     ? JSON.stringify({
         studentId: student?._id,
-        studentName: student?.name,
         eventId: qrEvent._id,
-        eventName: qrEvent.eventName,
-        date: qrEvent.date,
-        venue: qrEvent.venue,
       })
     : "";
 
@@ -266,6 +264,19 @@ export default function MyRegistrations() {
                       </span>
                     )}
                   </div>
+
+                  {/* Attendance badge on card */}
+                  {event.attendanceMarked ? (
+                    <div className="flex items-center gap-2 rounded-lg bg-pastel-green/20 border border-pastel-green/40 px-3 py-1.5 self-start">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-deep-slate shrink-0" />
+                      <span className="text-xs font-bold text-deep-slate">Attendance Marked</span>
+                    </div>
+                  ) : eventStatus !== "ended" ? (
+                    <div className="flex items-center gap-2 rounded-lg bg-soft-blush/60 border border-soft-blush px-3 py-1.5 self-start">
+                      <CircleDashed className="w-3.5 h-3.5 text-deep-slate/40 shrink-0" />
+                      <span className="text-xs font-medium text-deep-slate/50">Not yet scanned</span>
+                    </div>
+                  ) : null}
 
                   {/* Actions */}
                   {eventStatus !== "ended" ? (
@@ -361,6 +372,26 @@ export default function MyRegistrations() {
                 <p className="text-xs text-lavender font-semibold">{student?.name}</p>
                 <p className="text-xs text-deep-slate/40 mt-0.5">Show this QR at the event entrance</p>
               </div>
+
+              {/* Attendance status inside QR modal */}
+              {qrEvent.attendanceMarked ? (
+                <div className="w-full flex items-center justify-center gap-2 rounded-xl bg-pastel-green/20 border border-pastel-green/40 px-4 py-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-deep-slate shrink-0" />
+                  <div className="text-center">
+                    <p className="text-xs font-bold text-deep-slate">Attendance Marked</p>
+                    {qrEvent.attendanceTime && (
+                      <p className="text-xs text-deep-slate/55 mt-0.5">
+                        {new Date(qrEvent.attendanceTime).toLocaleString()}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="w-full flex items-center justify-center gap-2 rounded-xl bg-soft-blush/60 border border-soft-blush px-4 py-2.5">
+                  <CircleDashed className="w-4 h-4 text-deep-slate/40 shrink-0" />
+                  <p className="text-xs text-deep-slate/50 font-medium">Not yet scanned</p>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}

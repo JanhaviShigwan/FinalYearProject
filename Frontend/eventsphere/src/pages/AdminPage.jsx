@@ -11,6 +11,8 @@ import AdminCreateEvent from '../components/Admin/AdminCreateEvent';
 import AdminAnalytics from '../components/Admin/AdminAnalytics';
 import AdminUsers from '../components/Admin/AdminUsers';
 import AdminFeedbacks from '../components/Admin/AdminFeedbacks';
+import AdminRegistrations from '../components/Admin/AdminRegistrations';
+import AdminQRScanner from '../components/Admin/AdminQRScanner';
 import { getAdminRequestConfig, getStoredStudent, isAdminStudent } from '../utils/adminAuth';
 
 const REPORT_REFRESH_MS = 5000;
@@ -139,6 +141,8 @@ export default function AdminPage() {
     analytics: 'Analytics',
     users: 'Users',
     feedbacks: 'Student Feedbacks',
+    registrations: 'Registrations',
+    'scan-attendance': 'Scan Attendance',
   };
 
   const fetchEventsPage = useCallback(async ({ page = 1, append = false } = {}) => {
@@ -535,6 +539,10 @@ export default function AdminPage() {
         );
       case 'feedbacks':
         return <AdminFeedbacks />;
+      case 'registrations':
+        return <AdminRegistrations />;
+      case 'scan-attendance':
+        return <AdminQRScanner />;
       default:
         return (
           <AdminDashboard

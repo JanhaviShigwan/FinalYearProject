@@ -651,44 +651,28 @@ const registerForEvent = async (req, res) => {
 
     // EMAIL
 
-    // Keep payload identical to frontend MyRegistrations QR value.
+    // Minimal payload — scanner only needs studentId + eventId.
+    // Keeping it short ensures a low-version QR (large modules, easy to scan from screen).
     const qrPayload = {
       studentId: String(student._id),
-      studentName: student.name,
       eventId: String(event._id),
-      eventName: event.eventName,
-      date: event.date,
-      venue: event.venue,
     };
 
     const qrCodeValue = JSON.stringify(qrPayload);
     const qrCodeCid = `event-registration-qr-${registration._id}@eventsphere`;
 
-    const qrCodeBuffer = await QRCode.toBuffer(
-      qrCodeValue,
-      {
-        width: 220,
-        margin: 1,
-        errorCorrectionLevel: "M",
-        color: {
-          dark: "#3F3D56",
-          light: "#FFFFFF",
-        },
-      }
-    );
+    const qrOptions = {
+      width: 350,           // large modules — easy for camera to read off a screen
+      margin: 2,
+      errorCorrectionLevel: "H", // 30% recovery — handles screen glare / slight distortion
+      color: {
+        dark: "#000000",   // pure black for maximum contrast
+        light: "#FFFFFF",
+      },
+    };
 
-    const qrCodeDataUrl = await QRCode.toDataURL(
-      qrCodeValue,
-      {
-        width: 220,
-        margin: 1,
-        errorCorrectionLevel: "M",
-        color: {
-          dark: "#3F3D56",
-          light: "#FFFFFF",
-        },
-      }
-    );
+    const qrCodeBuffer = await QRCode.toBuffer(qrCodeValue, qrOptions);
+    const qrCodeDataUrl = await QRCode.toDataURL(qrCodeValue, qrOptions);
 
     const emailHTML =
       eventRegisterTemplate({
@@ -711,6 +695,7 @@ const registerForEvent = async (req, res) => {
         emailHTML,
         {
           topic: "EVENT_REGISTRATION",
+          bypassNotificationPreferenceCheck: true,
           attachments: [
             {
               filename: `${String(event.eventName || "event").replace(/[^a-z0-9-_ ]/gi, "").trim() || "event"}-entry-qr.png`,
@@ -807,7 +792,23 @@ const getStudentRegistrations = async (req, res) => {
       _id: { $in: eventIds }
     });
 
-    res.json(events);
+    // Merge attendance data onto each event object so the frontend can show status
+    const regMap = registrations.reduce((acc, r) => {
+      acc[String(r.eventId)] = r;
+      return acc;
+    }, {});
+
+    const merged = events.map(e => {
+      const reg = regMap[String(e._id)];
+      return {
+        ...e.toObject(),
+        attendanceMarked: reg?.attendanceMarked ?? false,
+        attendanceTime: reg?.attendanceTime ?? null,
+        registrationId: reg?._id ?? null,
+      };
+    });
+
+    res.json(merged);
 
   } catch (error) {
 

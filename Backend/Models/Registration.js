@@ -26,6 +26,16 @@ const registrationSchema = new mongoose.Schema(
   feedbackEmailSent: {
     type: Boolean,
     default: false
+  },
+
+  attendanceMarked: {
+    type: Boolean,
+    default: false
+  },
+
+  attendanceTime: {
+    type: Date,
+    default: null
   }
 },
 { timestamps: true }
