@@ -299,7 +299,7 @@ export default function Settings() {
       setUpdatingNotif(true);
 
       const newValue =
-        !currentStudent.notificationsEnabled;
+        !(currentStudent.emailNotifications ?? currentStudent.notificationsEnabled);
 
       const res = await axios.put(
         `${API_URL}/student/notifications/${activeStudentId}`,
@@ -308,6 +308,7 @@ export default function Settings() {
 
       setCurrentStudent((prev) => ({
         ...prev,
+        emailNotifications: res.data.emailNotifications,
         notificationsEnabled: res.data.notificationsEnabled,
       }));
 
@@ -315,6 +316,7 @@ export default function Settings() {
         "eventSphereStudent",
         JSON.stringify({
           ...currentStudent,
+          emailNotifications: res.data.emailNotifications,
           notificationsEnabled: res.data.notificationsEnabled,
         })
       );
@@ -349,6 +351,10 @@ export default function Settings() {
 
   const canEditVerification =
     currentStudent?.role !== "admin";
+
+  const isProfileApproved =
+    Boolean(currentStudent?.profileApproved)
+    || profileStatus === "approved";
 
   const statusLabel =
     profileStatus === "approved"
@@ -404,29 +410,35 @@ export default function Settings() {
         {canEditVerification && (
 
           <section className="rounded-[28px] border border-soft-blush bg-white p-6 shadow-sm md:p-8">
-            <div className="mb-6 rounded-2xl border border-lavender/20 bg-lavender/10 px-4 py-3 text-sm font-medium text-deep-slate/75">
-              {profileStatus === "approved"
-                ? "Your profile is approved. You can update your phone number here anytime."
-                : profileStatus === "rejected"
-                ? "Your last submission was rejected. Update your details here and the new version will go back to admin for approval."
-                : "Your profile is not approved yet. You can still edit your details here, and each save will update the database for admin review."}
-            </div>
+            {isProfileApproved ? (
+              <div className="rounded-2xl border border-lavender/20 bg-lavender/10 px-4 py-3 text-sm font-medium text-deep-slate/75">
+                Your profile is approved. You cannot edit details.
+              </div>
+            ) : (
+              <>
+                <div className="mb-6 rounded-2xl border border-lavender/20 bg-lavender/10 px-4 py-3 text-sm font-medium text-deep-slate/75">
+                  {profileStatus === "rejected"
+                    ? "Your last submission was rejected. Update your details here and the new version will go back to admin for approval."
+                    : "Your profile is not approved yet. You can still edit your details here, and each save will update the database for admin review."}
+                </div>
 
-            <StudentVerificationForm
-              student={currentStudent}
-              onSuccess={(updated) => {
+                <StudentVerificationForm
+                  student={currentStudent}
+                  onSuccess={(updated) => {
 
-                localStorage.setItem(
-                  "eventSphereStudent",
-                  JSON.stringify(updated)
-                );
+                    localStorage.setItem(
+                      "eventSphereStudent",
+                      JSON.stringify(updated)
+                    );
 
-                setCurrentStudent(updated);
+                    setCurrentStudent(updated);
 
-                fetchStudent();
+                    fetchStudent();
 
-              }}
-            />
+                  }}
+                />
+              </>
+            )}
           </section>
 
         )}

@@ -1,6 +1,20 @@
 const nodemailer = require("nodemailer");
+const Student = require("../Models/Student");
 
-const sendMail = async (to, subject, text) => {
+const normalizeRecipients = (to) => {
+  if (Array.isArray(to)) {
+    return to
+      .map((email) => String(email || "").trim().toLowerCase())
+      .filter(Boolean);
+  }
+
+  return String(to || "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+};
+
+const sendMail = async (to, subject, text, options = {}) => {
   try {
     if (!to || !subject || !text) {
       return false;
@@ -8,6 +22,34 @@ const sendMail = async (to, subject, text) => {
 
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
       return false;
+    }
+
+    const requestedRecipients = normalizeRecipients(to);
+
+    if (!requestedRecipients.length) {
+      return false;
+    }
+
+    let allowedRecipients = requestedRecipients;
+
+    if (options.type === "promo") {
+      const matchingUsers = await Student.find({
+        email: { $in: requestedRecipients },
+      }).select("email emailNotifications");
+
+      const blockedRecipientSet = new Set(
+        matchingUsers
+          .filter((user) => user?.emailNotifications === false)
+          .map((user) => String(user.email || "").toLowerCase())
+      );
+
+      allowedRecipients = requestedRecipients.filter(
+        (email) => !blockedRecipientSet.has(email)
+      );
+    }
+
+    if (!allowedRecipients.length) {
+      return true;
     }
 
     const smtpHost = process.env.SMTP_HOST || "smtp.gmail.com";
@@ -30,7 +72,7 @@ const sendMail = async (to, subject, text) => {
 
     await transporter.sendMail({
       from: process.env.EMAIL_FROM || `"EventSphere" <${process.env.EMAIL_USER}>`,
-      to,
+      to: allowedRecipients.join(", "),
       subject,
       text,
     });

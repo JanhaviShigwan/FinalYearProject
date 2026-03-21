@@ -6,7 +6,7 @@ export default function Preferences({
   updatingNotif,
   notifError
 }) {
-  const enabled = !!currentStudent?.notificationsEnabled;
+  const enabled = currentStudent?.emailNotifications ?? !!currentStudent?.notificationsEnabled;
 
   return (
     <div className="h-full rounded-[28px] border border-soft-blush bg-white p-6 shadow-sm">
@@ -59,8 +59,8 @@ export default function Preferences({
       <p className="mt-4 text-base text-deep-slate/55">
 
         {enabled
-          ? "You will receive event registration emails."
-          : "Event emails are disabled."}
+          ? "You will receive promotional event emails."
+          : "Promotional event emails are disabled."}
 
       </p>
 

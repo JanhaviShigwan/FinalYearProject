@@ -92,7 +92,7 @@ const runFeedbackMailCycle = async () => {
     // Find registrations that have not had a feedback email sent yet
     const registrations = await Registration.find({ feedbackEmailSent: { $ne: true } })
       .select("_id studentId eventId feedbackEmailSent")
-      .populate("studentId", "name email role notificationsEnabled notificationPreferences emailPreferences")
+      .populate("studentId", "name email role notificationsEnabled notificationPreferences emailNotifications emailPreferences")
       .populate({
         path: "eventId",
         model: "Event",
@@ -108,19 +108,24 @@ const runFeedbackMailCycle = async () => {
 
       if (!student || !event || !student.email) continue;
 
-      // Respect notification preferences
+      // Only send once event has ended
+      const endDateTime = getEventEndDateTime(event);
+      if (!endDateTime || now <= endDateTime) continue;
+
+      // Skip permanently when notifications are disabled at eligible send time.
       if (
         student.role === "admin" ||
         student.notificationPreferences?.enabled === false ||
         student.notificationsEnabled === false ||
+        student.emailNotifications === false ||
         student.emailPreferences?.reminders === false
       ) {
+        await Registration.updateOne(
+          { _id: reg._id, feedbackEmailSent: { $ne: true } },
+          { $set: { feedbackEmailSent: true } }
+        );
         continue;
       }
-
-      // Only send once event has ended
-      const endDateTime = getEventEndDateTime(event);
-      if (!endDateTime || now <= endDateTime) continue;
 
       // Atomically claim this registration to avoid duplicate sends
       const claim = await Registration.updateOne(
@@ -141,7 +146,7 @@ const runFeedbackMailCycle = async () => {
         student.email,
         `How was ${event.eventName}? Share your feedback!`,
         html,
-        { topic: "GENERAL" }
+        { topic: "GENERAL", type: "promo" }
       );
 
       if (!sent) {

@@ -7,9 +7,22 @@ const CATEGORY_LABELS = {
   EVENT_REMINDER: "Event Reminder",
   EVENT_CANCELLATION: "Event Cancelled",
   ANNOUNCEMENT: "New Announcement",
+  PROFILE_APPROVED: "Profile Approved",
   PASSWORD_RESET: "Forgot Password",
   PASSWORD_CHANGED: "Password Changed",
   GENERAL: "General"
+};
+
+const TOPIC_TYPES = {
+  REGISTRATION: "important",
+  EVENT_REGISTRATION: "important",
+  EVENT_REMINDER: "promo",
+  EVENT_CANCELLATION: "important",
+  ANNOUNCEMENT: "promo",
+  PROFILE_APPROVED: "important",
+  PASSWORD_RESET: "important",
+  PASSWORD_CHANGED: "important",
+  GENERAL: "important",
 };
 
 const TOPIC_ALIASES = {
@@ -21,6 +34,7 @@ const TOPIC_ALIASES = {
   EVENT_CANCELLATION: "EVENT_CANCELLATION",
   ANNOUNCEMENT: "ANNOUNCEMENT",
   NEW_ANNOUNCEMENT: "ANNOUNCEMENT",
+  PROFILE_APPROVED: "PROFILE_APPROVED",
   FORGOT_PASSWORD: "PASSWORD_RESET",
   PASSWORD_RESET: "PASSWORD_RESET",
   PASSWORD_CHANGED: "PASSWORD_CHANGED",
@@ -91,24 +105,25 @@ const normalizeRecipients = (to) => {
     .filter(Boolean);
 };
 
-const isPreferenceDisabled = (user) => {
-  if (user?.notificationPreferences && typeof user.notificationPreferences.enabled === "boolean") {
-    return user.notificationPreferences.enabled === false;
+const resolveMailType = (topic, explicitType) => {
+  if (explicitType === "promo" || explicitType === "important") {
+    return explicitType;
   }
 
-  return user?.notificationsEnabled === false;
+  return TOPIC_TYPES[topic] || "important";
+};
+
+const isPromoBlocked = (user) => {
+  return user?.emailNotifications === false;
 };
 
 const sendEmail = async (to, subject, html, options = {}) => {
   const topic = normalizeTopic(options.topic) || inferTopic(subject);
   const category = CATEGORY_LABELS[topic] || topic;
+  const mailType = resolveMailType(topic, options.type);
 
   try {
     const requestedRecipients = normalizeRecipients(to);
-    const bypassPreferenceCheck = options?.bypassPreferenceCheck === true;
-    const bypassRoleCheck = bypassPreferenceCheck || options?.bypassRoleCheck === true;
-    const bypassNotificationPreferenceCheck =
-      bypassPreferenceCheck || options?.bypassNotificationPreferenceCheck === true;
 
     if (!requestedRecipients.length) {
       console.log(`[MAIL][${category}] FAILED | reason: recipient missing | subject: ${subject}`);
@@ -117,24 +132,14 @@ const sendEmail = async (to, subject, html, options = {}) => {
 
     let allowedRecipients = requestedRecipients;
 
-    if (!bypassRoleCheck || !bypassNotificationPreferenceCheck) {
+    if (mailType === "promo") {
       const matchingUsers = await Student.find({
         email: { $in: requestedRecipients },
-      }).select("email role notificationPreferences notificationsEnabled");
+      }).select("email emailNotifications");
 
       const blockedRecipientSet = new Set(
         matchingUsers
-          .filter((user) => {
-            if (!bypassRoleCheck && user.role === "admin") {
-              return true;
-            }
-
-            if (!bypassNotificationPreferenceCheck && isPreferenceDisabled(user)) {
-              return true;
-            }
-
-            return false;
-          })
+          .filter((user) => isPromoBlocked(user))
           .map((user) => String(user.email || "").toLowerCase())
       );
 
@@ -144,7 +149,7 @@ const sendEmail = async (to, subject, html, options = {}) => {
 
       if (!allowedRecipients.length) {
         console.log(
-          `[MAIL][${category}] SKIPPED | reason: blocked by role/preferences | requested: ${requestedRecipients.join(", ")} | subject: ${subject}`
+          `[MAIL][${category}] SKIPPED | reason: promotional mail disabled | requested: ${requestedRecipients.join(", ")} | subject: ${subject}`
         );
         return true;
       }
@@ -187,7 +192,7 @@ const sendEmail = async (to, subject, html, options = {}) => {
         : {})
     };
 
-    console.log(`[MAIL] Sending Email | Category: ${category} | to: ${mailOptions.to} | subject: ${subject}`);
+    console.log(`[MAIL] Sending Email | Category: ${category} | Type: ${mailType} | to: ${mailOptions.to} | subject: ${subject}`);
 
     const info = await transporter.sendMail(mailOptions);
     const deliveredTo = Array.isArray(info?.accepted) && info.accepted.length

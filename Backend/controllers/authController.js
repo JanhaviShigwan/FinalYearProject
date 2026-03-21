@@ -15,18 +15,22 @@ const syncAdminProfileComplete = async (student) => {
 
   if (student.role === "admin") {
     const needsAdminSync =
-      !student.profileComplete || student.profileStatus !== "approved";
+      !student.profileComplete || student.profileStatus !== "approved" || !student.profileApproved;
 
     if (needsAdminSync) {
       student.profileComplete = true;
       student.profileStatus = "approved";
+      student.profileApproved = true;
 
       await Student.findByIdAndUpdate(student._id, {
-        $set: { profileComplete: true, profileStatus: "approved" },
+        $set: { profileComplete: true, profileStatus: "approved", profileApproved: true },
       });
     }
   } else if (!student.profileStatus) {
     student.profileStatus = student.profileComplete ? "approved" : "pending";
+    student.profileApproved = student.profileStatus === "approved";
+  } else {
+    student.profileApproved = student.profileStatus === "approved";
   }
 
   return student;
@@ -96,7 +100,7 @@ exports.registerStudent = async (req, res) => {
       lowerEmail,
       emailSubject,
       html,
-      { topic: "REGISTRATION" }
+      { topic: "REGISTRATION", type: "important" }
     );
 
     res.status(201).json({
@@ -111,6 +115,7 @@ exports.registerStudent = async (req, res) => {
         role: newStudent.role,
         profileComplete: newStudent.profileComplete,
         profileStatus: resolvedProfileStatus,
+        profileApproved: newStudent.profileApproved,
       },
     });
 
@@ -190,6 +195,7 @@ exports.loginStudent = async (req, res) => {
         role: student.role,
         profileComplete: student.profileComplete,
         profileStatus: resolvedProfileStatus,
+        profileApproved: student.profileApproved,
       },
     });
 
@@ -244,7 +250,7 @@ exports.forgotPassword = async (req, res) => {
       lowerEmail,
       "Reset Password",
       html,
-      { topic: "PASSWORD_RESET" }
+      { topic: "PASSWORD_RESET", type: "important" }
     );
 
     res.json({
@@ -355,7 +361,7 @@ exports.resetPassword = async (req, res) => {
       lowerEmail,
       "Password Changed",
       passwordChangedTemplate(),
-      { topic: "PASSWORD_CHANGED" }
+      { topic: "PASSWORD_CHANGED", type: "important" }
     );
 
     res.json({

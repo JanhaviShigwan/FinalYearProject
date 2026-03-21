@@ -15,9 +15,11 @@ async function forceAdminProfileCompleteOnUpdate() {
     if (update.$set) {
       update.$set.profileComplete = true;
       update.$set.profileStatus = "approved";
+      update.$set.profileApproved = true;
     } else {
       update.profileComplete = true;
       update.profileStatus = "approved";
+      update.profileApproved = true;
     }
 
     this.setUpdate(update);
@@ -100,12 +102,24 @@ const studentSchema = new mongoose.Schema(
       },
     },
 
+    profileApproved: {
+      type: Boolean,
+      default: function () {
+        return this.role === "admin";
+      },
+    },
+
     profileImage: {
       type: String,
       default: "",
     },
 
     notificationsEnabled: {
+      type: Boolean,
+      default: true,
+    },
+
+    emailNotifications: {
       type: Boolean,
       default: true,
     },
@@ -173,8 +187,12 @@ studentSchema.pre("save", function () {
   if (this.role === "admin") {
     this.profileComplete = true;
     this.profileStatus = "approved";
+    this.profileApproved = true;
   } else if (!this.profileStatus) {
     this.profileStatus = "pending";
+    this.profileApproved = false;
+  } else {
+    this.profileApproved = this.profileStatus === "approved";
   }
 });
 

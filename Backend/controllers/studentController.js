@@ -16,17 +16,21 @@ const syncAdminProfileComplete = async (student) => {
 
   if (student.role === "admin") {
     const needsAdminSync =
-      !student.profileComplete || student.profileStatus !== "approved";
+      !student.profileComplete || student.profileStatus !== "approved" || !student.profileApproved;
 
     if (needsAdminSync) {
       student.profileComplete = true;
       student.profileStatus = "approved";
+      student.profileApproved = true;
       await Student.findByIdAndUpdate(student._id, {
-        $set: { profileComplete: true, profileStatus: "approved" },
+        $set: { profileComplete: true, profileStatus: "approved", profileApproved: true },
       });
     }
   } else if (!student.profileStatus) {
     student.profileStatus = student.profileComplete ? "approved" : "pending";
+    student.profileApproved = student.profileStatus === "approved";
+  } else {
+    student.profileApproved = student.profileStatus === "approved";
   }
 
   return student;
@@ -129,7 +133,7 @@ exports.getAdminUsers = async (req, res) => {
         ],
       },
       {
-        $set: { profileComplete: true, profileStatus: "approved" },
+        $set: { profileComplete: true, profileStatus: "approved", profileApproved: true },
       }
     );
 
@@ -191,7 +195,7 @@ exports.updateAdminUser = async (req, res) => {
   try {
     const { studentId } = req.params;
 
-    const existingUser = await Student.findById(studentId).select("role profileComplete profileStatus");
+    const existingUser = await Student.findById(studentId).select("role profileComplete profileStatus profileApproved");
 
     if (!existingUser) {
       return res.status(404).json({ message: "User not found" });
@@ -260,6 +264,11 @@ exports.updateAdminUser = async (req, res) => {
       updates.profileStatus = "approved";
     }
 
+    updates.profileApproved =
+      targetRole === "admin"
+        ? true
+        : targetProfileStatus === "approved";
+
     const updatedUser = await Student.findByIdAndUpdate(
       studentId,
       { $set: updates },
@@ -272,7 +281,7 @@ exports.updateAdminUser = async (req, res) => {
           updatedUser.email,
           "Profile Approved - EventSphere",
           profileApprovedTemplate(updatedUser.name || "Student"),
-          { topic: "PROFILE_APPROVED" }
+          { topic: "PROFILE_APPROVED", type: "important" }
         );
       } catch (emailError) {
         console.error("Profile approval email error:", emailError);
@@ -454,6 +463,7 @@ exports.completeProfile = async (req, res) => {
       student.role === "admin" || existingProfileStatus === "approved"
         ? "approved"
         : "pending";
+    student.profileApproved = student.profileStatus === "approved";
 
     await student.save();
 
@@ -610,19 +620,21 @@ exports.updateNotifications = async (req, res) => {
       {
         $set: {
           notificationsEnabled,
+          emailNotifications: notificationsEnabled,
           "notificationPreferences.enabled": notificationsEnabled,
         },
       },
       {
         returnDocument: "after",
         runValidators: false,
-        select: "notificationsEnabled notificationPreferences",
+        select: "notificationsEnabled emailNotifications notificationPreferences",
       }
     );
 
     res.status(200).json({
       message: "Notification preference updated",
       notificationsEnabled: updatedStudent.notificationsEnabled,
+      emailNotifications: updatedStudent.emailNotifications,
       notificationPreferences: updatedStudent.notificationPreferences,
     });
 
@@ -740,7 +752,7 @@ exports.changePassword = async (req, res) => {
       student.email,
       "Password Changed",
       passwordChangedTemplate(),
-      { topic: "PASSWORD_CHANGED" }
+      { topic: "PASSWORD_CHANGED", type: "important" }
     );
 
 

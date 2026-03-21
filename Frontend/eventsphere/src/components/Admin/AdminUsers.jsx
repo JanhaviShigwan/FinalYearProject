@@ -30,13 +30,6 @@ export default function AdminUsers({ onDataChanged }) {
   const [blockReason, setBlockReason] = useState('');
   const [blockError, setBlockError] = useState('');
   const [isBlockingUser, setIsBlockingUser] = useState(false);
-  const [preferences, setPreferences] = useState({});
-  const [hasChanges, setHasChanges] = useState(false);
-  const [isSavingPreferences, setIsSavingPreferences] = useState(false);
-
-  const getNotificationEnabled = (user) => (
-    user?.notificationPreferences?.enabled ?? user?.notificationsEnabled ?? true
-  );
 
   const fetchUsers = useCallback(async (opts = {}) => {
     const targetPage = opts.page ?? 1;
@@ -65,18 +58,6 @@ export default function AdminUsers({ onDataChanged }) {
 
       setUsers(fetchedUsers);
       setPagination(res.data.pagination || { page: 1, limit: 10, total: 0, totalPages: 1 });
-
-      setPreferences((prev) => {
-        const next = hasChanges ? { ...prev } : {};
-
-        fetchedUsers.forEach((user) => {
-          if (!hasChanges || !Object.prototype.hasOwnProperty.call(next, user._id)) {
-            next[user._id] = getNotificationEnabled(user);
-          }
-        });
-
-        return next;
-      });
     } catch (err) {
       console.error('Error fetching users:', err);
       setError(err.response?.data?.message || 'Failed to load users. Please try again.');
@@ -85,7 +66,7 @@ export default function AdminUsers({ onDataChanged }) {
         setLoading(false);
       }
     }
-  }, [departmentFilter, hasChanges, roleFilter, search, yearFilter]);
+  }, [departmentFilter, roleFilter, search, yearFilter]);
 
   useEffect(() => {
     fetchUsers({ page: 1 });
@@ -101,16 +82,12 @@ export default function AdminUsers({ onDataChanged }) {
   }, [fetchUsers, search]);
 
   useEffect(() => {
-    if (hasChanges) {
-      return undefined;
-    }
-
     const refreshInterval = setInterval(() => {
       fetchUsers({ page, silent: true });
     }, 5000);
 
     return () => clearInterval(refreshInterval);
-  }, [fetchUsers, hasChanges, page]);
+  }, [fetchUsers, page]);
 
   const departments = useMemo(() => {
     const set = new Set(users.map((u) => u.department).filter(Boolean));
@@ -134,92 +111,6 @@ export default function AdminUsers({ onDataChanged }) {
       setError(err.response?.data?.message || 'Failed to update user');
     } finally {
       setBusyUserId('');
-    }
-  };
-
-  const handleNotificationChange = (user, value) => {
-    const enabled = value === 'Enabled';
-
-    setPreferences((prev) => ({
-      ...prev,
-      [user._id]: enabled,
-    }));
-
-    setHasChanges(true);
-  };
-
-  const saveNotificationPreferences = async () => {
-    try {
-      setIsSavingPreferences(true);
-      setError('');
-
-      const usersPayload = users.map((user) => {
-        const isAdmin = (user.role || '').toLowerCase() === 'admin';
-        const enabled = isAdmin
-          ? false
-          : Boolean(
-            Object.prototype.hasOwnProperty.call(preferences, user._id)
-              ? preferences[user._id]
-              : getNotificationEnabled(user)
-          );
-
-        return {
-          userId: user._id,
-          enabled,
-        };
-      });
-
-      await axios.put(
-        `${API_URL}/admin/notification-preferences`,
-        { users: usersPayload },
-        getAdminRequestConfig()
-      );
-
-      setUsers((prev) => prev.map((user) => {
-        const isAdmin = (user.role || '').toLowerCase() === 'admin';
-        const enabled = isAdmin
-          ? false
-          : Boolean(
-            Object.prototype.hasOwnProperty.call(preferences, user._id)
-              ? preferences[user._id]
-              : getNotificationEnabled(user)
-          );
-
-        return {
-          ...user,
-          notificationsEnabled: enabled,
-          notificationPreferences: {
-            ...(user.notificationPreferences || {}),
-            enabled,
-          },
-        };
-      }));
-
-      setPreferences((prev) => {
-        const next = { ...prev };
-        users.forEach((user) => {
-          const isAdmin = (user.role || '').toLowerCase() === 'admin';
-          next[user._id] = isAdmin
-            ? false
-            : Boolean(
-              Object.prototype.hasOwnProperty.call(prev, user._id)
-                ? prev[user._id]
-                : getNotificationEnabled(user)
-            );
-        });
-        return next;
-      });
-
-      setHasChanges(false);
-
-      if (onDataChanged) {
-        await onDataChanged();
-      }
-    } catch (err) {
-      console.error('Error saving notification preferences:', err);
-      setError(err.response?.data?.message || 'Failed to save notification preferences');
-    } finally {
-      setIsSavingPreferences(false);
     }
   };
 
@@ -368,7 +259,7 @@ export default function AdminUsers({ onDataChanged }) {
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
             <h3 className="text-2xl font-bold text-deep-slate">Users Management</h3>
-            <p className="text-sm text-deep-slate/55 mt-1">Manage notifications and student accounts.</p>
+            <p className="text-sm text-deep-slate/55 mt-1">Manage student accounts.</p>
           </div>
           <span className="inline-flex items-center gap-2 text-sm font-semibold bg-lavender/10 text-lavender px-3 py-1.5 rounded-full">
             <Users className="w-4 h-4" />
@@ -427,27 +318,14 @@ export default function AdminUsers({ onDataChanged }) {
       ) : null}
 
       <div className="bg-white rounded-2xl border border-soft-blush shadow-sm overflow-hidden">
-        {hasChanges ? (
-          <div className="px-5 pt-4 pb-5 flex justify-end">
-            <button
-              disabled={isSavingPreferences || loading}
-              onClick={saveNotificationPreferences}
-              className="px-3 py-1.5 rounded-lg bg-lavender text-white text-sm font-semibold hover:bg-lavender/90 disabled:opacity-40"
-            >
-              {isSavingPreferences ? 'Saving...' : 'Save Preferences'}
-            </button>
-          </div>
-        ) : null}
-
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[980px]">
+          <table className="w-full text-left border-collapse min-w-[900px]">
             <thead>
               <tr className="bg-warm-cream/55 border-b border-soft-blush">
                 <th className="px-5 py-3 text-xs uppercase tracking-wider text-deep-slate/55">User</th>
                 <th className="px-5 py-3 text-xs uppercase tracking-wider text-deep-slate/55">Role</th>
                 <th className="px-5 py-3 text-xs uppercase tracking-wider text-deep-slate/55">Year</th>
                 <th className="px-5 py-3 text-xs uppercase tracking-wider text-deep-slate/55">Profile</th>
-                <th className="px-5 py-3 text-xs uppercase tracking-wider text-deep-slate/55">Notifications</th>
                 <th className="px-5 py-3 text-xs uppercase tracking-wider text-deep-slate/55">Joined</th>
                 <th className="px-5 py-3 text-xs uppercase tracking-wider text-deep-slate/55 text-right">Actions</th>
               </tr>
@@ -455,11 +333,11 @@ export default function AdminUsers({ onDataChanged }) {
             <tbody className="divide-y divide-soft-blush">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="px-5 py-10 text-center text-deep-slate/55">Loading users...</td>
+                  <td colSpan={6} className="px-5 py-10 text-center text-deep-slate/55">Loading users...</td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-5 py-10 text-center text-deep-slate/55">No users found for selected filters.</td>
+                  <td colSpan={6} className="px-5 py-10 text-center text-deep-slate/55">No users found for selected filters.</td>
                 </tr>
               ) : (
                 users.map((user) => {
@@ -500,21 +378,6 @@ export default function AdminUsers({ onDataChanged }) {
                           </p>
                         ) : null}
                       </td>
-
-                      <td className="px-5 py-4">
-                        <select
-                          disabled={isBusy || isSavingPreferences || isAdmin}
-                          value={isAdmin
-                            ? 'Disabled'
-                            : (preferences[user._id] ?? getNotificationEnabled(user)) ? 'Enabled' : 'Disabled'}
-                          onChange={(e) => handleNotificationChange(user, e.target.value)}
-                          className="py-1.5 px-2.5 rounded-lg bg-warm-cream border border-transparent text-xs font-semibold text-deep-slate focus:outline-none focus:ring-2 focus:ring-lavender/45 disabled:opacity-60"
-                        >
-                          <option value="Enabled">Enabled</option>
-                          <option value="Disabled">Disabled</option>
-                        </select>
-                      </td>
-
                       <td className="px-5 py-4 text-sm text-deep-slate/60">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </td>

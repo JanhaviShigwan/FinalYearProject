@@ -44,6 +44,7 @@ const sendEventMailAsync = (event) => {
           .map((email) =>
             sendEmail(email, subject, html, {
               topic: "GENERAL",
+              type: "promo",
             })
           )
       );
@@ -481,7 +482,7 @@ const completeEvent = async (req, res) => {
                 r.studentId.email,
                 `Your Certificate is Ready – ${event.eventName}`,
                 certificateTemplate({ ...emailData, studentName: r.studentId.name || "" }),
-                { topic: "GENERAL" }
+                { topic: "GENERAL", type: "important" }
               )
             );
 
@@ -695,7 +696,7 @@ const registerForEvent = async (req, res) => {
         emailHTML,
         {
           topic: "EVENT_REGISTRATION",
-          bypassNotificationPreferenceCheck: true,
+          type: "important",
           attachments: [
             {
               filename: `${String(event.eventName || "event").replace(/[^a-z0-9-_ ]/gi, "").trim() || "event"}-entry-qr.png`,
@@ -873,7 +874,7 @@ const cancelRegistration = async (req, res) => {
         student.email,
         "Event Cancelled",
         html,
-        { topic: "EVENT_CANCELLATION" }
+        { topic: "EVENT_CANCELLATION", type: "important" }
       );
 
     } else {

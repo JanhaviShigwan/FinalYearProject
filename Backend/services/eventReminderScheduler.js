@@ -70,7 +70,7 @@ const runReminderCycle = async () => {
 
   const registrations = await Registration.find({})
     .select("studentId eventId reminderDaysSent")
-    .populate("studentId", "name email role notificationsEnabled notificationPreferences emailPreferences")
+    .populate("studentId", "name email role notificationsEnabled notificationPreferences emailNotifications emailPreferences")
     .populate("eventId", "eventName date time venue");
 
   let sentCount = 0;
@@ -85,17 +85,6 @@ const runReminderCycle = async () => {
       continue;
     }
 
-    if (
-      student.role === "admin" ||
-      student.notificationPreferences?.enabled === false ||
-      student.notificationsEnabled === false ||
-      student.emailPreferences?.reminders === false ||
-      student.emailPreferences?.promotions === false
-    ) {
-      skippedCount += 1;
-      continue;
-    }
-
     const eventStart = parseEventStartDate(event.date, event.time);
 
     if (!eventStart || eventStart <= now) {
@@ -106,6 +95,28 @@ const runReminderCycle = async () => {
     const daysUntilEvent = Math.ceil((eventStart.getTime() - now.getTime()) / DAY_MS);
 
     if (!shouldSendReminderForDay(daysUntilEvent, reminderDays)) {
+      skippedCount += 1;
+      continue;
+    }
+
+    if (
+      student.role === "admin" ||
+      student.notificationPreferences?.enabled === false ||
+      student.notificationsEnabled === false ||
+      student.emailNotifications === false ||
+      student.emailPreferences?.reminders === false ||
+      student.emailPreferences?.promotions === false
+    ) {
+      await Registration.updateOne(
+        {
+          _id: registration._id,
+          reminderDaysSent: { $ne: daysUntilEvent },
+        },
+        {
+          $addToSet: { reminderDaysSent: daysUntilEvent },
+        }
+      );
+
       skippedCount += 1;
       continue;
     }
@@ -149,7 +160,7 @@ const runReminderCycle = async () => {
       student.email,
       getReminderSubject(event.eventName, daysUntilEvent),
       html,
-      { topic: "EVENT_REMINDER" }
+      { topic: "EVENT_REMINDER", type: "promo" }
     );
 
     if (!sent) {

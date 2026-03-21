@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
@@ -24,6 +24,7 @@ import { isBlockedPayload, triggerBlockedLogout } from "../utils/blockedUser";
 
 export default function MyRegistrations() {
   const [myEvents, setMyEvents] = useState([]);
+  const [statusFilter, setStatusFilter] = useState("all");
   const [qrEvent, setQrEvent] = useState(null);
   const [cancelTarget, setCancelTarget] = useState(null);
   const [cancelError, setCancelError] = useState("");
@@ -180,6 +181,14 @@ export default function MyRegistrations() {
 
   const getEventStatus = (event) => getEventLifecycleStatus(event);
 
+  const filteredEvents = useMemo(() => {
+    if (statusFilter === "all") {
+      return myEvents;
+    }
+
+    return myEvents.filter((event) => getEventStatus(event) === statusFilter);
+  }, [myEvents, statusFilter]);
+
   const fade = {
     hidden: { opacity: 0, y: 16 },
     visible: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.06, duration: 0.3 } }),
@@ -200,14 +209,44 @@ export default function MyRegistrations() {
       </div>
 
       {/* Empty state */}
-      {myEvents.length === 0 ? (
+      <div className="flex flex-wrap items-center gap-2">
+        {[
+          { key: "all", label: "All" },
+          { key: "live", label: "Live" },
+          { key: "upcoming", label: "Upcoming" },
+          { key: "ended", label: "Ended" },
+        ].map((filter) => {
+          const isActive = statusFilter === filter.key;
+
+          return (
+            <button
+              key={filter.key}
+              type="button"
+              onClick={() => setStatusFilter(filter.key)}
+              className={`px-3 py-1.5 rounded-full text-sm font-bold border transition-colors ${
+                isActive
+                  ? "bg-lavender text-white border-lavender"
+                  : "bg-white text-deep-slate/70 border-soft-blush hover:border-lavender/40"
+              }`}
+            >
+              {filter.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {filteredEvents.length === 0 ? (
         <div className="rounded-2xl border border-soft-blush bg-white px-8 py-16 text-center">
           <Ticket className="w-10 h-10 text-deep-slate/20 mx-auto mb-3" />
-          <p className="text-deep-slate/50 font-medium">You haven't registered for any events yet.</p>
+          <p className="text-deep-slate/50 font-medium">
+            {myEvents.length === 0
+              ? "You haven't registered for any events yet."
+              : "No events found for this filter."}
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {myEvents.map((event, i) => {
+          {filteredEvents.map((event, i) => {
             const eventStatus = getEventStatus(event);
             return (
               <motion.div

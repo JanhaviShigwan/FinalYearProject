@@ -296,7 +296,7 @@ exports.updateAdminPassword = async (req, res) => {
       admin.email,
       "Admin Password Changed",
       passwordChangedTemplate(),
-      { topic: "PASSWORD_CHANGED" }
+      { topic: "PASSWORD_CHANGED", type: "important" }
     );
 
     res.status(200).json({
@@ -353,6 +353,7 @@ exports.updateNotificationPreferences = async (req, res) => {
               $set: {
                 "notificationPreferences.enabled": enabled,
                 notificationsEnabled: enabled,
+                emailNotifications: enabled,
               },
             },
           },
@@ -408,10 +409,7 @@ exports.blockUser = async (req, res) => {
         user.email,
         "Account Blocked",
         blockedTemplate(user.name, normalizedReason),
-        {
-          topic: "GENERAL",
-          bypassPreferenceCheck: true,
-        }
+        { topic: "GENERAL", type: "important" }
       );
     }
 
