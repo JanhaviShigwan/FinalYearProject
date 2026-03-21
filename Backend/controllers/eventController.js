@@ -270,6 +270,44 @@ const getRegistrationWindowState = (event, settings) => {
 };
 
 
+// Compute the correct lifecycle status for a plain event object
+const computeEventStatus = (event) => {
+  const start = getEventStartDateTime(event);
+  const end = getEventEndDateTime(event);
+  const now = new Date();
+
+  if (start && now < start) return "upcoming";
+  if (end && now > end) return "ended";
+  if (start && end) return "live";
+  if (start) return now >= start ? "live" : "upcoming";
+  if (end) return now > end ? "ended" : "live";
+  return "upcoming";
+};
+
+// Sync event statuses in DB (only when changed) and return plain objects with correct status
+const syncEventStatuses = async (events) => {
+  const toUpdate = [];
+
+  const synced = events.map(event => {
+    const doc = event.toObject ? event.toObject() : { ...event };
+    const computed = computeEventStatus(doc);
+    if (computed !== doc.status) {
+      toUpdate.push({ id: doc._id, status: computed });
+      return { ...doc, status: computed };
+    }
+    return doc;
+  });
+
+  if (toUpdate.length > 0) {
+    await Promise.allSettled(
+      toUpdate.map(({ id, status }) => Event.findByIdAndUpdate(id, { status }))
+    );
+  }
+
+  return synced;
+};
+
+
 // GET all events
 const getEvents = async (req, res) => {
   try {
@@ -286,22 +324,24 @@ const getEvents = async (req, res) => {
 
     const [events, total] = hasPaginationParams
       ? await Promise.all([
-        Event.find().sort({ createdAt: -1 }).skip(skip).limit(limit),
+        Event.find().sort({ date: -1, createdAt: -1 }).skip(skip).limit(limit),
         Event.countDocuments(),
       ])
       : await Promise.all([
-        Event.find().sort({ createdAt: -1 }),
+        Event.find().sort({ date: -1, createdAt: -1 }),
         Event.countDocuments(),
       ]);
 
-    const eventsWithRegistrationDate = events.map(event => {
+    const syncedEvents = await syncEventStatuses(events);
+
+    const eventsWithRegistrationDate = syncedEvents.map(doc => {
       const {
         registrationOpen,
         registrationOpenDate: openDate,
-      } = getRegistrationWindowState(event, settings);
+      } = getRegistrationWindowState(doc, settings);
 
       return {
-        ...event._doc,
+        ...doc,
         registrationOpenDate: openDate,
         registrationOpen,
       };
@@ -799,10 +839,12 @@ const getStudentRegistrations = async (req, res) => {
       return acc;
     }, {});
 
-    const merged = events.map(e => {
-      const reg = regMap[String(e._id)];
+    const syncedEvents = await syncEventStatuses(events);
+
+    const merged = syncedEvents.map(doc => {
+      const reg = regMap[String(doc._id)];
       return {
-        ...e.toObject(),
+        ...doc,
         attendanceMarked: reg?.attendanceMarked ?? false,
         attendanceTime: reg?.attendanceTime ?? null,
         registrationId: reg?._id ?? null,
