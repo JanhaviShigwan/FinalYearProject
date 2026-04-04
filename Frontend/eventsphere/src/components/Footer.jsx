@@ -109,8 +109,8 @@ export default function Footer() {
             <div className="space-y-3">
               <div className="flex items-center gap-2.5 text-[15px] text-[#6B6A80]">
                 <Mail size={17} className="shrink-0 text-[#9B96E5]" />
-                <a href="mailto:eventsphere@gmail.com" className="transition-colors duration-300 hover:text-[#F08A6C]">
-                  eventsphere@gmail.com
+                <a href="mailto:mail.eventsphere@gmail.com" className="transition-colors duration-300 hover:text-[#F08A6C]">
+                  mail.eventsphere@gmail.com
                 </a>
               </div>
 
