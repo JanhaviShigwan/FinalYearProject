@@ -14,6 +14,7 @@ import AdminFeedbacks from '../components/Admin/AdminFeedbacks';
 import AdminRegistrations from '../components/Admin/AdminRegistrations';
 import AdminQRScanner from '../components/Admin/AdminQRScanner';
 import { getAdminRequestConfig, getStoredStudent, isAdminStudent } from '../utils/adminAuth';
+import { getEventLifecycleStatus, getEventStartDateTime } from '../utils/eventStatus';
 
 const REPORT_REFRESH_MS = 5000;
 const EVENTS_PAGE_LIMIT = 15;
@@ -80,6 +81,35 @@ const getEventEndTimestamp = (event) => {
   parsedDate.setHours(parsedDate.getHours() + 3);
 
   return parsedDate.getTime();
+};
+
+const getAdminEventsSorted = (events = []) => {
+  const now = new Date();
+
+  return [...events].sort((a, b) => {
+    const aStatus = getEventLifecycleStatus(a, now);
+    const bStatus = getEventLifecycleStatus(b, now);
+
+    const aEndedPriority = aStatus === 'ended' ? 1 : 0;
+    const bEndedPriority = bStatus === 'ended' ? 1 : 0;
+
+    if (aEndedPriority !== bEndedPriority) {
+      return aEndedPriority - bEndedPriority;
+    }
+
+    const aStart = getEventStartDateTime(a);
+    const bStart = getEventStartDateTime(b);
+    const aStartTime = aStart ? aStart.getTime() : Number.MAX_SAFE_INTEGER;
+    const bStartTime = bStart ? bStart.getTime() : Number.MAX_SAFE_INTEGER;
+
+    if (aStartTime !== bStartTime) {
+      return aStartTime - bStartTime;
+    }
+
+    const aCreated = new Date(a?.createdAt || 0).getTime();
+    const bCreated = new Date(b?.createdAt || 0).getTime();
+    return aCreated - bCreated;
+  });
 };
 
 export default function AdminPage() {
@@ -162,6 +192,7 @@ export default function AdminPage() {
       }
 
       const res = await axios.get(`${API_URL}/events`, {
+        ...getAdminRequestConfig(),
         params: {
           page,
           limit: eventsLimit,
@@ -181,12 +212,12 @@ export default function AdminPage() {
       setEventsTotalCount(total);
       setEvents((prev) => {
         if (!append) {
-          return nextEvents;
+          return getAdminEventsSorted(nextEvents);
         }
 
         const existingIds = new Set(prev.map((event) => event._id || event.id));
         const uniqueNext = nextEvents.filter((event) => !existingIds.has(event._id || event.id));
-        return [...prev, ...uniqueNext];
+        return getAdminEventsSorted([...prev, ...uniqueNext]);
       });
       setEventsPage(page);
       setHasMoreEvents(page * eventsLimit < total);

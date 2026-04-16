@@ -218,6 +218,11 @@ function EventDetails() {
     registrationMessage = "Event has ended";
 
   }
+  else if (lifecycleStatus === "live") {
+
+    registrationMessage = "Event is ongoing";
+
+  }
   else {
 
     const diffDays = hasValidEventStart
@@ -274,7 +279,9 @@ function EventDetails() {
         ? "bg-slate-100 border-slate-200 text-slate-600"
         : isFull
           ? "bg-rose-50 border-rose-200 text-rose-700"
-          : "bg-emerald-50 border-emerald-200 text-emerald-700";
+          : lifecycleStatus === "live"
+            ? "bg-blue-50 border-blue-200 text-blue-700"
+            : "bg-emerald-50 border-emerald-200 text-emerald-700";
 
   return (
     <div className="event-details-shell min-h-screen">

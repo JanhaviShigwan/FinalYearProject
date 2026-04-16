@@ -12,6 +12,41 @@ import {
   Building2
 } from "lucide-react";
 
+const COLLEGE_OPTIONS_BY_DEPARTMENT = {
+  "IT & CS": [
+    "K J Somaiya College of Engineering",
+    "K J Somaiya Institute of Technology",
+    "K J Somaiya School of Engineering",
+    "K J Somaiya Polytechnic",
+    "Somaiya School of Basic and Applied Sciences",
+  ],
+  "Commerce": [
+    "K J Somaiya College of Arts and Commerce",
+    "K J Somaiya College of Science and Commerce",
+    "S K Somaiya College of Arts Science and Commerce",
+    "S K Somaiya College",
+  ],
+  "Finance": [
+    "K J Somaiya Institute of Management",
+    "K J Somaiya School of Business",
+    "K J Somaiya School of Banking and Finance",
+  ],
+  "Humanity": [
+    "K J Somaiya School of Humanities and Social Sciences",
+    "K J Somaiya School of Dharma Studies",
+    "K J Somaiya College of Education",
+    "S K Somaiya College of Education",
+    "S K Somaiya Vinay Mandir",
+    "S K Somaiya Shishu Niketan",
+  ],
+  "Science": [
+    "K J Somaiya Medical College",
+    "K J Somaiya College of Physiotherapy",
+    "K J Somaiya School of Nursing",
+    "K J Somaiya School of Design",
+  ],
+};
+
 export default function StudentVerificationForm({ student, onSuccess }) {
 
   const profileStatus =
@@ -28,31 +63,6 @@ export default function StudentVerificationForm({ student, onSuccess }) {
     [student?._id]
   );
 
-  const collegeOptions = [
-    "K J Somaiya College of Engineering",
-    "K J Somaiya Institute of Technology",
-    "K J Somaiya School of Engineering",
-    "K J Somaiya Institute of Management",
-    "K J Somaiya School of Business",
-    "K J Somaiya School of Banking and Finance",
-    "K J Somaiya College of Arts and Commerce",
-    "K J Somaiya College of Science and Commerce",
-    "K J Somaiya School of Design",
-    "K J Somaiya School of Humanities and Social Sciences",
-    "K J Somaiya School of Dharma Studies",
-    "K J Somaiya Medical College",
-    "K J Somaiya College of Physiotherapy",
-    "K J Somaiya School of Nursing",
-    "K J Somaiya College of Education",
-    "K J Somaiya Polytechnic",
-    "K J Somaiya School of Basic and Applied Sciences",
-    "S K Somaiya College of Arts Science and Commerce",
-    "S K Somaiya College",
-    "S K Somaiya College of Education",
-    "S K Somaiya Vinay Mandir",
-    "S K Somaiya Shishu Niketan",
-  ];
-
   const [popup, setPopup] = useState(null);
 
   const [formData, setFormData] = useState({
@@ -65,6 +75,14 @@ export default function StudentVerificationForm({ student, onSuccess }) {
     gender: "",
     dob: "",
   });
+
+  const collegeOptions = useMemo(() => {
+    if (!formData.department) {
+      return Object.values(COLLEGE_OPTIONS_BY_DEPARTMENT).flat();
+    }
+
+    return COLLEGE_OPTIONS_BY_DEPARTMENT[formData.department] || [];
+  }, [formData.department]);
 
   const courseMap = {
     "IT & CS": ["BSc IT", "BSc CS", "BCA"],
@@ -132,7 +150,8 @@ export default function StudentVerificationForm({ student, onSuccess }) {
       nextState = {
         ...formData,
         department: value,
-        course: ""
+        course: "",
+        college: "",
       };
 
     } else {
@@ -366,7 +385,7 @@ export default function StudentVerificationForm({ student, onSuccess }) {
                 required
                 disabled={phoneEditableOnly}
               >
-                <option value="">Select College</option>
+                <option value="">{formData.department ? "Select College" : "Select Department First"}</option>
                 {collegeOptions.map((collegeName) => (
                   <option key={collegeName} value={collegeName}>
                     {collegeName}

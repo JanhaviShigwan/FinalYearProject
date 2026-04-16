@@ -96,16 +96,13 @@ export default function AdminEvents({
       : base;
 
     return [...result].sort((a, b) => {
-      const featuredPriority = Number(Boolean(b.isFeatured)) - Number(Boolean(a.isFeatured));
+      const aStatus = getEventLifecycleStatus(a);
+      const bStatus = getEventLifecycleStatus(b);
+      const aEndedPriority = aStatus === 'ended' ? 1 : 0;
+      const bEndedPriority = bStatus === 'ended' ? 1 : 0;
 
-      if (featuredPriority !== 0) {
-        return featuredPriority;
-      }
-
-      const trendingPriority = Number(Boolean(b.isTrending)) - Number(Boolean(a.isTrending));
-
-      if (trendingPriority !== 0) {
-        return trendingPriority;
+      if (aEndedPriority !== bEndedPriority) {
+        return aEndedPriority - bEndedPriority;
       }
 
       return resolveEventDate(a) - resolveEventDate(b);
