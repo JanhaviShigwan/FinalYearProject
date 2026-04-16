@@ -30,16 +30,6 @@ router.post("/generate-description", async (req, res) => {
       });
     }
 
-    if (!process.env.GEMINI_API_KEY) {
-      return res.status(500).json({
-        message: "GEMINI_API_KEY is not configured.",
-      });
-    }
-
-    const ai = new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY,
-    });
-
     const prompt = `Generate a professional long description for a college event.
 
 Event Name: ${eventName}
@@ -51,6 +41,16 @@ Make it suitable for college event website.
 Do not use emojis.
 Do not add headings.
 Do not add bullet points.`;
+
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({
+        message: "GEMINI_API_KEY is not configured.",
+      });
+    }
+
+    const ai = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+    });
 
     const result = await ai.models.generateContent({
       model: "gemini-3.1-flash-lite-preview",
