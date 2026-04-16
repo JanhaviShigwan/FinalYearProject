@@ -196,6 +196,8 @@ export default function AdminPage() {
         params: {
           page,
           limit: eventsLimit,
+          fromDate: 'today',
+          sort: 'asc',
         },
       });
 

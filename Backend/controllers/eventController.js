@@ -315,21 +315,40 @@ const getEvents = async (req, res) => {
     const pageParam = Number.parseInt(req.query.page, 10);
     const limitParam = Number.parseInt(req.query.limit, 10);
     const hasPaginationParams = req.query.page !== undefined || req.query.limit !== undefined;
+    const sortParam = typeof req.query.sort === "string" ? req.query.sort.toLowerCase() : "";
+    const fromDateParam = typeof req.query.fromDate === "string" ? req.query.fromDate.trim() : "";
 
     const page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
     const limit = Number.isFinite(limitParam) && limitParam > 0
       ? Math.min(limitParam, 100)
       : 10;
     const skip = (page - 1) * limit;
+    const sortDirection = sortParam === "asc" ? 1 : -1;
+
+    const query = {};
+
+    if (fromDateParam) {
+      const todayLocal = new Date();
+      const yyyy = todayLocal.getFullYear();
+      const mm = String(todayLocal.getMonth() + 1).padStart(2, "0");
+      const dd = String(todayLocal.getDate()).padStart(2, "0");
+      const todayIsoDate = `${yyyy}-${mm}-${dd}`;
+
+      const effectiveFromDate = fromDateParam.toLowerCase() === "today"
+        ? todayIsoDate
+        : fromDateParam;
+
+      query.date = { $gte: effectiveFromDate };
+    }
 
     const [events, total] = hasPaginationParams
       ? await Promise.all([
-        Event.find().sort({ date: -1, createdAt: -1 }).skip(skip).limit(limit),
-        Event.countDocuments(),
+        Event.find(query).sort({ date: sortDirection, createdAt: sortDirection }).skip(skip).limit(limit),
+        Event.countDocuments(query),
       ])
       : await Promise.all([
-        Event.find().sort({ date: -1, createdAt: -1 }),
-        Event.countDocuments(),
+        Event.find(query).sort({ date: sortDirection, createdAt: sortDirection }),
+        Event.countDocuments(query),
       ]);
 
     const syncedEvents = await syncEventStatuses(events);

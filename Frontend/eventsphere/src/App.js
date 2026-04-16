@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import axios from "axios";
 
 import Home from "./pages/Home";
@@ -28,6 +28,16 @@ import {
   isBlockedPayload,
   triggerBlockedLogout,
 } from "./utils/blockedUser";
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [pathname]);
+
+  return null;
+}
 
 function App() {
   const [blockedPopupOpen, setBlockedPopupOpen] = useState(false);
@@ -70,6 +80,8 @@ function App() {
   return (
 
     <Router>
+
+      <ScrollToTop />
 
       <Routes>
 
